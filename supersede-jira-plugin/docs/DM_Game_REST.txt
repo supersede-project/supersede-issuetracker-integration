@@ -1,0 +1,55 @@
+Queste sono le chiamate REST che puoi usare per i requirements:
+
+Creare un requirement:
+- metodo: POST
+- url: "supersede-dm-app/requirement/"
+- data: requirement
+- response: location http header = "/requirementId"
+Il requirement presente nel body della richiesta (data) deve avere i campi 'name' e 'description', entrambi di tipo String
+
+Esempio in AngularJS:
+
+// Create a new requirement with empty name and description
+var requirement = {name: "", description: ""};
+$http({
+        url: "supersede-dm-app/requirement/",
+        data: requirement,
+        method: 'POST'
+    }).success(function(data, status, headers, config){
+        var l = headers('Location');
+        requirement.requirementId = parseInt(l.substring(l.lastIndexOf("/") + 1));
+    }).error(function(err){
+    });
+
+
+Ottenere tutti i requirements:
+- metodo: GET
+- url: "supersede-dm-app/requirement/"
+- parametro opzionale: nome="statusFx", possibili valori=["Eq", "Neq"]
+- parametro opzionale: nome="status", possibili valori=[0, 1, 2, 3, 4], dove 0=Uncorfirmed, 1=Editable, 2=Confirmed, 3=Enacted, 4=Discarded
+- valore di ritorno: List<Requirement>
+
+Esempio in AngularJS:
+
+// Get all the requirements that are not enacted
+$http.get('supersede-dm-app/requirement?statusFx=Neq&status=3')
+    .success(function (data) {
+       // here 'data' is an array of requirements
+    }).error(function(err){
+    });
+
+Ottenere il requirement con un determinato id:
+- metodo: GET
+- url: "supersede-dm-app/requirement/{requirementId}"
+- valore di ritorno: Requirement
+
+Esempio in AngularJS:
+
+// Get the requirement with id=1234
+$http({
+        url: "supersede-dm-app/requirement/1234",
+        method: 'GET'
+    }).success(function(data){
+        // here 'data' is an object with the following fields: ''requirementId', 'name', 'description', 'status', 'processId', 'creationDate', 'lastUpdateDate'
+    }).error(function(err){
+    });

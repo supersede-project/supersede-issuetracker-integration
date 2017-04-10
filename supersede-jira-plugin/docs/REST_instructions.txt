@@ -1,0 +1,89 @@
+1. perform a login using GET /login using the TenantId and Authorization (basic) headers as usual
+
+REQUEST >
+GET /login HTTP/1.1
+HOST: 172.28.16.163
+authorization: Basic xxxxxxxx
+tenantid: atos
+
+Of course the "xxxxxxxx" string is not a valid authorization string: use ARC or a base64 crypter to get the correct string for that using username and password you want
+
+2. get the SESSION from the Set-Cookie response header (the response code is 404 "not found" but that's ok). Please ignore the XSRF-TOKEN now, as it is not a correct token.
+
+RESPONSE >
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Content-Type: application/json;charset=UTF-8
+Date: Thu, 06 Apr 2017 10:28:25 GMT
+Expires: 0
+Pragma: no-cache
+Server: Apache/2.4.23 (Win64)
+Set-Cookie: XSRF-TOKEN=9b6d1c69-e036-4a9d-bb5d-b0a55b763fdd;path=/; SESSION=3805d228-0269-49ec-9e01-5abfb10f93b1;path=/;HttpOnly
+Transfer-Encoding: chunked
+X-Content-Type-Options: nosniff
+X-Frame-Options: DENY
+X-Xss-Protection: 1; mode=block
+
+3. put the SESSION in the Cookie header. This SESSION value has to be used for all the future REST calls
+3. perform a user data request using GET /user with the same TenantId and Authorization headers
+
+REQUEST >
+GET /user HTTP/1.1
+HOST: 172.28.16.163
+authorization: Basic d3BfYWRtaW46MTIzNDU=
+cookie: SESSION=3805d228-0269-49ec-9e01-5abfb10f93b1
+tenantid: atos
+
+4. get the XSRF-TOKEN from the Set-Cookie response header: if the Cookie is not correctly set in the request header with the correct login SESSION, the response will provide a wrong SESSION id.
+
+RESPONSE >
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Content-Type: application/json;charset=UTF-8
+Date: Thu, 06 Apr 2017 10:34:33 GMT
+Expires: 0
+Pragma: no-cache
+Server: Apache/2.4.23 (Win64)
+Set-Cookie: XSRF-TOKEN=2fdd2135-65d8-4f81-b059-79e8a784cda4;path=/
+Transfer-Encoding: chunked
+X-Content-Type-Options: nosniff
+X-Frame-Options: DENY
+X-Xss-Protection: 1; mode=block
+
+5. remove the Authorization header from future requests: it is not used anymore since we have the XSRF-TOKEN now
+6. add a X-XSRF-TOKEN header with as value the XSRF-TOKEN value (see 4): please be aware that the request header is X-XSRF-TOKEN not XSRF-TOKEN.
+
+cookie: SESSION=3805d228-0269-49ec-9e01-5abfb10f93b1
+tenantid: atos
+x-xsrf-token: 2fdd2135-65d8-4f81-b059-79e8a784cda4
+
+This is the standard authentication header allowing access to all the secured methods, such as POST.
+Unsecured methods (GET) only require a SESSION to be set in the Cookie, like we used with GET /user
+
+Now to add a requirement:
+7. set the content-type to application/json
+8. set the Raw payload for the requirement using the Jackson style JSON eg: {"name":"ciao","description":"descrizione"} (please see as the variable name is between quotes)
+9. perform a /supersede-dm-app/requirement (POST)
+
+REQUEST >
+POST /supersede-dm-app/requirement HTTP/1.1
+HOST: 172.28.16.163
+content-length: 53
+content-type: application/json
+cookie: SESSION=3805d228-0269-49ec-9e01-5abfb10f93b1
+tenantid: atos
+x-xsrf-token: 2fdd2135-65d8-4f81-b059-79e8a784cda4
+
+{"name":"ciao","description":"descrizione"}
+
+10. you'll receive a 201 code; the Location header will contain the id of the requirement just created.
+
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Content-Length: 0
+Date: Thu, 06 Apr 2017 10:40:58 GMT
+Expires: 0
+Location: http://172.28.16.163/requirement/5705
+Pragma: no-cache
+Server: Apache/2.4.23 (Win64)
+Set-Cookie: XSRF-TOKEN=2fdd2135-65d8-4f81-b059-79e8a784cda4;path=/
+X-Content-Type-Options: nosniff
+X-Frame-Options: DENY
+X-Xss-Protection: 1; mode=block

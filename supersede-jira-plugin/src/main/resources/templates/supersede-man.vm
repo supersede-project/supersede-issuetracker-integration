@@ -1,0 +1,221 @@
+<html>
+<head>
+    <title>SUPERSEDE - Issue Manager</title>
+    <meta name="decorator" content="atl.general">
+    <script>
+        AJS.$(document).ready(function() {
+            jQuery('.delete-issue').click(function() {
+                console.log('deleting');
+                var self = jQuery(this);
+                jQuery.ajax({
+                    type: "delete",
+                    url: "issuecrud?key=" + self.data("key"),
+                    success: function(data) {
+                        console.log('dom', self, data);
+                        self.parent().parent().remove();
+                    },
+                    error: function() {
+                        console.log('error', arguments);
+                    }
+                });
+                return false;
+            });
+        });
+    </script>
+    <style type="text/css">
+    	.table-truncate {
+    		table-layout: fixed;
+    	}
+    	.td-small {
+    		width: 5%;
+    	}
+    	.td-med {
+    		width: 20%;
+    	}
+    	.td-max {
+    		width: 60%
+    	}
+		.td-truncate {
+		  white-space: nowrap;
+		  overflow: hidden;
+		  text-overflow: ellipsis;
+		}
+	</style>
+</head>
+<body class="page-type-admin">
+<header class="aui-page-header">
+	<div class="aui-page-header-inner">
+		<div class="aui-page-header-main">
+			<h1>
+			<img src="$baseurl/download/resources/eu.supersede.jira.plugins.supersede-jira-plugin:supersede-jira-plugin-resources/images/supersede_color.png">
+			Issues Manager
+			</h1>
+			<!-- .aui-page-header-main -->
+		</div>
+	</div>
+	<!-- .aui-page-header-inner -->
+</header>
+
+#if ($errors && $errors.size()>0)
+<div class="content-container">
+    <div class="content-body">
+            <div class="aui-message error shadowed">
+                #foreach($error in $errors)
+                    <p class="title">
+                        <span class="aui-icon icon-error"></span>
+                        <strong>$error</strong>
+                    </p>
+                #end
+            </div>
+            <!-- .aui-message -->
+    </div>
+</div>
+#end
+
+<div class="aui-page-panel" id="browse-issues-page">
+	<div class="aui-page-panel-inner">
+		<div class="aui-page-panel-nav">
+			<div class="project-type-nav">
+				<ul class="issue-types-filters vertical tabs">
+					<li id="all-project-type" class="first active">
+						<a rel="all" href="/FIXME">
+						<strong>Issues</strong></a>
+					</li>
+					<li id="all-project-type" class="first active">
+						<a rel="all" href="/FIXME">
+						<strong>Import</strong></a>
+					</li>
+					<li id="all-project-type" class="first active">
+						<a rel="all" href="/FIXME">
+						<strong>Export</strong></a>
+					</li>
+				</ul>
+			</div>
+		<!-- .aui-page-panel-nav -->
+		</div>
+	
+		<section class="aui-page-panel-content">
+			<div class="module">
+				<div class="mod-header" id="filter-projects">
+					<div>
+						<h2>Mapped Issues</h2>
+					</div>
+				</div>
+				
+				<div class="mod-content" id="projects">
+					<div class="p-list">
+						<table class="aui table-truncate">
+							<thead>
+								<tr>
+									<th class="td-small">Key</th>
+									<th class="td-small">Supersede</th>
+			                        <th class="td-med">Summary</th>
+			                        <th class="td-max">Description</th>
+			                        <th class="td-small">Assignee</th>
+			                        <th class="td-small">Reporter</th>
+			                        <th class="td-small"></th>
+								</tr>
+							</thead>
+							<tbody class="projects-list">
+								#foreach( $issue in $issues )
+		                        <tr>
+		                            <td class="td-truncate">$issue.getKey()</td>
+		                            <td class="td-truncate">$issue.getCustomFieldValue($customFieldManager.getCustomFieldObject("customfield_10000"))</td>
+		                            <td class="td-truncate">$issue.getSummary()</td>
+		                            <td class="td-truncate">
+		                                #if($issue.getDescription())
+		                            	$issue.getDescription()
+		                        		#end
+		                            </td>
+		                            <td class="td-truncate">
+		                                #if($issue.getAssignee())
+		                                $issue.getAssignee().getName()
+		                                #end
+		                            </td>
+		                            <td class="td-truncate">
+		                                #if($issue.getReporter())
+		                                $issue.getReporter().getName()
+		                                #end
+		                            </td>
+		                            <td>
+		                                <a href="$baseurl/browse/$issue.getKey()">View</a> &nbsp;
+		                            </td>
+		                        </tr>
+		                        #end
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+			
+			<div class="module">
+				<div class="mod-header" id="filter-projects">
+					<div>
+						<h2>Issues to import</h2>
+					</div>
+				</div>
+				
+				<div class="mod-content" id="projects">
+					<div class="p-list">
+						<table class="aui table-truncate">
+							<thead>
+								<tr>
+									<th class="td-small">Id</th>
+			                        <th class="td-med">Name</th>
+			                        <th class="td-max">Description</th>
+			                        <th class="td-small">Priority</th>
+			                        <th class="td-small">Effort</th>
+			                        <th class="td-small"></th>
+								</tr>
+							</thead>
+							<tbody class="projects-list">
+								#foreach( $req in $requirements )
+		                        <tr>
+		                            <td class="td-truncate">$req.getId()</td>
+		                            <td class="td-truncate">$req.getName()</td>
+		                            <td class="td-truncate">
+		                                #if($req.getDescription())
+		                            $req.getDescription()
+		                        		#end
+		                            </td>
+		                            <td>
+		                                $req.getPriority()
+		                            </td>
+		                            <td>
+		                                $req.getEffort()
+		                            </td>
+		                            <td>
+		                                <a href="supersede-man?import=y&id=$req.getId()&name=$req.getName()&description=$req.getDescription()">Import</a> &nbsp;
+		                            </td>
+		                        </tr>
+		                        #end
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+			
+			<div class="module">
+				<div class="mod-header" id="filter-projects">
+					<div>
+						<h2>Issue to Export</h2>
+					</div>
+				</div>
+				
+				<div class="mod-content" id="projects">
+					<form method="get" action="supersede-man" class="aui dont-default-focus">
+			            <input type="hidden" name="export" value="y">
+			            <label for="issuekey-input">Issue Key:</label>
+			            <input type="text" id="issuekey-input" name="issuekey" value="">
+			            <input type="submit" class="button" value="Export Issue as Requirement">
+			        </form>
+				</div>
+			</div>
+		</section>
+		
+	<!-- .aui-page-panel-content -->
+	</div>
+<!-- .aui-page-panel-inner -->
+</div>
+</body>
+</html>
