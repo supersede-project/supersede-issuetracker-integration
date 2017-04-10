@@ -6,5 +6,5 @@ These plug-ins will be evaluated during the final project validation phase, whos
 
 Contents
 ------------------------------------------
-docs: project analysis and generic documentation
-supersede-jira-plugin: a Jira plugin implementation
+  * docs: project analysis and generic documentation
+  * supersede-jira-plugin: a Jira plugin implementation
