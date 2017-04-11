@@ -6,5 +6,5 @@ A list of requirements based on the JIRA dev experience
 
 1. Ability to see the details of a Requirement/Feature
 It would be good for the jira supersedeAdmin to have direct access to the requirement bound to an issue to edit its fields, start or monitor a process or anything else.
-At the moment it is only possible to access the list of requirements
+At the moment it is only possible to access the list of requirements or get the json out of a single requirement, but not visualize the requirement.
 

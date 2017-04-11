@@ -86,7 +86,8 @@ public class SupersedeMan extends HttpServlet {
 	 * that the two can be synchronised.
 	 */
 	private final static String SUPERSEDE_FIELD_NAME = "Supersede",
-			SUPERSEDE_FIELD_TYPE = "eu.supersede.jira.plugins.supersede-jira-plugin:supersede-custom-field";
+			SUPERSEDE_FIELD_TYPE = "eu.supersede.jira.plugins.supersede-jira-plugin:supersede-custom-field",
+			CUSTOM_FIELD_SEARCHER = "com.atlassian.jira.plugin.system.customfieldtypes:textsearcher";
 
 	private static final int CONN_TIMEOUT = 10000;
 
@@ -145,8 +146,7 @@ public class SupersedeMan extends HttpServlet {
 		CustomFieldType supersedeFieldType = getSupersedeCustomFieldType();
 		CustomField supersedeField = getSupersedeCustomField(supersedeFieldType);
 		if (null == supersedeField) {
-			CustomFieldSearcher fieldSearcher = customFieldManager
-					.getCustomFieldSearcher("com.atlassian.jira.plugin.system.customfieldtypes:textsearcher");
+			CustomFieldSearcher fieldSearcher = customFieldManager.getCustomFieldSearcher(CUSTOM_FIELD_SEARCHER);
 			List<JiraContextNode> contexts = new ArrayList<JiraContextNode>();
 			contexts.add(GlobalIssueContext.getInstance());
 			IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);

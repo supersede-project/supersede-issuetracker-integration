@@ -72,29 +72,37 @@
 </div>
 #end
 
+
+
 <div class="aui-page-panel" id="browse-issues-page">
 	<div class="aui-page-panel-inner">
 		<div class="aui-page-panel-nav">
-			<div class="project-type-nav">
-				<ul class="issue-types-filters vertical tabs">
-					<li id="all-project-type" class="first active">
-						<a rel="all" href="/FIXME">
-						<strong>Issues</strong></a>
-					</li>
-					<li id="all-project-type" class="first active">
-						<a rel="all" href="/FIXME">
-						<strong>Import</strong></a>
-					</li>
-					<li id="all-project-type" class="first active">
-						<a rel="all" href="/FIXME">
-						<strong>Export</strong></a>
-					</li>
-				</ul>
-			</div>
+			<nav class="aui-navgroup aui-navgroup-vertical">
+			    <div class="aui-navgroup-inner">
+			        <div class="aui-nav-heading"><h2><strong>Projects</strong></h2></div>
+			        <ul class="aui-nav">
+			            <li><a href="#">atos</a></li>
+			            <li><a href="#">test</a></li>
+			        </ul>
+			    </div>
+			</nav>
 		<!-- .aui-page-panel-nav -->
 		</div>
 	
 		<section class="aui-page-panel-content">
+		
+			<nav class="aui-navgroup aui-navgroup-horizontal">
+			    <div class="aui-navgroup-inner">
+			        <div class="aui-navgroup-primary">
+			            <ul class="aui-nav">
+			                <li class="aui-nav-selected"><a href="#">Mapped Issues</a></li>
+			                <li><a href="#">Import</a></li>
+			                <li><a href="#">Export</a></li>
+			            </ul>
+			        </div><!-- .aui-navgroup-primary -->
+			    </div><!-- .aui-navgroup-inner -->
+			</nav><!-- .aui-navgroup -->
+		
 			<div class="module">
 				<div class="mod-header" id="filter-projects">
 					<div>
