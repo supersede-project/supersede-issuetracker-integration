@@ -48,9 +48,14 @@
     <description key="supersede-cfg.description">SUPERSEDE Configuration</description>
     <url-pattern>/supersede-cfg</url-pattern>
   </servlet>
-  <customfield-type name="Supersede Custom Field" i18n-name-key="supersede-custom-field.name" key="supersede-custom-field" class="eu.supersede.jira.plugins.customfields.SupersedeCustomField">
-    <description key="supersede-custom-field.description">The Supersede Custom Field Plugin</description>
+  <customfield-type name="SUPERSEDE Custom Field" i18n-name-key="supersede-custom-field.name" key="supersede-custom-field" class="eu.supersede.jira.plugins.customfields.SupersedeCustomField">
+    <description key="supersede-custom-field.description">A custom field used to map SUPERSEDE requirements/features</description>
     <resource name="view" type="velocity" location="/templates/customfields/supersede-custom-field/view.vm"/>
     <resource name="edit" type="velocity" location="/templates/customfields/supersede-custom-field/edit.vm"/>
   </customfield-type>
+  <customfield-searcher name="Supersede Field Searcher" i18n-name-key="supersede-field-searcher.name" key="supersede-field-searcher" class="eu.supersede.jira.plugins.customfields.SupersedeFieldSearcher">
+    <description key="supersede-field-searcher.description">The Supersede Field Searcher Plugin</description>
+    <valid-customfield-type package="eu.supersede.jira.plugins" key="supersede-customfield-searcher"/>
+    <resource name="search" type="velocity" location="/templates/customfields/supersede-field-searcher/search.vm"/>
+  </customfield-searcher>
 </atlassian-plugin>

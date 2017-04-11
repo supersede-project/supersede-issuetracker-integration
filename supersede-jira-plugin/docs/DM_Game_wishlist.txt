@@ -1,0 +1,10 @@
+DM_Game SUPERSEDE App Wishlist
+==============================
+A list of requirements based on the JIRA dev experience
+------------------------------
+20170411 matteo.pedrotti@deltainformatica.eu
+
+1. Ability to see the details of a Requirement/Feature
+It would be good for the jira supersedeAdmin to have direct access to the requirement bound to an issue to edit its fields, start or monitor a process or anything else.
+At the moment it is only possible to access the list of requirements
+

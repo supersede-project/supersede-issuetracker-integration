@@ -20,6 +20,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +43,7 @@ import com.atlassian.jira.config.IssueTypeManager;
 import com.atlassian.jira.issue.CustomFieldManager;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.IssueInputParameters;
+import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.issue.context.GlobalIssueContext;
 import com.atlassian.jira.issue.context.JiraContextNode;
 import com.atlassian.jira.issue.customfields.CustomFieldSearcher;
@@ -83,11 +85,10 @@ public class SupersedeMan extends HttpServlet {
 	 * value of the field is the id of the SUPERSEDE requirement or feature so
 	 * that the two can be synchronised.
 	 */
-	private final static String 
-		SUPERSEDE_FIELD_NAME = "Supersede",
-		SUPERSEDE_FIELD_TYPE = "eu.supersede.jira.plugins.supersede-jira-plugin:supersede-custom-field";
-	
-	private static final int CONN_TIMEOUT = 10000; 
+	private final static String SUPERSEDE_FIELD_NAME = "Supersede",
+			SUPERSEDE_FIELD_TYPE = "eu.supersede.jira.plugins.supersede-jira-plugin:supersede-custom-field";
+
+	private static final int CONN_TIMEOUT = 10000;
 
 	private IssueService issueService;
 	private ProjectService projectService;
@@ -97,10 +98,10 @@ public class SupersedeMan extends HttpServlet {
 	private final com.atlassian.jira.user.util.UserManager jiraUserManager;
 	private final PluginSettingsFactory pluginSettingsFactory;
 	private final CustomFieldManager customFieldManager;
-	
+
 	private String serverUrl, username, password, tenantOverride;
 	private Long supersedeFieldId;
-	private String currentProject; //TODO!!!
+	private String currentProject; // TODO!!!
 
 	public SupersedeMan(IssueService issueService, ProjectService projectService, SearchService searchService,
 			UserManager userManager, com.atlassian.jira.user.util.UserManager jiraUserManager,
@@ -116,13 +117,17 @@ public class SupersedeMan extends HttpServlet {
 		this.customFieldManager = customFieldManager;
 		loadConfiguration();
 	}
-	
-	private void loadConfiguration(){
+
+	private void loadConfiguration() {
 		PluginSettings pluginSettings = pluginSettingsFactory.createGlobalSettings();
-		serverUrl = SupersedeCfg.getConfigurationValue(pluginSettings, SupersedeCfg.KEY_HOSTNAME, SupersedeCfg.DEF_HOSTNAME);
-		username = SupersedeCfg.getConfigurationValue(pluginSettings, SupersedeCfg.KEY_USERNAME, SupersedeCfg.DEF_USERNAME);
-		password = SupersedeCfg.getConfigurationValue(pluginSettings, SupersedeCfg.KEY_PASSWORD, SupersedeCfg.DEF_PASSWORD);
-		tenantOverride = SupersedeCfg.getConfigurationValue(pluginSettings, SupersedeCfg.KEY_TENANT, SupersedeCfg.DEF_TENANT);
+		serverUrl = SupersedeCfg.getConfigurationValue(pluginSettings, SupersedeCfg.KEY_HOSTNAME,
+				SupersedeCfg.DEF_HOSTNAME);
+		username = SupersedeCfg.getConfigurationValue(pluginSettings, SupersedeCfg.KEY_USERNAME,
+				SupersedeCfg.DEF_USERNAME);
+		password = SupersedeCfg.getConfigurationValue(pluginSettings, SupersedeCfg.KEY_PASSWORD,
+				SupersedeCfg.DEF_PASSWORD);
+		tenantOverride = SupersedeCfg.getConfigurationValue(pluginSettings, SupersedeCfg.KEY_TENANT,
+				SupersedeCfg.DEF_TENANT);
 	}
 
 	private ApplicationUser getCurrentUser(HttpServletRequest req) {
@@ -152,39 +157,40 @@ public class SupersedeMan extends HttpServlet {
 				log.debug(it.getId() + " ", it.getName());
 				myIssueTypes.add(it);
 			}
-			supersedeField = customFieldManager.createCustomField(SUPERSEDE_FIELD_NAME, "SUPERSEDE powered issue", supersedeFieldType,
-					fieldSearcher, contexts, myIssueTypes);
+			supersedeField = customFieldManager.createCustomField(SUPERSEDE_FIELD_NAME, "SUPERSEDE powered issue",
+					supersedeFieldType, fieldSearcher, contexts, myIssueTypes);
 			log.info("the supersede custom field has been installed to all the issue types");
 		} else {
 			log.info("the supersede custom field is already available");
 		}
 		supersedeFieldId = supersedeField.getIdAsLong();
-		log.debug("supersede custom field id is "+supersedeFieldId);
+		log.debug("supersede custom field id is " + supersedeFieldId);
 	}
 
 	private String getBasicAuth() {
-		String userpass = getUsername()+ ":" + getPassword();
+		String userpass = getUsername() + ":" + getPassword();
 		String basicAuth = "Basic " + new String(new Base64().encode(userpass.getBytes()));
 		return basicAuth;
 	}
 
 	private String getCurrentProject() {
-		//this should be set in the query: otherwise a project should be picked up by the user
-		return tenantOverride.length()>0?tenantOverride:currentProject;
+		// this should be set in the query: otherwise a project should be picked
+		// up by the user
+		return tenantOverride.length() > 0 ? tenantOverride : currentProject;
 	}
-	
-	private String getUrl(){
+
+	private String getUrl() {
 		return this.serverUrl;
 	}
-	
-	private String getUsername(){
+
+	private String getUsername() {
 		return this.username;
 	}
-	
-	private String getPassword(){
+
+	private String getPassword() {
 		return this.password;
 	}
-	
+
 	/**
 	 * 
 	 * @return the session id for this login
@@ -202,7 +208,7 @@ public class SupersedeMan extends HttpServlet {
 
 		// fuck the response... 404 is still fine for a login
 		log.info("login: " + conn.getResponseCode());
-		
+
 		Map<String, List<String>> map = conn.getHeaderFields();
 		List<String> cookies = map.get("Set-Cookie");
 
@@ -227,7 +233,7 @@ public class SupersedeMan extends HttpServlet {
 		conn.setRequestMethod("GET");
 		conn.setRequestProperty("Authorization", getBasicAuth());
 		conn.setRequestProperty("TenantId", getCurrentProject());
-		conn.setRequestProperty("Cookie", "SESSION="+sessionId);
+		conn.setRequestProperty("Cookie", "SESSION=" + sessionId);
 
 		Map<String, List<String>> map = conn.getHeaderFields();
 		List<String> cookies = map.get("Set-Cookie");
@@ -250,7 +256,6 @@ public class SupersedeMan extends HttpServlet {
 		try {
 
 			URL url = new URL(getUrl() + "/supersede-dm-app/requirement");
-			// URL url = new URL("http://supersede.es.atos.net:8080/login");
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 			conn.setConnectTimeout(CONN_TIMEOUT);
 			conn.setReadTimeout(CONN_TIMEOUT);
@@ -290,11 +295,29 @@ public class SupersedeMan extends HttpServlet {
 			log.error(e.getMessage());
 		}
 	}
+	
+	/**
+	 * Remove all the requirements which are already mapped as issues
+	 * @param user
+	 * @param requirements
+	 */
+	private void filterRequirements(ApplicationUser user, Collection<Requirement> requirements){
+		for(Iterator<Requirement> ir = requirements.iterator(); ir.hasNext();){
+			Requirement r = ir.next();
+			Issue i = getIssueByRequirement(user, r.getId());
+			if(null != i){
+				ir.remove();
+				log.debug("removed requirement "+r.getId()+" because already mapped to "+i.getKey());
+			}
+		}
+	}
 
-	private void getRequirements(Collection<Requirement> requirements) {
+	private void getRequirements(HttpServletRequest req, Collection<Requirement> requirements) {
 		try {
+			ApplicationUser user = getCurrentUser(req);
 			String sessionId = login();
 			fetchRequirements(sessionId, requirements);
+			filterRequirements(user, requirements);
 		} catch (Exception e) {
 			log.error("login error : " + e);
 			return;
@@ -318,7 +341,7 @@ public class SupersedeMan extends HttpServlet {
 		// Our JQL clause is simple project="TUTORIAL"
 		// com.atlassian.query.Query query =
 		// jqlClauseBuilder.project("TEST").buildQuery();
-		Query query = jqlClauseBuilder.customField(supersedeFieldId).isNot().empty().and().project(getCurrentProject())
+		Query query = jqlClauseBuilder.customField(supersedeFieldId).isNotEmpty().and().project(getCurrentProject())
 				.buildQuery();
 		// A page filter is used to provide pagination. Let's use an unlimited
 		// filter to
@@ -335,17 +358,50 @@ public class SupersedeMan extends HttpServlet {
 		return searchResults.getIssues();
 	}
 	
+	private Issue getIssueByRequirement(ApplicationUser user, String requirementId){
+		// search issues
+		// The search interface requires JQL clause... so let's build one
+		JqlClauseBuilder jqlClauseBuilder = JqlQueryBuilder.newClauseBuilder();
+		// Our JQL clause is simple project="TUTORIAL"
+		// com.atlassian.query.Query query =
+		// jqlClauseBuilder.project("TEST").buildQuery();
+		Query query = jqlClauseBuilder.customField(supersedeFieldId).like(requirementId).and().project(getCurrentProject()).buildQuery();
+		log.debug(query.getQueryString());
+		log.debug(query.getWhereClause().toString());
+		// A page filter is used to provide pagination. Let's use an unlimited
+		// filter to
+		// to bypass pagination.
+		PagerFilter pagerFilter = PagerFilter.getUnlimitedFilter();
+		com.atlassian.jira.issue.search.SearchResults searchResults = null;
+		try {
+			// Perform search results
+			searchResults = searchService.search(user, query, pagerFilter);
+		} catch (SearchException e) {
+			e.printStackTrace();
+		}
+		// return the results
+		List<Issue> issues = searchResults.getIssues();
+		if(0 == issues.size()){
+			log.debug("no issues found for requirement "+requirementId);
+			return null;
+		}
+		if(0 < issues.size()){
+			log.warn("more issues mapped to the same requirement "+requirementId+": returning the first found");
+		}
+		return issues.get(0);
+	}
+
 	private Requirement fetchRequirement(String sessionId, String id) {
 		try {
 
-			URL url = new URL(getUrl() + "/supersede-dm-app/requirement/"+id);
+			URL url = new URL(getUrl() + "/supersede-dm-app/requirement/" + id);
 			// URL url = new URL("http://supersede.es.atos.net:8080/login");
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 			conn.setConnectTimeout(CONN_TIMEOUT);
 			conn.setReadTimeout(CONN_TIMEOUT);
 			conn.setRequestMethod("GET");
 			conn.setRequestProperty("Accept", "application/json");
-			//conn.setRequestProperty("Authorization", getBasicAuth());
+			// conn.setRequestProperty("Authorization", getBasicAuth());
 			conn.setRequestProperty("TenantId", getCurrentProject());
 			conn.setRequestProperty("Cookie", "SESSION=" + sessionId + ";");
 
@@ -361,9 +417,9 @@ public class SupersedeMan extends HttpServlet {
 			}
 			JSONObject job = new JSONObject(sb.toString());
 			log.debug(job.toString(2));
-			
+
 			Requirement r = new Requirement(job);
-			
+
 			conn.disconnect();
 			return r;
 		} catch (Exception e) {
@@ -371,8 +427,8 @@ public class SupersedeMan extends HttpServlet {
 			return null;
 		}
 	}
-	
-	private Requirement getRequirement(String id){
+
+	private Requirement getRequirement(String id) {
 		try {
 			String sessionId = login();
 			return fetchRequirement(sessionId, id);
@@ -381,25 +437,24 @@ public class SupersedeMan extends HttpServlet {
 			return null;
 		}
 	}
-	
-	private CustomFieldType getSupersedeCustomFieldType(){
-		CustomFieldType supersedeFieldType = customFieldManager
-				.getCustomFieldType(SUPERSEDE_FIELD_TYPE);
-		if(null == supersedeFieldType){
-			log.error("no such custom field type found: "+SUPERSEDE_FIELD_TYPE);
-			for(CustomFieldType t : customFieldManager.getCustomFieldTypes()){
-				log.debug(t.getName()+" "+t.getKey());
+
+	private CustomFieldType getSupersedeCustomFieldType() {
+		CustomFieldType supersedeFieldType = customFieldManager.getCustomFieldType(SUPERSEDE_FIELD_TYPE);
+		if (null == supersedeFieldType) {
+			log.error("no such custom field type found: " + SUPERSEDE_FIELD_TYPE);
+			for (CustomFieldType t : customFieldManager.getCustomFieldTypes()) {
+				log.debug(t.getName() + " " + t.getKey());
 			}
-			throw new NullPointerException("no "+SUPERSEDE_FIELD_TYPE+" custom field available");
+			throw new NullPointerException("no " + SUPERSEDE_FIELD_TYPE + " custom field available");
 		}
 		return supersedeFieldType;
 	}
-	
-	private CustomField getSupersedeCustomField(CustomFieldType supersedeFieldType){
+
+	private CustomField getSupersedeCustomField(CustomFieldType supersedeFieldType) {
 		CustomField supersedeField = null;
 		Collection<CustomField> supersedeFields = customFieldManager.getCustomFieldObjectsByName(SUPERSEDE_FIELD_NAME);
-		for(CustomField cf : supersedeFields){
-			if(cf.getCustomFieldType().equals(supersedeFieldType)){
+		for (CustomField cf : supersedeFields) {
+			if (cf.getCustomFieldType().equals(supersedeFieldType)) {
 				supersedeField = cf;
 			}
 		}
@@ -445,48 +500,27 @@ public class SupersedeMan extends HttpServlet {
 			} else {
 				IssueResult issue = issueService.create(user, result);
 				log.info("added issue for requirement " + req.getParameter("id"));
-
-				/*
-				 * issue.getIssue().setCustomFieldValue(supersedeField,
-				 * req.getParameter("id")); Object customField =
-				 * issue.getIssue().getCustomFieldValue(supersedeField);
-				 * log.debug("custom field: ",customField);
-				 * 
-				 * issue.getIssue().store();
-				 * 
-				 * IssueInputParameters updates =
-				 * issueService.newIssueInputParameters();
-				 * issueInputParameters.addCustomFieldValue(supersedeField.getId
-				 * (), req.getParameter("id"));
-				 * issueInputParameters.addCustomFieldValue(
-				 * SUPERSEDE_FIELD_NAME, req.getParameter("id"));
-				 * updates.addCustomFieldValue(supersedeField.getId(),
-				 * req.getParameter("id"));
-				 * updates.addCustomFieldValue(SUPERSEDE_FIELD_NAME,
-				 * req.getParameter("id")); IssueService.UpdateValidationResult
-				 * updateRes = issueService.validateUpdate(user,
-				 * issue.getIssue().getId(), updates);
-				 * 
-				 * if (updateRes.getErrorCollection().hasAnyErrors()) {
-				 * Map<String,String> errorsMap =
-				 * updateRes.getErrorCollection().getErrors(); for(String eid :
-				 * errorsMap.keySet()){ errors.add(eid+": "+errorsMap.get(eid));
-				 * } log.error("cannot update issue for requirement "
-				 * +req.getParameter("id")); }else{ IssueResult updated =
-				 * issueService.update(user, updateRes); log.info(
-				 * "updated issue for requirement "+req.getParameter("id"));
-				 * 
-				 * Object updatedField =
-				 * updated.getIssue().getCustomFieldValue(supersedeField);
-				 * log.debug("updated custom field: ",updatedField); }
-				 */
 			}
 		}
 	}
 
-	private void sendPostRequest(String sessionId, String xsrf, String name, String description) {
-
-		try{
+	/**
+	 * Perform a REST call (POST) asking SUPERSEDE to create a new requirement
+	 * with the given name and description.
+	 * 
+	 * @param sessionId
+	 *            current user session identifier
+	 * @param xsrf
+	 *            the authentication token to be used for secured methods
+	 * @param name
+	 *            the requirement name
+	 * @param description
+	 *            the requirement description
+	 * @return the id of the created requirement in SUPERSEDE
+	 */
+	private String sendPostRequest(String sessionId, String xsrf, String name, String description) {
+		String requirementId = null;
+		try {
 
 			URL url = new URL(getUrl() + "/supersede-dm-app/requirement");
 			// URL url = new URL("http://supersede.es.atos.net:8080/login");
@@ -496,10 +530,10 @@ public class SupersedeMan extends HttpServlet {
 			conn.setDoOutput(true);
 			conn.setRequestMethod("POST");
 			conn.setRequestProperty("Content-Type", "application/json");
-			//conn.setRequestProperty("Authorization", getBasicAuth());
+			// conn.setRequestProperty("Authorization", getBasicAuth());
 			conn.setRequestProperty("TenantId", getCurrentProject());
 			conn.setRequestProperty("Cookie", "SESSION=" + sessionId + ";");
-			//conn.setRequestProperty("SESSION", sessionId);
+			// conn.setRequestProperty("SESSION", sessionId);
 			conn.setRequestProperty("X-XSRF-TOKEN", xsrf);
 
 			JSONObject req = new JSONObject();
@@ -511,6 +545,11 @@ public class SupersedeMan extends HttpServlet {
 			wr.flush();
 
 			log.debug("connection code " + conn.getResponseCode());
+			String locationHeader = conn.getHeaderField("Location");
+			log.debug("location header " + locationHeader);
+			requirementId = locationHeader.substring(locationHeader.lastIndexOf("/") + 1);
+			log.debug("requirement id " + requirementId);
+
 			BufferedReader ebr = new BufferedReader(new InputStreamReader((conn.getErrorStream())));
 			log.debug("printing output:");
 			String error;
@@ -540,32 +579,67 @@ public class SupersedeMan extends HttpServlet {
 		} catch (Exception e) {
 			log.error(e.getMessage());
 		}
+		return requirementId;
 	}
 
-	private void testCreateRequirement(String sessionid, String xsrf, Issue issue) {
+	private void testCreateRequirement(String sessionid, String xsrf, MutableIssue issue, ApplicationUser user, Collection<String> errors) {
 		log.debug("creating requirement for issue " + issue.getId());
 		// 1. send the request to supersede
-		sendPostRequest(sessionid, xsrf, issue.getSummary(), issue.getDescription());
+		String requirementId = sendPostRequest(sessionid, xsrf, issue.getSummary(), issue.getDescription());
 		// 2. get the response with the requirement id
 		// 3. update the issue with the custom field "Supersede" set as the
 		// requirement id
+		if (null != requirementId) {
+			updateIssue(issue, user, requirementId, errors);
+		}
+	}
+
+	private void updateIssue(MutableIssue issue, ApplicationUser user, String requirementId, Collection<String> errors) {
+
+		CustomField supersedeField = getSupersedeCustomField(getSupersedeCustomFieldType());
+		issue.setCustomFieldValue(supersedeField, requirementId);
+		Object customField = issue.getCustomFieldValue(supersedeField);
+		log.debug("custom field of "+issue.getKey()+" set to "+ customField);
+
+		IssueInputParameters issueInputParameters = issueService.newIssueInputParameters();
+		issueInputParameters.addCustomFieldValue(supersedeField.getId(), requirementId);
+		IssueService.UpdateValidationResult updateRes = issueService.validateUpdate(user, issue.getId(), issueInputParameters);
+
+		if (updateRes.getErrorCollection().hasAnyErrors()) {
+			Map<String, String> errorsMap = updateRes.getErrorCollection().getErrors();
+			for (String eid : errorsMap.keySet()) {
+				errors.add(eid + ": " + errorsMap.get(eid));
+			}
+			log.error("cannot update issue for requirement " + requirementId);
+		} else {
+			IssueResult updated = issueService.update(user, updateRes);
+			log.info("updated issue "+issue.getId()+" for requirement " + requirementId);
+
+			Object updatedField = updated.getIssue().getCustomFieldValue(supersedeField);
+			log.debug("updated custom field: ", updatedField);
+		}
 	}
 
 	private void newRequirement(HttpServletRequest req, Collection<String> errors) {
 		String issueKey = req.getParameter("issuekey");
 		log.info("creating new requirement for " + issueKey);
-		IssueResult issueRes = issueService.getIssue(getCurrentUser(req), issueKey);
+		ApplicationUser user = getCurrentUser(req);
+		IssueResult issueRes = issueService.getIssue(user, issueKey);
 		if (issueRes.isValid()) {
 			try {
 				String sessionId = login();
 				String xsrf = authenticate(sessionId);
-				testCreateRequirement(sessionId, xsrf, issueRes.getIssue());
+				testCreateRequirement(sessionId, xsrf, issueRes.getIssue(), user, errors);
 			} catch (Exception e) {
 				log.error("login error: " + e);
 			}
 		} else {
 			errors.add("invalid issue key " + issueKey);
 		}
+	}
+	
+	private String getCustomFieldId(){
+		return "customfield_" + supersedeFieldId;
 	}
 
 	@Override
@@ -590,14 +664,14 @@ public class SupersedeMan extends HttpServlet {
 		// Render the list of issues (list.vm) if no params are passed in
 		List<Issue> issues = getIssues(req);
 		List<Requirement> requirements = new LinkedList<Requirement>();
-		getRequirements(requirements);
+		getRequirements(req, requirements);
 		Map<String, Object> context = Maps.newHashMap();
 		context.put("issues", issues);
 		context.put("requirements", requirements);
 		context.put("errors", errors);
 		context.put("baseurl", ComponentAccessor.getApplicationProperties().getString("jira.baseurl"));
 		context.put("customFieldManager", customFieldManager);
-		context.put("customFieldId", "customfield_"+supersedeFieldId);
+		context.put("customFieldId", getCustomFieldId());
 		resp.setContentType("text/html;charset=utf-8");
 		// Pass in the list of issues as the context
 		templateRenderer.render(MANAGER_BROWSER_TEMPLATE, context, resp.getWriter());
