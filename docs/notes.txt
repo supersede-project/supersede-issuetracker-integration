@@ -1,0 +1,24 @@
+SUPERSEDE JIRA-PLUGIN
+
+20170502
+-- jira-plugin todo -->
+history <-> imported/exported
+update <-> supersede/jira fields
+resources
+
+automatic mapping options
+alert on new imports
+
+fms mapping in jira-plugin
+> block editing issue while working on supersede
+
+-- supersede -->
+add delta tenant
+tenant creation effort details
+FBK meeting to familiarize with dmgame wp3
+Mauro to pass competencies over
+
+-- sw progress -->
+negotation facilitators
+meta-decision process (how to decide)
+
