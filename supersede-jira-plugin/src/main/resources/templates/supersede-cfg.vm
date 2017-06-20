@@ -78,7 +78,8 @@
 			            <input type="hidden" name="options" value="y">
 			            <p>
 			            <p>
-			            If specified, will use this tenant when fetching or creating requirements/features in SUPERSEDE.
+			            If specified, will use this tenant when fetching or creating requirements/features in SUPERSEDE.<br/>
+			            If not specified, the project name will be used as the tenant.
 			            </p>
 			            <label for="tenant-input">Force tenant:</label>
 			            <input type="text" id="tenant-input" name="tenant" value="$tenant">
