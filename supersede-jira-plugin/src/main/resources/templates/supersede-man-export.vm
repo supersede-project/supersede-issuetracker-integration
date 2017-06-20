@@ -1,0 +1,19 @@
+<html>
+<body>
+	<div class="mod-header" id="filter-projects">
+		<div>
+			<h2>Issue to Export</h2>
+		</div>
+	</div>
+
+	<div class="mod-content" id="projects">
+		<form method="get" action="supersede-man"
+			class="aui dont-default-focus">
+			<input type="hidden" name="export" value="y"> <label
+				for="issuekey-input">Issue Key:</label> <input type="text"
+				id="issuekey-input" name="issuekey" value=""> <input
+				type="submit" class="button" value="Export Issue as Requirement">
+		</form>
+	</div>
+</body>
+</html>

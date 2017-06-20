@@ -1,0 +1,76 @@
+<html>
+<head>
+<script>
+	AJS.$(document).ready(function() {
+		jQuery('.check-alerts').click(function() {
+			console.log('refreshing alerts');
+			var self = jQuery(this);
+			jQuery.ajax({
+				type : "get",
+				url : "supersede-man?refreshAlerts=y",
+				success : function(data) {
+					//console.log('dom', self, data);
+					$("#alerts").html(data);
+					//self.parent().parent().remove();
+				},
+				error : function() {
+					console.log('error', arguments);
+				}
+			});
+			return false;
+		});
+	});
+</script>
+</head>
+<body>
+	<div class="tabs-pane" id="alerts">
+		<div class="mod-header" id="filter-projects">
+			<div>
+				<h2>Alerts</h2>
+				<span>
+					<button class="aui-button aui-button-secondary check-alerts">Check
+						Supersede</button>
+				</span>
+			</div>
+			<div class="p-list">
+				<form action="supersede-man" method="get">
+					<table class="aui table-truncate">
+						<thead>
+							<tr>
+								<th class="td-med"></th>
+								<th class="td-max">ID</th>
+								<th class="td-med">App. ID</th>
+								<th class="td-max">Timestamp</th>
+								<th class="td-max">Description</th>
+							</tr>
+						</thead>
+						<tbody class="projects-list">
+							#foreach( $alert in $alerts )
+							<tr>
+								<td class="td-truncate"><input class="checkbox"
+									type="checkbox" name="chkSelected"
+									onclick="$(this).next().val(this.checked?'1':'0')"> <input
+									type="hidden" name="selectionList" /></td>
+								<td class="td-truncate">$alert.getId()</td>
+								<td class="td-truncate">$alert.getApplicationId()</td>
+								<td class="td-truncate">$alert.getTimestamp()</td>
+								<td class="td-truncate">$alert.getDescription()</td>
+							</tr>
+							#end
+						</tbody>
+					</table>
+					<div class="aui-group">
+						<div class="aui-item">
+							<input type="hidden" name="import" value="y"> <input
+								class="aui-button aui-button-primary" type="submit"
+								name="action" value="Import"> <input
+								class="aui-button aui-button-secondary" type="submit"
+								name="action" value="Attach">
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

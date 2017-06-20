@@ -1,0 +1,41 @@
+<html>
+<body>
+	<div class="mod-header" id="filter-projects">
+		<div>
+			<h2>Issues to import</h2>
+		</div>
+	</div>
+
+	<div class="mod-content" id="projects">
+		<div class="p-list">
+			<table class="aui table-truncate">
+				<thead>
+					<tr>
+						<th class="td-small">Id</th>
+						<th class="td-med">Name</th>
+						<th class="td-max">Description</th>
+						<th class="td-small">Priority</th>
+						<th class="td-small">Effort</th>
+						<th class="td-small"></th>
+					</tr>
+				</thead>
+				<tbody class="projects-list">
+					#foreach( $req in $requirements )
+					<tr>
+						<td class="td-truncate">$req.getId()</td>
+						<td class="td-truncate">$req.getName()</td>
+						<td class="td-truncate">#if($req.getDescription())
+							$req.getDescription() #end</td>
+						<td>$req.getPriority()</td>
+						<td>$req.getEffort()</td>
+						<td><a
+							href="supersede-man?import=y&id=$req.getId()&name=$req.getName()&description=$req.getDescription()">Import</a>
+							&nbsp;</td>
+					</tr>
+					#end
+				</tbody>
+			</table>
+		</div>
+	</div>
+</body>
+</html>

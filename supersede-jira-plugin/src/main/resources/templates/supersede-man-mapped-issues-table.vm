@@ -1,0 +1,43 @@
+<html>
+<body>
+	<div class="mod-header" id="filter-projects">
+		<div>
+			<h2>Mapped Issues</h2>
+		</div>
+	</div>
+
+	<div class="mod-content" id="projects">
+		<div class="p-list">
+			<table class="aui table-truncate">
+				<thead>
+					<tr>
+						<th class="td-small">Key</th>
+						<th class="td-small">Supersede</th>
+						<th class="td-med">Summary</th>
+						<th class="td-max">Description</th>
+						<th class="td-small">Assignee</th>
+						<th class="td-small">Reporter</th>
+						<th class="td-small"></th>
+					</tr>
+				</thead>
+				<tbody class="projects-list">
+					#foreach( $issue in $issues )
+					<tr>
+						<td class="td-truncate">$issue.getKey()</td>
+						<td class="td-truncate">$issue.getCustomFieldValue($customFieldManager.getCustomFieldObject($customFieldId))</td>
+						<td class="td-truncate">$issue.getSummary()</td>
+						<td class="td-truncate">#if($issue.getDescription())
+							$issue.getDescription() #end</td>
+						<td class="td-truncate">#if($issue.getAssignee())
+							$issue.getAssignee().getName() #end</td>
+						<td class="td-truncate">#if($issue.getReporter())
+							$issue.getReporter().getName() #end</td>
+						<td><a href="$baseurl/browse/$issue.getKey()">View</a> &nbsp;</td>
+					</tr>
+					#end
+				</tbody>
+			</table>
+		</div>
+	</div>
+</body>
+</html>

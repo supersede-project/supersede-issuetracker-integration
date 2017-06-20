@@ -20,6 +20,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -65,6 +66,8 @@ import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
 import com.google.common.collect.Maps;
+
+import eu.supersede.jira.plugins.servlet.Requirement;
 
 /**
  * 
@@ -295,29 +298,36 @@ public class SupersedeMan extends HttpServlet {
 			log.error(e.getMessage());
 		}
 	}
-	
+
 	/**
 	 * Remove all the requirements which are already mapped as issues
+	 * 
 	 * @param user
 	 * @param requirements
 	 */
-	private void filterRequirements(ApplicationUser user, Collection<Requirement> requirements){
-		for(Iterator<Requirement> ir = requirements.iterator(); ir.hasNext();){
+	private void filterRequirements(ApplicationUser user, Collection<Requirement> requirements) {
+		for (Iterator<Requirement> ir = requirements.iterator(); ir.hasNext();) {
 			Requirement r = ir.next();
 			Issue i = getIssueByRequirement(user, r.getId());
-			if(null != i){
+			if (null != i) {
 				ir.remove();
-				log.debug("removed requirement "+r.getId()+" because already mapped to "+i.getKey());
+				log.debug("removed requirement " + r.getId() + " because already mapped to " + i.getKey());
 			}
 		}
 	}
 
 	private void getRequirements(HttpServletRequest req, Collection<Requirement> requirements) {
+		getRequirements(req, requirements, true);
+	}
+
+	private void getRequirements(HttpServletRequest req, Collection<Requirement> requirements, boolean filter) {
 		try {
 			ApplicationUser user = getCurrentUser(req);
 			String sessionId = login();
 			fetchRequirements(sessionId, requirements);
-			filterRequirements(user, requirements);
+			if (filter) {
+				filterRequirements(user, requirements);
+			}
 		} catch (Exception e) {
 			log.error("login error : " + e);
 			return;
@@ -357,15 +367,16 @@ public class SupersedeMan extends HttpServlet {
 		// return the results
 		return searchResults.getIssues();
 	}
-	
-	private Issue getIssueByRequirement(ApplicationUser user, String requirementId){
+
+	private Issue getIssueByRequirement(ApplicationUser user, String requirementId) {
 		// search issues
 		// The search interface requires JQL clause... so let's build one
 		JqlClauseBuilder jqlClauseBuilder = JqlQueryBuilder.newClauseBuilder();
 		// Our JQL clause is simple project="TUTORIAL"
 		// com.atlassian.query.Query query =
 		// jqlClauseBuilder.project("TEST").buildQuery();
-		Query query = jqlClauseBuilder.customField(supersedeFieldId).like(requirementId).and().project(getCurrentProject()).buildQuery();
+		Query query = jqlClauseBuilder.customField(supersedeFieldId).like(requirementId).and()
+				.project(getCurrentProject()).buildQuery();
 		log.debug(query.getQueryString());
 		log.debug(query.getWhereClause().toString());
 		// A page filter is used to provide pagination. Let's use an unlimited
@@ -381,12 +392,12 @@ public class SupersedeMan extends HttpServlet {
 		}
 		// return the results
 		List<Issue> issues = searchResults.getIssues();
-		if(0 == issues.size()){
-			log.debug("no issues found for requirement "+requirementId);
+		if (0 == issues.size()) {
+			log.debug("no issues found for requirement " + requirementId);
 			return null;
 		}
-		if(0 < issues.size()){
-			log.warn("more issues mapped to the same requirement "+requirementId+": returning the first found");
+		if (1 < issues.size()) {
+			log.warn("more issues mapped to the same requirement " + requirementId + ": returning the first found");
 		}
 		return issues.get(0);
 	}
@@ -582,7 +593,8 @@ public class SupersedeMan extends HttpServlet {
 		return requirementId;
 	}
 
-	private void testCreateRequirement(String sessionid, String xsrf, MutableIssue issue, ApplicationUser user, Collection<String> errors) {
+	private void testCreateRequirement(String sessionid, String xsrf, MutableIssue issue, ApplicationUser user,
+			Collection<String> errors) {
 		log.debug("creating requirement for issue " + issue.getId());
 		// 1. send the request to supersede
 		String requirementId = sendPostRequest(sessionid, xsrf, issue.getSummary(), issue.getDescription());
@@ -594,16 +606,18 @@ public class SupersedeMan extends HttpServlet {
 		}
 	}
 
-	private void updateIssue(MutableIssue issue, ApplicationUser user, String requirementId, Collection<String> errors) {
+	private void updateIssue(MutableIssue issue, ApplicationUser user, String requirementId,
+			Collection<String> errors) {
 
 		CustomField supersedeField = getSupersedeCustomField(getSupersedeCustomFieldType());
 		issue.setCustomFieldValue(supersedeField, requirementId);
 		Object customField = issue.getCustomFieldValue(supersedeField);
-		log.debug("custom field of "+issue.getKey()+" set to "+ customField);
+		log.debug("custom field of " + issue.getKey() + " set to " + customField);
 
 		IssueInputParameters issueInputParameters = issueService.newIssueInputParameters();
 		issueInputParameters.addCustomFieldValue(supersedeField.getId(), requirementId);
-		IssueService.UpdateValidationResult updateRes = issueService.validateUpdate(user, issue.getId(), issueInputParameters);
+		IssueService.UpdateValidationResult updateRes = issueService.validateUpdate(user, issue.getId(),
+				issueInputParameters);
 
 		if (updateRes.getErrorCollection().hasAnyErrors()) {
 			Map<String, String> errorsMap = updateRes.getErrorCollection().getErrors();
@@ -613,7 +627,7 @@ public class SupersedeMan extends HttpServlet {
 			log.error("cannot update issue for requirement " + requirementId);
 		} else {
 			IssueResult updated = issueService.update(user, updateRes);
-			log.info("updated issue "+issue.getId()+" for requirement " + requirementId);
+			log.info("updated issue " + issue.getId() + " for requirement " + requirementId);
 
 			Object updatedField = updated.getIssue().getCustomFieldValue(supersedeField);
 			log.debug("updated custom field: ", updatedField);
@@ -637,22 +651,40 @@ public class SupersedeMan extends HttpServlet {
 			errors.add("invalid issue key " + issueKey);
 		}
 	}
-	
-	private String getCustomFieldId(){
+
+	private String getCustomFieldId() {
 		return "customfield_" + supersedeFieldId;
 	}
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
+		Map<String, Object> context = Maps.newHashMap();
+		
 		// process request
 		List<String> errors = new LinkedList<String>();
 		if ("y".equals(req.getParameter("import"))) {
+			String[] chk = req.getParameterValues("selectionList");
+			String[] ids = req.getParameterValues("idList");
+			
+			
 			errors.add("importing " + req.getParameter("id"));
 			newIssue(req, errors);
 		} else if ("y".equals(req.getParameter("export"))) {
 			errors.add("exporting " + req.getParameter("issuekey"));
 			newRequirement(req, errors);
+		} else if ("y".equals(req.getParameter("refreshAlerts"))) {
+			//Reload just the alerts table template
+			List<Alert> alerts = fetchAlerts(req);
+			context.put("alerts", alerts);
+			templateRenderer.render("/templates/supersede-man-alerts-table.vm", context, resp.getWriter());
+			return;
+		} else if ("y".equals(req.getParameter("refreshCompare"))) {
+			//Reload just the comparison table template
+			List<Difference> differences = compareIssues(req);
+			context.put("differences", differences);
+			templateRenderer.render("/templates/supersede-man-compare-table.vm", context, resp.getWriter());
+			return;
 		}
 		// ---
 
@@ -662,12 +694,18 @@ public class SupersedeMan extends HttpServlet {
 			log.error("checking custom supersede field: " + e);
 		}
 		// Render the list of issues (list.vm) if no params are passed in
+		List<Difference> differences = compareIssues(req);
+		
+
 		List<Issue> issues = getIssues(req);
 		List<Requirement> requirements = new LinkedList<Requirement>();
 		getRequirements(req, requirements);
-		Map<String, Object> context = Maps.newHashMap();
+		List<Alert> alerts = fetchAlerts(req);
+
+		context.put("alerts", alerts);
 		context.put("issues", issues);
 		context.put("requirements", requirements);
+		context.put("differences", differences);
 		context.put("errors", errors);
 		context.put("baseurl", ComponentAccessor.getApplicationProperties().getString("jira.baseurl"));
 		context.put("customFieldManager", customFieldManager);
@@ -677,4 +715,111 @@ public class SupersedeMan extends HttpServlet {
 		templateRenderer.render(MANAGER_BROWSER_TEMPLATE, context, resp.getWriter());
 	}
 
+	private List<Difference> compareIssues(HttpServletRequest req) {
+		List<Issue> JIRAissues = getIssues(req);
+		List<Requirement> requirements = new LinkedList<Requirement>();
+		List<Difference> differences = new LinkedList<Difference>();
+		getRequirements(req, requirements, false);
+
+		// ricerco gli ID jira nella lista requirements in modo da inserirli
+		// come anomalie
+		System.out.println("####### I RETRIEVED " + JIRAissues.size() + " JIRA Issues");
+		System.out.println("####### I RETRIEVED " + requirements.size() + " SS Issues");
+		log.error("####### I RETRIEVED " + JIRAissues.size() + " JIRA Issues");
+		log.error("####### I RETRIEVED " + requirements.size() + " SS Issues");
+		for (Issue i : JIRAissues) {
+			for (Requirement r : requirements) {
+				CustomField supersedeField = getSupersedeCustomField(getSupersedeCustomFieldType());
+				String value = (String) i.getCustomFieldValue(supersedeField);
+				log.error("VALUES " + String.valueOf(value) + " " + r.getId());
+				if (String.valueOf(value).equals(r.getId())) {
+					// Verifico la coerenza dei dati
+					boolean equal = true;
+					equal &= i.getDescription().equals(r.getDescription());
+					if (!equal) {
+						log.error("####### I RETRIEVED AN ISSUE THAT NEEDS TO BE SHOWN");
+						Difference d = new Difference();
+						d.setAnomalyType("DESCRIPTION");
+						d.setId(r.getId());
+						d.setJIRAValue(i.getDescription());
+						d.setSSValue(r.getDescription());
+						differences.add(d);
+					}
+
+				}
+			}
+		}
+		return differences;
+	}
+
+	private List<Alert> fetchAlerts(HttpServletRequest req ) {
+		List<Alert> alerts = new LinkedList<Alert>();
+		try {
+			//retrieve the list of all alerts from the specified tenant
+			String sessionId = login();
+			URL url = new URL(getUrl() + "/supersede-dm-app/alerts");
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			conn.setConnectTimeout(CONN_TIMEOUT);
+			conn.setReadTimeout(CONN_TIMEOUT);
+			conn.setRequestMethod("GET");
+			conn.setRequestProperty("Accept", "application/json");
+			conn.setRequestProperty("Authorization", getBasicAuth());
+			conn.setRequestProperty("TenantId", getCurrentProject());
+			conn.setRequestProperty("Cookie", "SESSION=" + sessionId + ";");
+
+			log.debug("connection code " + conn.getResponseCode());
+
+			BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
+
+			String output;
+			StringBuffer sb = new StringBuffer();
+			while ((output = br.readLine()) != null) {
+				sb.append(output);
+			}
+			JSONArray jarr = new JSONArray(sb.toString());
+			int l = jarr.length();
+			for (int i = 0; i < l; ++i) {
+				JSONObject o = jarr.getJSONObject(i);
+				try {
+					//We retrieve a list of alerts because there could be more than one request per alert.
+					//Every request could have different descriptions.
+					List<Alert> a = parseJSONAsAlert(o);
+					alerts.addAll(a);
+				} catch (Exception e) {
+					log.error("parsing ", o);
+				}
+			}
+
+			conn.disconnect();
+		} catch (Exception e) {
+			log.error(e.getMessage());
+		}
+
+		return alerts;
+	}
+
+	private List<Alert> parseJSONAsAlert(JSONObject o) {
+		List<Alert> al = new LinkedList<Alert>();
+		try {
+			// Retrieval of requests linked to every alert
+			JSONArray requests = o.getJSONArray("requests");
+			for (int i = 0; i < requests.length(); i++) {
+				//For every request, I create a custom Alert with significant fields inside
+				//It is a custom object created for JIRA, because I cannot use linked projects or libraries.
+				JSONObject r = requests.getJSONObject(i);
+				Alert a = new Alert();
+				a.setApplicationId(o.getString("applicationId"));
+				a.setId(o.getString("id"));
+				a.setTenant(o.getString("tenant"));
+				Date d = new Date(/*o.getLong("timestamp")*/);
+				a.setTimestamp(d.toString());
+				a.setDescription(r.getString("description"));
+				al.add(a);
+			}
+
+		} catch (Exception e) {
+			log.error(e.getMessage());
+		}
+		return al;
+	}
 }
