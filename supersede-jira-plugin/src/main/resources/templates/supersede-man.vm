@@ -81,7 +81,7 @@
 
 				<div class="aui-tabs horizontal-tabs">
 					<ul class="tabs-menu">
-						<li class="menu-item"><a href="#mapped-issues">Mapped
+						<li class="menu-item active-tab"><a href="#mapped-issues">Mapped
 								Issues</a></li>
 						<li class="menu-item"><a href="#import">Import</a></li>
 						<li class="menu-item"><a href="#export">Export</a></li>
@@ -90,7 +90,7 @@
 						<li class="menu-item"><a href="#alerts">Alerts </a></li>
 					</ul>
 
-					<div class="tabs-pane" id="mapped-issues">
+					<div class="tabs-pane active-pane" id="mapped-issues">
 						#parse("/templates/supersede-man-mapped-issues-table.vm")</div>
 
 					<div class="tabs-pane" id="import">
@@ -101,8 +101,11 @@
 
 					<div class="tabs-pane" id="compare">
 						#parse("/templates/supersede-man-compare-table.vm")</div>
+						
 					<div class="tabs-pane" id="alerts">
 						#parse("/templates/supersede-man-alerts-table.vm")</div>
+
+				</div>
 			</section>
 
 			<!-- .aui-page-panel-content -->

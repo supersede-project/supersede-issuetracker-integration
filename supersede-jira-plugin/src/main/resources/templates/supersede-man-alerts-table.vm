@@ -2,6 +2,7 @@
 <head>
 <script>
 	AJS.$(document).ready(function() {
+		var selectionString = '';
 		jQuery('.check-alerts').click(function() {
 			console.log('refreshing alerts');
 			var self = jQuery(this);
@@ -19,6 +20,28 @@
 			});
 			return false;
 		});
+		
+		jQuery('.chkSelected').click(function() {
+			console.log('selected alert');
+			if ($(this).prop('checked')) {
+			// Write a string containing the IDs of selected alerts
+				alert("ID is " + $(this).attr('id'));
+				alert(selectionString);
+				selectionString += $(this).attr('id');
+				selectionString += '\n';
+				alert(selectionString);
+			} else {
+				//Remove the selected ID if checkbox gets unchecked
+				alert(selectionString);
+				selectionString = selectionString.replace($(this).attr('id') + '\n', '');
+				alert(selectionString);
+			}
+		});
+		
+		jQuery('.alertManagement').click(function() {
+			console.log('alert management')
+			$("#selectionList").val(selectionString);
+		});
 	});
 </script>
 </head>
@@ -33,7 +56,6 @@
 				</span>
 			</div>
 			<div class="p-list">
-				<form action="supersede-man" method="get">
 					<table class="aui table-truncate">
 						<thead>
 							<tr>
@@ -47,11 +69,9 @@
 						<tbody class="projects-list">
 							#foreach( $alert in $alerts )
 							<tr>
-								<td class="td-truncate"><input class="checkbox"
-									type="checkbox" name="chkSelected"
-									onclick="$(this).next().val(this.checked?'1':'0')"> <input
-									type="hidden" name="selectionList" /></td>
-								<td class="td-truncate">$alert.getId()</td>
+								<td class="td-truncate"><input class="checkbox chkSelected"
+									type="checkbox" id=$alert.getId()> </td>
+								<td class="td-truncate">$alert.getId() </td>
 								<td class="td-truncate">$alert.getApplicationId()</td>
 								<td class="td-truncate">$alert.getTimestamp()</td>
 								<td class="td-truncate">$alert.getDescription()</td>
@@ -61,14 +81,15 @@
 					</table>
 					<div class="aui-group">
 						<div class="aui-item">
-							<input type="hidden" name="import" value="y"> <input
-								class="aui-button aui-button-primary" type="submit"
+						<form action="supersede-man" method="get">
+							<input type="hidden" id="selectionList" name="selectionList">
+							<input class="aui-button aui-button-primary alertManagement" type="submit"
 								name="action" value="Import"> <input
-								class="aui-button aui-button-secondary" type="submit"
+								class="aui-button aui-button-secondary alertManagement" type="submit"
 								name="action" value="Attach">
-						</div>
+						</form>
 					</div>
-				</form>
+					</div>
 			</div>
 		</div>
 	</div>

@@ -13,6 +13,7 @@
 package eu.supersede.jira.plugins.servlet;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -45,6 +46,7 @@ import com.atlassian.jira.issue.CustomFieldManager;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.IssueInputParameters;
 import com.atlassian.jira.issue.MutableIssue;
+import com.atlassian.jira.issue.attachment.CreateAttachmentParamsBean;
 import com.atlassian.jira.issue.context.GlobalIssueContext;
 import com.atlassian.jira.issue.context.JiraContextNode;
 import com.atlassian.jira.issue.customfields.CustomFieldSearcher;
@@ -60,14 +62,13 @@ import com.atlassian.jira.util.json.JSONArray;
 import com.atlassian.jira.util.json.JSONException;
 import com.atlassian.jira.util.json.JSONObject;
 import com.atlassian.jira.web.bean.PagerFilter;
+import com.atlassian.jira.web.util.AttachmentException;
 import com.atlassian.query.Query;
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
 import com.google.common.collect.Maps;
-
-import eu.supersede.jira.plugins.servlet.Requirement;
 
 /**
  * 
@@ -660,27 +661,52 @@ public class SupersedeMan extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
 		Map<String, Object> context = Maps.newHashMap();
-		
+
 		// process request
 		List<String> errors = new LinkedList<String>();
-		if ("y".equals(req.getParameter("import"))) {
-			String[] chk = req.getParameterValues("selectionList");
-			String[] ids = req.getParameterValues("idList");
-			
-			
+		if ("Import".equals(req.getParameter("action"))) {
+			//If "Import" button was clicked in alert table
+			String[] list = req.getParameter("selectionList").split("\n");
+			for(int i = 0; i<list.length; i++) {
+				
+			}
+
 			errors.add("importing " + req.getParameter("id"));
 			newIssue(req, errors);
+		} else if ("Attach".equals(req.getParameter("action"))) {
+			//If "Attach" button was clicked in alert table
+			XMLFileGenerator xml = new XMLFileGenerator("TESTID", new Date());
+			xml.generateXMLFile();
+			List<Issue> JIRAissues = getIssues(req);
+			Issue attachable = null;
+			for (Issue i : JIRAissues) {
+				CustomField supersedeField = getSupersedeCustomField(getSupersedeCustomFieldType());
+				String value = (String) i.getCustomFieldValue(supersedeField);
+				if ("4477".equals(value)) {
+					attachable = i;
+				}
+			}
+			if (attachable == null) {
+				return;
+			}
+			CreateAttachmentParamsBean capb = new CreateAttachmentParamsBean.Builder(new File("D:\\Tmp\\file.xml"),
+					"file.xml", "application/octet-stream", null, attachable).build();
+			try {
+				ComponentAccessor.getAttachmentManager().createAttachment(capb);
+			} catch (AttachmentException e) {
+				e.printStackTrace();
+			}
 		} else if ("y".equals(req.getParameter("export"))) {
 			errors.add("exporting " + req.getParameter("issuekey"));
 			newRequirement(req, errors);
 		} else if ("y".equals(req.getParameter("refreshAlerts"))) {
-			//Reload just the alerts table template
+			// Reload just the alerts table template
 			List<Alert> alerts = fetchAlerts(req);
 			context.put("alerts", alerts);
 			templateRenderer.render("/templates/supersede-man-alerts-table.vm", context, resp.getWriter());
 			return;
 		} else if ("y".equals(req.getParameter("refreshCompare"))) {
-			//Reload just the comparison table template
+			// Reload just the comparison table template
 			List<Difference> differences = compareIssues(req);
 			context.put("differences", differences);
 			templateRenderer.render("/templates/supersede-man-compare-table.vm", context, resp.getWriter());
@@ -695,7 +721,6 @@ public class SupersedeMan extends HttpServlet {
 		}
 		// Render the list of issues (list.vm) if no params are passed in
 		List<Difference> differences = compareIssues(req);
-		
 
 		List<Issue> issues = getIssues(req);
 		List<Requirement> requirements = new LinkedList<Requirement>();
@@ -752,10 +777,10 @@ public class SupersedeMan extends HttpServlet {
 		return differences;
 	}
 
-	private List<Alert> fetchAlerts(HttpServletRequest req ) {
+	private List<Alert> fetchAlerts(HttpServletRequest req) {
 		List<Alert> alerts = new LinkedList<Alert>();
 		try {
-			//retrieve the list of all alerts from the specified tenant
+			// retrieve the list of all alerts from the specified tenant
 			String sessionId = login();
 			URL url = new URL(getUrl() + "/supersede-dm-app/alerts");
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -781,8 +806,9 @@ public class SupersedeMan extends HttpServlet {
 			for (int i = 0; i < l; ++i) {
 				JSONObject o = jarr.getJSONObject(i);
 				try {
-					//We retrieve a list of alerts because there could be more than one request per alert.
-					//Every request could have different descriptions.
+					// We retrieve a list of alerts because there could be more
+					// than one request per alert.
+					// Every request could have different descriptions.
 					List<Alert> a = parseJSONAsAlert(o);
 					alerts.addAll(a);
 				} catch (Exception e) {
@@ -804,14 +830,16 @@ public class SupersedeMan extends HttpServlet {
 			// Retrieval of requests linked to every alert
 			JSONArray requests = o.getJSONArray("requests");
 			for (int i = 0; i < requests.length(); i++) {
-				//For every request, I create a custom Alert with significant fields inside
-				//It is a custom object created for JIRA, because I cannot use linked projects or libraries.
+				// For every request, I create a custom Alert with significant
+				// fields inside
+				// It is a custom object created for JIRA, because I cannot use
+				// linked projects or libraries.
 				JSONObject r = requests.getJSONObject(i);
 				Alert a = new Alert();
 				a.setApplicationId(o.getString("applicationId"));
 				a.setId(o.getString("id"));
 				a.setTenant(o.getString("tenant"));
-				Date d = new Date(/*o.getLong("timestamp")*/);
+				Date d = new Date(/* o.getLong("timestamp") */);
 				a.setTimestamp(d.toString());
 				a.setDescription(r.getString("description"));
 				al.add(a);

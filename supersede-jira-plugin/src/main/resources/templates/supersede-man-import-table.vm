@@ -11,7 +11,7 @@
 			<table class="aui table-truncate">
 				<thead>
 					<tr>
-						<th class="td-small">Id</th>
+						<th class="td-med">Id</th>
 						<th class="td-med">Name</th>
 						<th class="td-max">Description</th>
 						<th class="td-small">Priority</th>

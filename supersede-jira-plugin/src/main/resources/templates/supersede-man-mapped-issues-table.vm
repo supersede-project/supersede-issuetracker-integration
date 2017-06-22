@@ -12,7 +12,7 @@
 				<thead>
 					<tr>
 						<th class="td-small">Key</th>
-						<th class="td-small">Supersede</th>
+						<th class="td-med">Supersede</th>
 						<th class="td-med">Summary</th>
 						<th class="td-max">Description</th>
 						<th class="td-small">Assignee</th>
