@@ -33,7 +33,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,6 +92,14 @@ public class SupersedeMan extends HttpServlet {
 	private final static String SUPERSEDE_FIELD_NAME = "Supersede",
 			SUPERSEDE_FIELD_TYPE = "eu.supersede.jira.plugins.supersede-jira-plugin:supersede-custom-field",
 			CUSTOM_FIELD_SEARCHER = "com.atlassian.jira.plugin.system.customfieldtypes:textsearcher";
+
+	// STATIC CUSTOM STRING AND FIELDS
+
+	private static final String SEPARATOR = "\n";
+	private static final String PARAM_ACTION = "action";
+	private static final String PARAM_SELECTION_LIST = "selectionList";
+
+	// END CUSTOM STRING AND FIELDS SECTION
 
 	private static final int CONN_TIMEOUT = 10000;
 
@@ -336,13 +343,17 @@ public class SupersedeMan extends HttpServlet {
 		}
 	}
 
+	private List<Issue> getIssues(HttpServletRequest req) {
+		return getIssues(req, null);
+	}
+
 	/**
 	 * Retrieve the issues with a valid supersede field set
 	 * 
 	 * @param req
 	 * @return
 	 */
-	private List<Issue> getIssues(HttpServletRequest req) {
+	private List<Issue> getIssues(HttpServletRequest req, String id) {
 		// User is required to carry out a search
 		ApplicationUser user = getCurrentUser(req);
 
@@ -353,8 +364,14 @@ public class SupersedeMan extends HttpServlet {
 		// Our JQL clause is simple project="TUTORIAL"
 		// com.atlassian.query.Query query =
 		// jqlClauseBuilder.project("TEST").buildQuery();
-		Query query = jqlClauseBuilder.customField(supersedeFieldId).isNotEmpty().and().project(getCurrentProject())
-				.buildQuery();
+
+		// Build the basic Jql query
+		jqlClauseBuilder.customField(supersedeFieldId).isNotEmpty().and().project(getCurrentProject());
+		if (id != null) {
+			// if an ID is provided, use in in filter
+			jqlClauseBuilder.and().customField(supersedeFieldId).eq(id);
+		}
+		Query query = jqlClauseBuilder.buildQuery();
 		// A page filter is used to provide pagination. Let's use an unlimited
 		// filter to
 		// to bypass pagination.
@@ -670,58 +687,35 @@ public class SupersedeMan extends HttpServlet {
 
 		// process request
 		List<String> errors = new LinkedList<String>();
-		if (!"".equals(req.getParameter("action"))) {
+		if (!"".equals(req.getParameter(PARAM_ACTION)) && req.getParameter(PARAM_ACTION) != null) {
 			// true = import clicked - false = attach clicked
-			boolean isImport = "Import".equals(req.getParameter("action"));
-
+			boolean isImport = "Import".equals(req.getParameter(PARAM_ACTION));
 			// I retrieve Alert list anyway, both buttons require it
-			String[] list = req.getParameter("selectionList").split("\n");
+			String[] list = req.getParameter(PARAM_SELECTION_LIST).split(SEPARATOR);
+			String issueID = "";
+			if (isImport) {
+				Alert a = fetchAlerts(req, list[0]).get(0);
+				issueID = a.getId();
+				newIssue(req, "Issue " + a.getId(), a.getDescription(), a.getId(), errors);
+			}
 			for (int i = 0; i < list.length; i++) {
 				Alert a = fetchAlerts(req, list[i]).get(0);
 				if (isImport) {
-					// perform importing in JIRA
-					newIssue(req, "Issue " + a.getId(), a.getDescription(), a.getId(), errors);
+					// attach file to the newly created issue
+					errors.add("importing " + req.getParameter("id"));
+					attachToIssue(req, getIssues(req, issueID).get(0));
+
+					// TODO: attach to an issue
+
 				} else {
 					// attach to an existing issue
 
-					// // If "Attach" button was clicked in alert table
-					// XMLFileGenerator xml = new XMLFileGenerator(a.getId(),
-					// new Date());
-					// File tmpFile = xml.generateXMLFile();
-					// if(tmpFile == null){
-					// return;
-					// }
-					// List<Issue> JIRAissues = getIssues(req);
-					// Issue attachable = null;
-					// for (Issue i : JIRAissues) {
-					// CustomField supersedeField =
-					// getSupersedeCustomField(getSupersedeCustomFieldType());
-					// String value = (String)
-					// i.getCustomFieldValue(supersedeField);
-					// if ("4477".equals(value)) {
-					// attachable = i;
-					//
-					// }
-					// if (attachable == null) {
-					// return;
-					// }
-					// CreateAttachmentParamsBean capb = new
-					// CreateAttachmentParamsBean.Builder(
-					// new File("D:\\Tmp\\file.xml"), "file.xml",
-					// "application/octet-stream", null, attachable)
-					// .build();
-					// try {
-					// ComponentAccessor.getAttachmentManager().createAttachment(capb);
-					// } catch (AttachmentException e) {
-					// e.printStackTrace();
-					// }
+					// TODO: retrieve hidden input issue number
+					// TODO: attach to that issue
+
 				}
-
-				// errors.add("importing " + req.getParameter("id"));
-				// newIssue(req, errors);
-
 			}
-
+			//FIXME: FIELDS BELOW HAVE TO BE REMOVED OR MOVED IN OTHER TABS IN FINAL VERSION
 		} else if ("y".equals(req.getParameter("export"))) {
 			errors.add("exporting " + req.getParameter("issuekey"));
 			newRequirement(req, errors);
@@ -758,12 +752,33 @@ public class SupersedeMan extends HttpServlet {
 		context.put("requirements", requirements);
 		context.put("differences", differences);
 		context.put("errors", errors);
+		context.put("separator", SEPARATOR);
 		context.put("baseurl", ComponentAccessor.getApplicationProperties().getString("jira.baseurl"));
 		context.put("customFieldManager", customFieldManager);
 		context.put("customFieldId", getCustomFieldId());
 		resp.setContentType("text/html;charset=utf-8");
 		// Pass in the list of issues as the context
 		templateRenderer.render(MANAGER_BROWSER_TEMPLATE, context, resp.getWriter());
+	}
+
+	private void attachToIssue(HttpServletRequest req, Issue i) {
+		// If "Attach" button was clicked in alert table
+		XMLFileGenerator xml = new XMLFileGenerator(i.getId().toString(), new Date());
+		File tmpFile = xml.generateXMLFile();
+		if (tmpFile == null) {
+			return;
+		}
+
+		CustomField supersedeField = getSupersedeCustomField(getSupersedeCustomFieldType());
+		String value = (String) i.getCustomFieldValue(supersedeField);
+
+		CreateAttachmentParamsBean capb = new CreateAttachmentParamsBean.Builder(tmpFile, value, "application/xml",
+				null, i).build();
+		try {
+			ComponentAccessor.getAttachmentManager().createAttachment(capb);
+		} catch (AttachmentException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private List<Difference> compareIssues(HttpServletRequest req) {
