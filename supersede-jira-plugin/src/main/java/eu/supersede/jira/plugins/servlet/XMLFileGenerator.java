@@ -2,6 +2,8 @@ package eu.supersede.jira.plugins.servlet;
 
 import java.util.Date;
 import java.io.File;
+import java.io.IOException;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -45,7 +47,7 @@ public class XMLFileGenerator {
 		this.date = date;
 	}
 
-	protected void generateXMLFile() {
+	protected File generateXMLFile() {
 		try {
 			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
@@ -88,7 +90,8 @@ public class XMLFileGenerator {
 			TransformerFactory transformerFactory = TransformerFactory.newInstance();
 			Transformer transformer = transformerFactory.newTransformer();
 			DOMSource source = new DOMSource(doc);
-			StreamResult result = new StreamResult(new File("D:\\Tmp\\file.xml"));
+			File file = File.createTempFile("file", ".xml");
+			StreamResult result = new StreamResult(file);
 
 			// Output to console for testing
 			// StreamResult result = new StreamResult(System.out);
@@ -96,11 +99,15 @@ public class XMLFileGenerator {
 			transformer.transform(source, result);
 
 			System.out.println("File saved!");
+			return file;
 		} catch (ParserConfigurationException pce) {
 			pce.printStackTrace();
 		} catch (TransformerException tfe) {
 			tfe.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
+		return null;
 	}
 
 }

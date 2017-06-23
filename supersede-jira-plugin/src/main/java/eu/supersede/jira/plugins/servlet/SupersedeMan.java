@@ -474,6 +474,11 @@ public class SupersedeMan extends HttpServlet {
 	}
 
 	private void newIssue(HttpServletRequest req, Collection<String> errors) {
+		newIssue(req, req.getParameter("name"), req.getParameter("description"), req.getParameter("id"), errors);
+	}
+
+	private void newIssue(HttpServletRequest req, String name, String description, String id,
+			Collection<String> errors) {
 		ApplicationUser user = getCurrentUser(req);
 		// Perform creation if the "new" param is passed in
 		// First we need to validate the new issue being created
@@ -664,38 +669,53 @@ public class SupersedeMan extends HttpServlet {
 
 		// process request
 		List<String> errors = new LinkedList<String>();
-		if ("Import".equals(req.getParameter("action"))) {
-			//If "Import" button was clicked in alert table
-			String[] list = req.getParameter("selectionList").split("\n");
-			for(int i = 0; i<list.length; i++) {
-				
-			}
+		if (!"".equals(req.getParameter("action"))) {
+			// true = import clicked - false = attach clicked
+			boolean isImport = "Import".equals(req.getParameter("action"));
 
-			errors.add("importing " + req.getParameter("id"));
-			newIssue(req, errors);
-		} else if ("Attach".equals(req.getParameter("action"))) {
-			//If "Attach" button was clicked in alert table
-			XMLFileGenerator xml = new XMLFileGenerator("TESTID", new Date());
-			xml.generateXMLFile();
-			List<Issue> JIRAissues = getIssues(req);
-			Issue attachable = null;
-			for (Issue i : JIRAissues) {
-				CustomField supersedeField = getSupersedeCustomField(getSupersedeCustomFieldType());
-				String value = (String) i.getCustomFieldValue(supersedeField);
-				if ("4477".equals(value)) {
-					attachable = i;
+			// I retrieve Alert list anyway, both buttons require it
+			String[] list = req.getParameter("selectionList").split("\n");
+			for (int i = 0; i < list.length; i++) {
+				Alert a = fetchAlerts(req, list[i]).get(0);
+				if (isImport) {
+					// perform importing in JIRA
+					newIssue(req, "Issue " + a.getId(), a.getDescription(), a.getId(), errors);
+				} else {
+					// attach to an existing issue
+
+//					// If "Attach" button was clicked in alert table
+//					XMLFileGenerator xml = new XMLFileGenerator(a.getId(), new Date());
+//								File tmpFile = xml.generateXMLFile();
+//					if(tmpFile == null){
+//						return;
+//					}
+//					List<Issue> JIRAissues = getIssues(req);
+//					Issue attachable = null;
+//					for (Issue i : JIRAissues) {
+//						CustomField supersedeField = getSupersedeCustomField(getSupersedeCustomFieldType());
+//						String value = (String) i.getCustomFieldValue(supersedeField);
+//						if ("4477".equals(value)) {
+//							attachable = i;
+//
+//						}
+//						if (attachable == null) {
+//							return;
+//						}
+//						CreateAttachmentParamsBean capb = new CreateAttachmentParamsBean.Builder(
+//								new File("D:\\Tmp\\file.xml"), "file.xml", "application/octet-stream", null, attachable)
+//										.build();
+//						try {
+//							ComponentAccessor.getAttachmentManager().createAttachment(capb);
+//						} catch (AttachmentException e) {
+//							e.printStackTrace();
+//						}
+					}
 				}
-			}
-			if (attachable == null) {
-				return;
-			}
-			CreateAttachmentParamsBean capb = new CreateAttachmentParamsBean.Builder(new File("D:\\Tmp\\file.xml"),
-					"file.xml", "application/octet-stream", null, attachable).build();
-			try {
-				ComponentAccessor.getAttachmentManager().createAttachment(capb);
-			} catch (AttachmentException e) {
-				e.printStackTrace();
-			}
+
+			
+
+			// errors.add("importing " + req.getParameter("id"));
+			// newIssue(req, errors);
 		} else if ("y".equals(req.getParameter("export"))) {
 			errors.add("exporting " + req.getParameter("issuekey"));
 			newRequirement(req, errors);
@@ -778,11 +798,16 @@ public class SupersedeMan extends HttpServlet {
 	}
 
 	private List<Alert> fetchAlerts(HttpServletRequest req) {
+		// retrieves a list of all alerts on SS
+		return fetchAlerts(req, "");
+	}
+
+	private List<Alert> fetchAlerts(HttpServletRequest req, String alertId) {
 		List<Alert> alerts = new LinkedList<Alert>();
 		try {
 			// retrieve the list of all alerts from the specified tenant
 			String sessionId = login();
-			URL url = new URL(getUrl() + "/supersede-dm-app/alerts");
+			URL url = new URL(getUrl() + "/supersede-dm-app/alerts/" + alertId);
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 			conn.setConnectTimeout(CONN_TIMEOUT);
 			conn.setReadTimeout(CONN_TIMEOUT);
