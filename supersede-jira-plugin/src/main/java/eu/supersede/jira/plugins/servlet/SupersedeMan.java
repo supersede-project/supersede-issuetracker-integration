@@ -95,7 +95,7 @@ public class SupersedeMan extends HttpServlet {
 
 	// STATIC CUSTOM STRING AND FIELDS
 
-	private static final String SEPARATOR = "\n";
+	private static final String SEPARATOR = ":";
 	private static final String PARAM_ACTION = "action";
 	private static final String PARAM_SELECTION_LIST = "selectionList";
 
