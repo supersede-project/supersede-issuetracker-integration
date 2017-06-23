@@ -1,48 +1,78 @@
 <html>
 <head>
+<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+<script src="https://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
 <script>
-	AJS.$(document).ready(function() {
-		var selectionString = '';
-		jQuery('.check-alerts').click(function() {
-			console.log('refreshing alerts');
-			var self = jQuery(this);
-			jQuery.ajax({
-				type : "get",
-				url : "supersede-man?refreshAlerts=y",
-				success : function(data) {
-					//console.log('dom', self, data);
-					$("#alerts").html(data);
-					//self.parent().parent().remove();
-				},
-				error : function() {
-					console.log('error', arguments);
-				}
+	AJS.$(document).ready(
+			function() {
+				var selectionString = '';
+				jQuery('.check-alerts').click(function() {
+					console.log('refreshing alerts');
+					var self = jQuery(this);
+					jQuery.ajax({
+						type : "get",
+						url : "supersede-man?refreshAlerts=y",
+						success : function(data) {
+							//console.log('dom', self, data);
+							$("#alerts").html(data);
+							//self.parent().parent().remove();
+						},
+						error : function() {
+							console.log('error', arguments);
+						}
+					});
+					return false;
+				});
+
+				jQuery('.chkSelected').click(
+						function() {
+							console.log('selected alert');
+							if ($(this).prop('checked')) {
+								// Write a string containing the IDs of selected alerts
+								alert("ID is " + $(this).attr('id'));
+								alert(selectionString);
+								selectionString += $(this).attr('id');
+								selectionString += "\n";
+								alert(selectionString);
+							} else {
+								//Remove the selected ID if checkbox gets unchecked
+								alert(selectionString);
+								selectionString = selectionString.replace($(
+										this).attr('id')
+										+ '\n', '');
+								alert(selectionString);
+							}
+						});
+				var opt = {
+				        autoOpen: false,
+				        modal: true,
+				        width: 550,
+				        height:650,
+				        title: 'Details'
+				};
+				
+				jQuery('.opener').click(function() {
+					$("#dialog-1").dialog(opt).dialog("open");
+				});
+
+				jQuery('.alertManagement').click(function() {
+					console.log('alert management')
+					$("#selectionList").val(selectionString);
+				});
+				
+				//Shows the dialog when the "Show dialog" button is clicked
+				AJS.$("#dialog-show-button").click(function() {
+				    AJS.dialog2("#demo-dialog").show();
+				    alert("ciao");
+				});
+
+				// Hides the dialog
+				AJS.$("#dialog-close-button").click(function(e) {
+				    e.preventDefault();
+				    AJS.dialog2("#demo-dialog").hide();
+				    alert("ciao");
+				});
 			});
-			return false;
-		});
-		
-		jQuery('.chkSelected').click(function() {
-			console.log('selected alert');
-			if ($(this).prop('checked')) {
-			// Write a string containing the IDs of selected alerts
-				alert("ID is " + $(this).attr('id'));
-				alert(selectionString);
-				selectionString += $(this).attr('id');
-				selectionString += '\n';
-				alert(selectionString);
-			} else {
-				//Remove the selected ID if checkbox gets unchecked
-				alert(selectionString);
-				selectionString = selectionString.replace($(this).attr('id') + '\n', '');
-				alert(selectionString);
-			}
-		});
-		
-		jQuery('.alertManagement').click(function() {
-			console.log('alert management')
-			$("#selectionList").val(selectionString);
-		});
-	});
 </script>
 </head>
 <body>
@@ -55,41 +85,84 @@
 						Supersede</button>
 				</span>
 			</div>
+			<div id="dialog-1" title="Dialog Title goes here...">This my
+				first jQuery UI Dialog!</div>
 			<div class="p-list">
-					<table class="aui table-truncate">
-						<thead>
-							<tr>
-								<th class="td-med"></th>
-								<th class="td-max">ID</th>
-								<th class="td-med">App. ID</th>
-								<th class="td-max">Timestamp</th>
-								<th class="td-max">Description</th>
-							</tr>
-						</thead>
-						<tbody class="projects-list">
-							#foreach( $alert in $alerts )
-							<tr>
-								<td class="td-truncate"><input class="checkbox chkSelected"
-									type="checkbox" id=$alert.getId()> </td>
-								<td class="td-truncate">$alert.getId() </td>
-								<td class="td-truncate">$alert.getApplicationId()</td>
-								<td class="td-truncate">$alert.getTimestamp()</td>
-								<td class="td-truncate">$alert.getDescription()</td>
-							</tr>
-							#end
-						</tbody>
-					</table>
-					<div class="aui-group">
-						<div class="aui-item">
+				<table class="aui table-truncate">
+					<thead>
+						<tr>
+							<th class="td-med">Click me</th>
+							<th class="td-med"></th>
+							<th class="td-max">ID</th>
+							<th class="td-med">App. ID</th>
+							<th class="td-max">Timestamp</th>
+							<th class="td-max">Description</th>
+						</tr>
+					</thead>
+					<tbody class="projects-list">
+						#foreach( $alert in $alerts )
+						<tr>
+							<td class="td-truncate"><input class="opener" type="submit">
+							</td>
+							<td class="td-truncate"><input class="chkSelected checkbox"
+								type="checkbox" id=$alert.getId()></td>
+							<td class="td-truncate">$alert.getId()</td>
+							<td class="td-truncate">$alert.getApplicationId()</td>
+							<td class="td-truncate">$alert.getTimestamp()</td>
+							<td class="td-truncate">$alert.getDescription()</td>
+						</tr>
+						#end
+					</tbody>
+				</table>
+				
+				<!-- Create a trigger which will be used by the JavaScript -->
+<button id="dialog-show-button" class="aui-button">Show dialog</button>
+
+<!-- Render the dialog -->
+<section role="dialog" id="demo-dialog" class="aui-layer aui-dialog2 aui-dialog2-medium" aria-hidden="true">
+    <!-- Dialog header -->
+    <header class="aui-dialog2-header">
+        <!-- The dialog's title -->
+        <h2 class="aui-dialog2-header-main">Always use sentence case</h2>
+        <!-- Actions to render on the right of the header -->
+        <div class="aui-dialog2-header-secondary">
+            <form class="aui" action="#">
+                <input id="demo-search" class="text" type="search" name="search">
+            </form>
+        </div>
+        <!-- Close icon -->
+        <a class="aui-dialog2-header-close">
+            <span class="aui-icon aui-icon-small aui-iconfont-close-dialog">Close</span>
+        </a>
+    </header>
+    <!-- Main dialog content -->
+    <div class="aui-dialog2-content">
+        <p>Hello World</p>
+    </div>
+    <!-- Dialog footer -->
+    <footer class="aui-dialog2-footer">
+        <!-- Actions to render on the right of the footer -->
+        <div class="aui-dialog2-footer-actions">
+            <button id="dialog-submit-button" class="aui-button aui-button-primary">OK</button>
+            <button id="dialog-next-button" class="aui-button">Next</button>
+            <button id="dialog-close-button" class="aui-button aui-button-link">Close</button>
+        </div>
+        <!-- Hint text is rendered on the left of the footer -->
+        <div class="aui-dialog2-footer-hint">this is a hint</div>
+    </footer>
+</section>
+				
+				<div class="aui-group">
+					<div class="aui-item">
 						<form action="supersede-man" method="get">
 							<input type="hidden" id="selectionList" name="selectionList">
-							<input class="aui-button aui-button-primary alertManagement" type="submit"
-								name="action" value="Import"> <input
-								class="aui-button aui-button-secondary alertManagement" type="submit"
-								name="action" value="Attach">
+							<input class="aui-button aui-button-primary alertManagement"
+								type="submit" name="action" value="Import"> <input
+								class="aui-button aui-button-secondary alertManagement"
+								type="submit" name="action" value="Attach">
 						</form>
 					</div>
-					</div>
+				</div>
 			</div>
 		</div>
 	</div>

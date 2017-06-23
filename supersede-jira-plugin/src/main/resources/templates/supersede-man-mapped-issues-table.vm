@@ -24,7 +24,7 @@
 					#foreach( $issue in $issues )
 					<tr>
 						<td class="td-truncate">$issue.getKey()</td>
-						<td class="td-truncate">$issue.getCustomFieldValue($customFieldManager.getCustomFieldObject($customFieldId))</td>
+						<td class="td-truncate"><a href="$baseurl/browse/$issue.getKey()">$issue.getCustomFieldValue($customFieldManager.getCustomFieldObject($customFieldId))</a></a></td>
 						<td class="td-truncate">$issue.getSummary()</td>
 						<td class="td-truncate">#if($issue.getDescription())
 							$issue.getDescription() #end</td>
