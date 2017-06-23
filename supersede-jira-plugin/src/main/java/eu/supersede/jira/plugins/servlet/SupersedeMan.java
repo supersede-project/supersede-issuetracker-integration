@@ -33,6 +33,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -676,7 +677,10 @@ public class SupersedeMan extends HttpServlet {
 		} else if ("Attach".equals(req.getParameter("action"))) {
 			//If "Attach" button was clicked in alert table
 			XMLFileGenerator xml = new XMLFileGenerator("TESTID", new Date());
-			xml.generateXMLFile();
+			File tmpFile = xml.generateXMLFile();
+			if(tmpFile == null){
+				return;
+			}
 			List<Issue> JIRAissues = getIssues(req);
 			Issue attachable = null;
 			for (Issue i : JIRAissues) {
@@ -689,8 +693,8 @@ public class SupersedeMan extends HttpServlet {
 			if (attachable == null) {
 				return;
 			}
-			CreateAttachmentParamsBean capb = new CreateAttachmentParamsBean.Builder(new File("D:\\Tmp\\file.xml"),
-					"file.xml", "application/octet-stream", null, attachable).build();
+			CreateAttachmentParamsBean capb = new CreateAttachmentParamsBean.Builder(tmpFile,
+					tmpFile.getName()+ ".xml", "application/octet-stream", null, attachable).build();
 			try {
 				ComponentAccessor.getAttachmentManager().createAttachment(capb);
 			} catch (AttachmentException e) {
