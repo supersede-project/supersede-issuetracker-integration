@@ -33,6 +33,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -673,6 +674,7 @@ public class SupersedeMan extends HttpServlet {
 			// true = import clicked - false = attach clicked
 			boolean isImport = "Import".equals(req.getParameter("action"));
 
+<<<<<<< HEAD
 			// I retrieve Alert list anyway, both buttons require it
 			String[] list = req.getParameter("selectionList").split("\n");
 			for (int i = 0; i < list.length; i++) {
@@ -710,12 +712,44 @@ public class SupersedeMan extends HttpServlet {
 //							e.printStackTrace();
 //						}
 					}
+=======
+			errors.add("importing " + req.getParameter("id"));
+			newIssue(req, errors);
+		} else if ("Attach".equals(req.getParameter("action"))) {
+			//If "Attach" button was clicked in alert table
+			XMLFileGenerator xml = new XMLFileGenerator("TESTID", new Date());
+			File tmpFile = xml.generateXMLFile();
+			if(tmpFile == null){
+				return;
+			}
+			List<Issue> JIRAissues = getIssues(req);
+			Issue attachable = null;
+			for (Issue i : JIRAissues) {
+				CustomField supersedeField = getSupersedeCustomField(getSupersedeCustomFieldType());
+				String value = (String) i.getCustomFieldValue(supersedeField);
+				if ("4477".equals(value)) {
+					attachable = i;
+>>>>>>> branch 'develop' of https://github.com/supersede-project/supersede-issuetracker-integration.git
 				}
+<<<<<<< HEAD
 
 			
 
 			// errors.add("importing " + req.getParameter("id"));
 			// newIssue(req, errors);
+=======
+			}
+			if (attachable == null) {
+				return;
+			}
+			CreateAttachmentParamsBean capb = new CreateAttachmentParamsBean.Builder(tmpFile,
+					tmpFile.getName()+ ".xml", "application/octet-stream", null, attachable).build();
+			try {
+				ComponentAccessor.getAttachmentManager().createAttachment(capb);
+			} catch (AttachmentException e) {
+				e.printStackTrace();
+			}
+>>>>>>> branch 'develop' of https://github.com/supersede-project/supersede-issuetracker-integration.git
 		} else if ("y".equals(req.getParameter("export"))) {
 			errors.add("exporting " + req.getParameter("issuekey"));
 			newRequirement(req, errors);
