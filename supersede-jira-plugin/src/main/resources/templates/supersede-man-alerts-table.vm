@@ -4,107 +4,99 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:dialog2");
 <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
 <script src="https://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
 <script>
-	AJS
-			.$(document)
-			.ready(
-					function() {
-						var selectionString = '';
-						var issuesSelectionString = '';
-						jQuery('.check-alerts').click(function() {
-							console.log('refreshing alerts');
-							var self = jQuery(this);
-							jQuery.ajax({
-								type : "get",
-								url : "supersede-man?refreshAlerts=y",
-								success : function(data) {
-									//console.log('dom', self, data);
-									$("#alerts").html(data);
-									//self.parent().parent().remove();
-								},
-								error : function() {
-									console.log('error', arguments);
-								}
-							});
-							return false;
-						});
-
-						jQuery('.chkSelected').click(
-								function() {
-									console.log('selected alert');
-									if ($(this).prop('checked')) {
-										// Write a string containing the IDs of selected alerts
-										alert("ID is " + $(this).attr('id'));
-										alert(selectionString);
-										selectionString += $(this).attr('id');
-										selectionString += "\n";
-										alert(selectionString);
-									} else {
-										//Remove the selected ID if checkbox gets unchecked
-										alert(selectionString);
-										selectionString = selectionString
-												.replace($(this).attr('id')
-														+ '\n', '');
-										alert(selectionString);
-									}
-								});
-						jQuery('.dialogChkSelected')
-								.click(
-										function() {
-											if ($(this).prop('checked')) {
-												// Write a string containing the IDs of selected alerts
-												alert("ID is "
-														+ $(this).attr('key'));
-												alert(issuesSelectionString);
-												issuesSelectionString += $(this)
-														.attr('key');
-												issuesSelectionString += "\n";
-												alert(issuesSelectionString);
-											} else {
-												//Remove the selected ID if checkbox gets unchecked
-												alert(issuesSelectionString);
-												issuesSelectionString = issuesSelectionString
-														.replace($(this).attr(
-																'key')
-																+ '\n', '');
-												alert(issuesSelectionString);
-											}
-										});
-						var opt = {
-							autoOpen : false,
-							modal : true,
-							width : 550,
-							height : 650,
-							title : 'Details'
-						};
-
-						jQuery('.opener').click(function() {
-							$("#dialog-1").dialog(opt).dialog("open");
-						});
-
-						jQuery('.alertManagement').click(function() {
-							console.log('alert management')
-							$("#selectionList").val(selectionString);
-						});
-
-						//Shows the dialog when the "Show dialog" button is clicked
-						AJS.$("#dialog-show-button").click(function() {
-							AJS.dialog2("#demo-dialog").show();
-						});
-
-						// Hides the dialog
-						AJS.$("#dialog-close-button").click(function(e) {
-							e.preventDefault();
-							AJS.dialog2("#demo-dialog").hide();
-						});
-
-						//DIALOG
-						jQuery('.dialogButton').click(
-								function() {
-									console.log('alert management')
-									$("#issuesSelectionList").val(
-											issuesSelectionString);
-								});
+	AJS.$(document).ready(
+			function() {
+				var selectionString = '';
+				var issuesSelectionString = '';
+				jQuery('.check-alerts').click(function() {
+					console.log('refreshing alerts');
+					var self = jQuery(this);
+					jQuery.ajax({
+						type : "get",
+						url : "supersede-man?refreshAlerts=y",
+						success : function(data) {
+							//console.log('dom', self, data);
+							$("#alerts").html(data);
+							//self.parent().parent().remove();
+						},
+						error : function() {
+							console.log('error', arguments);
+						}
 					});
+					return false;
+				});
+
+				jQuery('.chkSelected').click(
+						function() {
+							console.log('selected alert');
+							if ($(this).prop('checked')) {
+								// Write a string containing the IDs of selected alerts
+								alert("ID is " + $(this).attr('id'));
+								alert(selectionString);
+								selectionString += $(this).attr('id');
+								selectionString += '$separator';
+								alert(selectionString);
+							} else {
+								//Remove the selected ID if checkbox gets unchecked
+								alert(selectionString);
+								selectionString = selectionString.replace($(
+										this).attr('id')
+										+ '$separator', '');
+								alert(selectionString);
+							}
+						});
+				jQuery('.dialogChkSelected').click(
+						function() {
+							if ($(this).prop('checked')) {
+								// Write a string containing the IDs of selected alerts
+								alert("ID is " + $(this).attr('id'));
+								alert(issuesSelectionString);
+								issuesSelectionString += $(this).attr('id');
+								issuesSelectionString += '$separator';
+								alert(issuesSelectionString);
+							} else {
+								//Remove the selected ID if checkbox gets unchecked
+								alert(issuesSelectionString);
+								issuesSelectionString = issuesSelectionString
+										.replace($(this).attr('id')
+												+ '$separator', '');
+								alert(issuesSelectionString);
+							}
+						});
+				var opt = {
+					autoOpen : false,
+					modal : true,
+					width : 550,
+					height : 650,
+					title : 'Details'
+				};
+
+				jQuery('.opener').click(function() {
+					$("#dialog-1").dialog(opt).dialog("open");
+				});
+
+				jQuery('.alertManagement').click(function() {
+					console.log('alert management')
+					$(".selectionList").val(selectionString);
+				});
+
+				//Shows the dialog when the "Show dialog" button is clicked
+				AJS.$("#dialog-show-button").click(function() {
+					AJS.dialog2("#demo-dialog").show();
+				});
+
+				// Hides the dialog
+				AJS.$("#dialog-close-button").click(function(e) {
+					e.preventDefault();
+					AJS.dialog2("#demo-dialog").hide();
+				});
+
+				//DIALOG
+				jQuery('.dialogButton').click(function() {
+					console.log('alert management')
+					$("#issuesSelectionList").val(issuesSelectionString);
+				});
+			});
 </script>
 </head>
 <body>
@@ -189,10 +181,12 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:dialog2");
 						<!-- Actions to render on the right of the footer -->
 						<div class="aui-dialog2-footer-actions">
 							<form action="supersede-man" method="get">
+							<input type="hidden" class="selectionList" name="selectionList">
 								<input type="hidden" id="issuesSelectionList"
 									name="issuesSelectionList"> <input type="submit"
 									id="dialog-submit-button"
-									class="aui-button aui-button-primary dialogButton" value="OK">
+									class="aui-button aui-button-primary dialogButton"
+									name="action" value="OK">
 							</form>
 							<button id="dialog-close-button"
 								class="aui-button aui-button-link">Close</button>
@@ -205,14 +199,15 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:dialog2");
 				<div class="aui-group">
 					<div class="aui-item">
 						<form action="supersede-man" method="get">
-							<input type="hidden" id="selectionList" name="selectionList">
+							<input type="hidden" class="selectionList" name="selectionList">
 							<input class="aui-button aui-button-primary alertManagement"
-								type="submit" name="action" value="Import"> <!-- <input
+								type="submit" name="action" value="Import">
+							<!-- <input
 								class="aui-button aui-button-secondary alertManagement"
 								id="dialog-show-button" type="submit" name="action"
 								value="Attach">-->
 						</form>
-						<button id="dialog-show-button">Attach</button>
+						<button id="dialog-show-button" class="alertManagement">Attach</button>
 					</div>
 				</div>
 			</div>

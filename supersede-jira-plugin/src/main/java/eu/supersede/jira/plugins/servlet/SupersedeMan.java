@@ -704,18 +704,24 @@ public class SupersedeMan extends HttpServlet {
 				if (isImport) {
 					// attach file to the newly created issue
 					errors.add("importing " + req.getParameter("id"));
-					attachToIssue(req, getIssues(req, issueID).get(0));
+					attachToIssue(a, getIssues(req, issueID).get(0));
 
 					// TODO: attach to an issue
 
 				} else {
 					// attach to an existing issue
-					
+					String[] issuesList = req.getParameter(PARAM_ISSUES_SELECTION_LIST).split(SEPARATOR);
+					for(int j = 0; j < issuesList.length; j++){
+					errors.add("attaching " + req.getParameter("id"));
+					attachToIssue(a, getIssues(req, issuesList[j]).get(0));
+					}
 					// TODO: retrieve hidden input issue number
 					// TODO: attach to that issue
 
 				}
 			}
+			
+			
 			//FIXME: FIELDS BELOW HAVE TO BE REMOVED OR MOVED IN OTHER TABS IN FINAL VERSION
 		} else if ("y".equals(req.getParameter("export"))) {
 			errors.add("exporting " + req.getParameter("issuekey"));
@@ -762,19 +768,16 @@ public class SupersedeMan extends HttpServlet {
 		templateRenderer.render(MANAGER_BROWSER_TEMPLATE, context, resp.getWriter());
 	}
 
-	private void attachToIssue(HttpServletRequest req, Issue i) {
+	private void attachToIssue(Alert source, Issue target) {
 		// If "Attach" button was clicked in alert table
-		XMLFileGenerator xml = new XMLFileGenerator(i.getId().toString(), new Date());
+		XMLFileGenerator xml = new XMLFileGenerator(source.getId(), new Date());
 		File tmpFile = xml.generateXMLFile();
 		if (tmpFile == null) {
 			return;
 		}
 
-		CustomField supersedeField = getSupersedeCustomField(getSupersedeCustomFieldType());
-		String value = (String) i.getCustomFieldValue(supersedeField);
-
-		CreateAttachmentParamsBean capb = new CreateAttachmentParamsBean.Builder(tmpFile, value, "application/xml",
-				null, i).build();
+		CreateAttachmentParamsBean capb = new CreateAttachmentParamsBean.Builder(tmpFile, source.getId(), "application/xml",
+				null, target).build();
 		try {
 			ComponentAccessor.getAttachmentManager().createAttachment(capb);
 		} catch (AttachmentException e) {
