@@ -13,6 +13,7 @@
   <!-- add our web resources -->
   <web-resource key="supersede-jira-plugin-resources" name="supersede-jira-plugin Web Resources">
     <dependency>com.atlassian.auiplugin:ajs</dependency>
+    <dependency>com.atlassian.auiplugin:dialog2</dependency>
     <resource type="download" name="supersede-jira-plugin.css" location="/css/supersede-jira-plugin.css"/>
     <resource type="download" name="supersede-jira-plugin.js" location="/js/supersede-jira-plugin.js"/>
     <resource type="download" name="images/" location="/images"/>

@@ -98,6 +98,7 @@ public class SupersedeMan extends HttpServlet {
 	private static final String SEPARATOR = ":";
 	private static final String PARAM_ACTION = "action";
 	private static final String PARAM_SELECTION_LIST = "selectionList";
+	private static final String PARAM_ISSUES_SELECTION_LIST = "issuesSelectionList";
 
 	// END CUSTOM STRING AND FIELDS SECTION
 
@@ -709,7 +710,7 @@ public class SupersedeMan extends HttpServlet {
 
 				} else {
 					// attach to an existing issue
-
+					
 					// TODO: retrieve hidden input issue number
 					// TODO: attach to that issue
 
