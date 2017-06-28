@@ -370,7 +370,7 @@ public class SupersedeMan extends HttpServlet {
 		jqlClauseBuilder.customField(supersedeFieldId).isNotEmpty().and().project(getCurrentProject());
 		if (id != null) {
 			// if an ID is provided, use in in filter
-			jqlClauseBuilder.and().customField(supersedeFieldId).eq(id);
+//			jqlClauseBuilder.and().customField(supersedeFieldId).eq(id);
 		}
 		Query query = jqlClauseBuilder.buildQuery();
 		// A page filter is used to provide pagination. Let's use an unlimited
@@ -832,7 +832,12 @@ public class SupersedeMan extends HttpServlet {
 		try {
 			// retrieve the list of all alerts from the specified tenant
 			String sessionId = login();
-			URL url = new URL(getUrl() + "/supersede-dm-app/alerts/" + alertId);
+			if(alertId != null && !alertId.isEmpty()){
+				alertId = "?id="+alertId;
+			} else{
+				alertId = "";
+			}
+			URL url = new URL(getUrl() + "/supersede-dm-app/alerts" + alertId);
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 			conn.setConnectTimeout(CONN_TIMEOUT);
 			conn.setReadTimeout(CONN_TIMEOUT);

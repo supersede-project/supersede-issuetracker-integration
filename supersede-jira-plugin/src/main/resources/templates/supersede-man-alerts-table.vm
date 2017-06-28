@@ -163,18 +163,25 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:dialog2");
 					</header>
 					<!-- Main dialog content -->
 					<div class="aui-dialog2-content">
+					<table class="aui table-truncate">
 						<tbody class="projects-list">
 							#foreach( $issue in $issues )
+							#set($start = 0)
+							#set($end = 9)
+							#set($range = [$start..$end])
+							#foreach($i in $range)
 							<tr>
 								<td class="td-truncate"><input
 									class="dialogChkSelected checkbox" type="checkbox"
-									id=$issue.getKey()></td>
+									id=$issue.getCustomFieldValue($customFieldManager.getCustomFieldObject($customFieldId))></td>
 								<td class="td-truncate">$issue.getKey()</td>
 								<td class="td-truncate">$issue.getCustomFieldValue($customFieldManager.getCustomFieldObject($customFieldId))</td>
 								<td class="td-truncate">$issue.getSummary()</td>
 							</tr>
 							#end
+							#end
 						</tbody>
+						</table>
 					</div>
 					<!-- Dialog footer -->
 					<footer class="aui-dialog2-footer">
@@ -207,7 +214,7 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:dialog2");
 								id="dialog-show-button" type="submit" name="action"
 								value="Attach">-->
 						</form>
-						<button id="dialog-show-button" class="alertManagement">Attach</button>
+						<button id="dialog-show-button" class="aui-button aui-button-secondary alertManagement">Attach</button>
 					</div>
 				</div>
 			</div>
