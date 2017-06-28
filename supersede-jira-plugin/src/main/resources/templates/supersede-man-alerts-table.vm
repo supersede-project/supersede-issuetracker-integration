@@ -31,36 +31,26 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:dialog2");
 							console.log('selected alert');
 							if ($(this).prop('checked')) {
 								// Write a string containing the IDs of selected alerts
-								alert("ID is " + $(this).attr('id'));
-								alert(selectionString);
 								selectionString += $(this).attr('id');
 								selectionString += '$separator';
-								alert(selectionString);
 							} else {
 								//Remove the selected ID if checkbox gets unchecked
-								alert(selectionString);
 								selectionString = selectionString.replace($(
 										this).attr('id')
 										+ '$separator', '');
-								alert(selectionString);
 							}
 						});
 				jQuery('.dialogChkSelected').click(
 						function() {
 							if ($(this).prop('checked')) {
 								// Write a string containing the IDs of selected alerts
-								alert("ID is " + $(this).attr('id'));
-								alert(issuesSelectionString);
 								issuesSelectionString += $(this).attr('id');
 								issuesSelectionString += '$separator';
-								alert(issuesSelectionString);
 							} else {
 								//Remove the selected ID if checkbox gets unchecked
-								alert(issuesSelectionString);
 								issuesSelectionString = issuesSelectionString
 										.replace($(this).attr('id')
 												+ '$separator', '');
-								alert(issuesSelectionString);
 							}
 						});
 				var opt = {
@@ -166,10 +156,6 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:dialog2");
 					<table class="aui table-truncate">
 						<tbody class="projects-list">
 							#foreach( $issue in $issues )
-							#set($start = 0)
-							#set($end = 9)
-							#set($range = [$start..$end])
-							#foreach($i in $range)
 							<tr>
 								<td class="td-truncate"><input
 									class="dialogChkSelected checkbox" type="checkbox"
@@ -178,7 +164,6 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:dialog2");
 								<td class="td-truncate">$issue.getCustomFieldValue($customFieldManager.getCustomFieldObject($customFieldId))</td>
 								<td class="td-truncate">$issue.getSummary()</td>
 							</tr>
-							#end
 							#end
 						</tbody>
 						</table>

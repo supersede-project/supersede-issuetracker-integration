@@ -95,7 +95,7 @@ public class SupersedeMan extends HttpServlet {
 
 	// STATIC CUSTOM STRING AND FIELDS
 
-	private static final String SEPARATOR = ":";
+	private static final String SEPARATOR = "\\n";
 	private static final String PARAM_ACTION = "action";
 	private static final String PARAM_SELECTION_LIST = "selectionList";
 	private static final String PARAM_ISSUES_SELECTION_LIST = "issuesSelectionList";
@@ -370,7 +370,7 @@ public class SupersedeMan extends HttpServlet {
 		jqlClauseBuilder.customField(supersedeFieldId).isNotEmpty().and().project(getCurrentProject());
 		if (id != null) {
 			// if an ID is provided, use in in filter
-//			jqlClauseBuilder.and().customField(supersedeFieldId).eq(id);
+			jqlClauseBuilder.and().customField(supersedeFieldId).like(id);
 		}
 		Query query = jqlClauseBuilder.buildQuery();
 		// A page filter is used to provide pagination. Let's use an unlimited
@@ -505,10 +505,10 @@ public class SupersedeMan extends HttpServlet {
 		// We're only going to set the summary and description. The rest are
 		// hard-coded to
 		// simplify this tutorial.
-		issueInputParameters.setSummary(req.getParameter("name"));
-		issueInputParameters.setDescription(req.getParameter("description"));
+		issueInputParameters.setSummary(name);
+		issueInputParameters.setDescription(description);
 		CustomField supersedeField = getSupersedeCustomField(getSupersedeCustomFieldType());
-		issueInputParameters.addCustomFieldValue(supersedeField.getId(), req.getParameter("id"));
+		issueInputParameters.addCustomFieldValue(supersedeField.getId(), id);
 
 		// We need to set the assignee, reporter, project, and issueType...
 		// For assignee and reporter, we'll just use the currentUser
@@ -517,7 +517,7 @@ public class SupersedeMan extends HttpServlet {
 		// We hard-code the project name to be the project with the TUTORIAL key
 		Project project = projectService.getProjectByKey(user, getCurrentProject().toUpperCase()).getProject();
 		if (null == project) {
-			errors.add("Cannot add issue for requirement " + req.getParameter("id") + ": no such project "
+			errors.add("Cannot add issue for requirement " + id + ": no such project "
 					+ getCurrentProject());
 		} else {
 			issueInputParameters.setProjectId(project.getId());
@@ -532,10 +532,10 @@ public class SupersedeMan extends HttpServlet {
 				for (String eid : errorsMap.keySet()) {
 					errors.add(eid + ": " + errorsMap.get(eid));
 				}
-				log.error("cannot add issue for requirement " + req.getParameter("id"));
+				log.error("cannot add issue for requirement " + id);
 			} else {
 				IssueResult issue = issueService.create(user, result);
-				log.info("added issue for requirement " + req.getParameter("id"));
+				log.info("added issue for requirement " + id);
 			}
 		}
 	}
@@ -696,14 +696,15 @@ public class SupersedeMan extends HttpServlet {
 			String issueID = "";
 			if (isImport) {
 				Alert a = fetchAlerts(req, list[0]).get(0);
-				issueID = a.getId();
-				newIssue(req, "Issue " + a.getId(), a.getDescription(), a.getId(), errors);
+				issueID = a.getId()+System.currentTimeMillis();
+				newIssue(req, "Issue " + a.getId(), a.getDescription(), issueID, errors);
 			}
+			Alert a = null; 
 			for (int i = 0; i < list.length; i++) {
-				Alert a = fetchAlerts(req, list[i]).get(0);
+				a = fetchAlerts(req, list[i]).get(0);
 				if (isImport) {
 					// attach file to the newly created issue
-					errors.add("importing " + req.getParameter("id"));
+					errors.add("importing " + a.getId());
 					attachToIssue(a, getIssues(req, issueID).get(0));
 
 					// TODO: attach to an issue
@@ -711,9 +712,9 @@ public class SupersedeMan extends HttpServlet {
 				} else {
 					// attach to an existing issue
 					String[] issuesList = req.getParameter(PARAM_ISSUES_SELECTION_LIST).split(SEPARATOR);
-					for(int j = 0; j < issuesList.length; j++){
-					errors.add("attaching " + req.getParameter("id"));
-					attachToIssue(a, getIssues(req, issuesList[j]).get(0));
+					for (int j = 0; j < issuesList.length; j++) {
+						errors.add("attaching " + a.getId());
+						attachToIssue(a, getIssues(req, issuesList[j]).get(0));
 					}
 					// TODO: retrieve hidden input issue number
 					// TODO: attach to that issue
@@ -776,7 +777,7 @@ public class SupersedeMan extends HttpServlet {
 			return;
 		}
 
-		CreateAttachmentParamsBean capb = new CreateAttachmentParamsBean.Builder(tmpFile, source.getId(), "application/xml",
+		CreateAttachmentParamsBean capb = new CreateAttachmentParamsBean.Builder(tmpFile, source.getId()+".xml", "application/xml",
 				null, target).build();
 		try {
 			ComponentAccessor.getAttachmentManager().createAttachment(capb);
