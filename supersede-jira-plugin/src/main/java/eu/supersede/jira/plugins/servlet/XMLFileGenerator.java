@@ -47,7 +47,7 @@ public class XMLFileGenerator {
 		this.date = date;
 	}
 
-	protected File generateXMLFile() {
+	public File generateXMLFile() {
 		try {
 			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
