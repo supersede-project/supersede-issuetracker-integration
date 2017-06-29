@@ -1,0 +1,32 @@
+<html>
+<head>
+<script>
+	AJS.$(document).ready(function() {
+		onPageLoad();
+	});
+
+	function onPageLoad() {
+		jQuery('.check-compare').click(function() {
+			console.log('refreshing comparison table');
+			var self = jQuery(this);
+			jQuery.ajax({
+				type : "get",
+				url : "supersede-man?refreshCompare=y",
+				success : function(data) {
+					console.log('dom', self, data);
+					$("#data").html(data);
+					onPageLoad();
+				},
+				error : function() {
+					console.log('error', arguments);
+				}
+			});
+		});
+	}
+</script>
+</head>
+<body>
+	<div class="mod-header" id="data">
+		#parse("/templates/content-supersede-man-compare-table.vm")</div>
+</body>
+</html>

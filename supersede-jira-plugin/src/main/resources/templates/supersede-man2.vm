@@ -85,23 +85,6 @@
 							</nav>
 							<!-- .aui-page-panel-nav -->
 						</div>
-
-
-
-<div class="aui-page-panel" id="browse-issues-page">
-	<div class="aui-page-panel-inner">
-		<div class="aui-page-panel-nav">
-			<nav class="aui-navgroup aui-navgroup-vertical">
-			    <div class="aui-navgroup-inner">
-			        <div class="aui-nav-heading"><h2><strong>Projects</strong></h2></div>
-			        <ul class="aui-nav">
-			            <li><a href="#">atos</a></li>
-			            <li><a href="#">test</a></li>
-			        </ul>
-			    </div>
-			</nav>
-		<!-- .aui-page-panel-nav -->
-		</div>
 	
 		<section class="aui-page-panel-content">
 		

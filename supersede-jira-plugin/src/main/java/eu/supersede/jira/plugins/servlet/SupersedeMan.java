@@ -94,13 +94,11 @@ public class SupersedeMan extends HttpServlet {
 	 * value of the field is the id of the SUPERSEDE requirement or feature so
 	 * that the two can be synchronised.
 	 */
-	private final static String SUPERSEDE_FIELD_NAME = "Supersede",
-			SUPERSEDE_FIELD_TYPE = "eu.supersede.jira.plugins.supersede-jira-plugin:supersede-custom-field",
-			CUSTOM_FIELD_SEARCHER = "com.atlassian.jira.plugin.system.customfieldtypes:textsearcher";
+	private final static String SUPERSEDE_FIELD_NAME = "Supersede", SUPERSEDE_FIELD_TYPE = "eu.supersede.jira.plugins.supersede-jira-plugin:supersede-custom-field", CUSTOM_FIELD_SEARCHER = "com.atlassian.jira.plugin.system.customfieldtypes:textsearcher";
 
 	// STATIC CUSTOM STRING AND FIELDS
 
-	private static final String SEPARATOR = "\\n";
+	private static final String SEPARATOR = ":::";
 	private static final String PARAM_ACTION = "action";
 	private static final String PARAM_SELECTION_LIST = "selectionList";
 	private static final String PARAM_ISSUES_SELECTION_LIST = "issuesSelectionList";
@@ -123,10 +121,8 @@ public class SupersedeMan extends HttpServlet {
 
 	private RequirementLogic requirementLogic;
 
-	public SupersedeMan(IssueService issueService, ProjectService projectService, SearchService searchService,
-			UserManager userManager, com.atlassian.jira.user.util.UserManager jiraUserManager,
-			TemplateRenderer templateRenderer, PluginSettingsFactory pluginSettingsFactory,
-			CustomFieldManager customFieldManager) {
+	public SupersedeMan(IssueService issueService, ProjectService projectService, SearchService searchService, UserManager userManager, com.atlassian.jira.user.util.UserManager jiraUserManager, TemplateRenderer templateRenderer,
+			PluginSettingsFactory pluginSettingsFactory, CustomFieldManager customFieldManager) {
 		this.userManager = userManager;
 		this.templateRenderer = templateRenderer;
 		this.jiraUserManager = jiraUserManager;
@@ -161,8 +157,7 @@ public class SupersedeMan extends HttpServlet {
 				log.debug(it.getId() + " ", it.getName());
 				myIssueTypes.add(it);
 			}
-			supersedeField = customFieldManager.createCustomField(SUPERSEDE_FIELD_NAME, "SUPERSEDE powered issue",
-					supersedeFieldType, fieldSearcher, contexts, myIssueTypes);
+			supersedeField = customFieldManager.createCustomField(SUPERSEDE_FIELD_NAME, "SUPERSEDE powered issue", supersedeFieldType, fieldSearcher, contexts, myIssueTypes);
 			log.info("the supersede custom field has been installed to all the issue types");
 		} else {
 			log.info("the supersede custom field is already available");
@@ -272,8 +267,7 @@ public class SupersedeMan extends HttpServlet {
 		return requirementId;
 	}
 
-	private void testCreateRequirement(String sessionid, String xsrf, MutableIssue issue, ApplicationUser user,
-			Collection<String> errors) {
+	private void testCreateRequirement(String sessionid, String xsrf, MutableIssue issue, ApplicationUser user, Collection<String> errors) {
 		log.debug("creating requirement for issue " + issue.getId());
 		// 1. send the request to supersede
 		String requirementId = sendPostRequest(sessionid, xsrf, issue.getSummary(), issue.getDescription());
@@ -281,8 +275,7 @@ public class SupersedeMan extends HttpServlet {
 		// 3. update the issue with the custom field "Supersede" set as the
 		// requirement id
 		if (null != requirementId) {
-			issueLogic.updateIssue(issue, user, requirementId, errors,
-					getSupersedeCustomField(getSupersedeCustomFieldType()));
+			issueLogic.updateIssue(issue, user, requirementId, errors, getSupersedeCustomField(getSupersedeCustomFieldType()));
 		}
 	}
 
@@ -312,7 +305,11 @@ public class SupersedeMan extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
 		Map<String, Object> context = Maps.newHashMap();
-
+		try {
+			checkSupersedeField();
+		} catch (Exception e) {
+			log.error("checking custom supersede field: " + e);
+		}
 		// process request
 		List<String> errors = new LinkedList<String>();
 		if (!"".equals(req.getParameter(PARAM_ACTION)) && req.getParameter(PARAM_ACTION) != null) {
@@ -324,8 +321,7 @@ public class SupersedeMan extends HttpServlet {
 			if (isImport) {
 				Alert a = alertLogic.fetchAlerts(req, list[0]).get(0);
 				issueID = a.getId() + System.currentTimeMillis();
-				issueLogic.newIssue(req, "Issue " + a.getId(), a.getDescription(), issueID, errors,
-						getSupersedeCustomField(getSupersedeCustomFieldType()));
+				issueLogic.newIssue(req, "Issue " + a.getId(), a.getDescription(), issueID, errors, getSupersedeCustomField(getSupersedeCustomFieldType()));
 			}
 			Alert a = null;
 			for (int i = 0; i < list.length; i++) {
@@ -355,30 +351,36 @@ public class SupersedeMan extends HttpServlet {
 		} else if ("y".equals(req.getParameter("export"))) {
 			errors.add("exporting " + req.getParameter("issuekey"));
 			newRequirement(req, errors);
-		} else if ("y".equals(req.getParameter("refreshAlerts"))) {
-			// Reload just the alerts table template
+		} else if ("y".equals(req.getParameter("openAlerts")) || "y".equals(req.getParameter("refreshAlerts"))) {
 			List<Alert> alerts = alertLogic.fetchAlerts(req);
+			List<Issue> issues = issueLogic.getIssues(req, supersedeFieldId);
+			context.put("customFieldManager", customFieldManager);
+			context.put("customFieldId", getCustomFieldId());
+			context.put("issues", issues);
 			context.put("alerts", alerts);
-			templateRenderer.render("/templates/supersede-man-alerts-table.vm", context, resp.getWriter());
+			context.put("date", new Date().toString());
+			if (req.getParameter("openAlerts") != null && "y".equals(req.getParameter("openAlerts"))) {
+				templateRenderer.render("/templates/logic-supersede-man-alerts-table.vm", context, resp.getWriter());
+			} else {
+				templateRenderer.render("/templates/content-supersede-man-alerts-table.vm", context, resp.getWriter());
+			}
 			return;
-		} else if ("y".equals(req.getParameter("refreshCompare"))) {
-			// Reload just the comparison table template
-			List<Difference> differences = issueLogic.compareIssues(req, supersedeFieldId,
-					getSupersedeCustomField(getSupersedeCustomFieldType()));
+		} else if ("y".equals(req.getParameter("openCompare")) || "y".equals(req.getParameter("refreshCompare"))) {
+			// Reload just the alerts table template
+			List<Difference> differences = issueLogic.compareIssues(req, supersedeFieldId, getSupersedeCustomField(getSupersedeCustomFieldType()));
 			context.put("differences", differences);
-			templateRenderer.render("/templates/supersede-man-compare-table.vm", context, resp.getWriter());
+			context.put("date", new Date().toString());
+			if (req.getParameter("openCompare") != null && "y".equals(req.getParameter("openCompare"))) {
+				templateRenderer.render("/templates/logic-supersede-man-compare-table.vm", context, resp.getWriter());
+			} else {
+				templateRenderer.render("/templates/content-supersede-man-compare-table.vm", context, resp.getWriter());
+			}
 			return;
 		}
 		// ---
 
-		try {
-			checkSupersedeField();
-		} catch (Exception e) {
-			log.error("checking custom supersede field: " + e);
-		}
 		// Render the list of issues (list.vm) if no params are passed in
-		List<Difference> differences = issueLogic.compareIssues(req, supersedeFieldId,
-				getSupersedeCustomField(getSupersedeCustomFieldType()));
+		List<Difference> differences = issueLogic.compareIssues(req, supersedeFieldId, getSupersedeCustomField(getSupersedeCustomFieldType()));
 
 		List<Issue> issues = issueLogic.getIssues(req, supersedeFieldId);
 		List<Requirement> requirements = new LinkedList<Requirement>();

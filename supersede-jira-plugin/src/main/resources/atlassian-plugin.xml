@@ -1,62 +1,90 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<atlassian-plugin key="${atlassian.plugin.key}" name="${project.name}" plugins-version="2">
-  <plugin-info>
-    <description>${project.description}</description>
-    <version>${project.version}</version>
-    <vendor name="${project.organization.name}" url="${project.organization.url}"/>
-    <param name="plugin-icon">images/pluginIcon.png</param>
-    <param name="plugin-logo">images/pluginLogo.png</param>
-  </plugin-info>
-  <!-- add our i18n resource -->
-  <resource type="i18n" name="i18n" location="supersede-jira-plugin"/>
-  <!-- add our web resources -->
-  <web-resource key="supersede-jira-plugin-resources" name="supersede-jira-plugin Web Resources">
-    <dependency>com.atlassian.auiplugin:ajs</dependency>
-    <dependency>com.atlassian.auiplugin:dialog2</dependency>
-    <resource type="download" name="supersede-jira-plugin.css" location="/css/supersede-jira-plugin.css"/>
-    <resource type="download" name="supersede-jira-plugin.js" location="/js/supersede-jira-plugin.js"/>
-    <resource type="download" name="images/" location="/images"/>
-    <context>supersede-jira-plugin</context>
-  </web-resource>
-  <web-item name="supersedeItem" i18n-name-key="supersede-item.name" key="supersede-item" section="system.top.navigation.bar" weight="1000">
-    <description key="supersede-item.description">SUPERSEDE Plugin</description>
-    <label key="supersede-item.label"/>
-    <link linkId="supersede-dropdown-menu"/>
-  </web-item>
-  <web-section name="supersedeSection" i18n-name-key="supersede-section.name" key="supersede-section" location="supersede-dropdown-menu" weight="1000">
-    <description key="supersede-section.description">SUPERSEDE Section</description>
-  </web-section>
-  <web-item name="supersedeAdminItem" i18n-name-key="supersede-admin-item.name" key="supersede-admin-item" section="supersede-dropdown-menu/supersede-section" weight="1000">
-    <description key="supersede-admin-item.description">Configuration</description>
-    <label key="supersede-admin-item.label"/>
-    <link linkId="supersede-admin-item-link">/plugins/servlet/supersede-cfg</link>
-  </web-item>
-  <web-item name="supersedeManItem" i18n-name-key="supersede-man-item.name" key="supersede-man-item" section="supersede-dropdown-menu/supersede-section" weight="1000">
-    <description key="supersede-man-item.description">Issues</description>
-    <label key="supersede-man-item.label"/>
-    <link linkId="supersede-man-item-link">/plugins/servlet/supersede-man</link>
-  </web-item>
-  <servlet name="Supersede Man" i18n-name-key="supersede-man.name" key="supersede-man" class="eu.supersede.jira.plugins.servlet.SupersedeMan">
-    <description key="supersede-man.description">SUPERSEDE Manager</description>
-    <url-pattern>/supersede-man</url-pattern>
-  </servlet>
-  <component-import key="templateRenderer" interface="com.atlassian.templaterenderer.TemplateRenderer" filter=""/>
-  <component-import key="userManager" interface="com.atlassian.sal.api.user.UserManager" filter=""/>
-  <component-import key="pluginSettingsFactory" interface="com.atlassian.sal.api.pluginsettings.PluginSettingsFactory" filter=""/>
-  <component-import key="customFieldManager" interface="com.atlassian.jira.issue.CustomFieldManager" filter=""/>
-  <servlet name="Supersede Cfg" i18n-name-key="supersede-cfg.name" key="supersede-cfg" class="eu.supersede.jira.plugins.servlet.SupersedeCfg">
-    <description key="supersede-cfg.description">SUPERSEDE Configuration</description>
-    <url-pattern>/supersede-cfg</url-pattern>
-  </servlet>
-  <customfield-type name="SUPERSEDE Custom Field" i18n-name-key="supersede-custom-field.name" key="supersede-custom-field" class="eu.supersede.jira.plugins.customfields.SupersedeCustomField">
-    <description key="supersede-custom-field.description">A custom field used to map SUPERSEDE requirements/features</description>
-    <resource name="view" type="velocity" location="/templates/customfields/supersede-custom-field/view.vm"/>
-    <resource name="edit" type="velocity" location="/templates/customfields/supersede-custom-field/edit.vm"/>
-  </customfield-type>
-  <customfield-searcher name="Supersede Field Searcher" i18n-name-key="supersede-field-searcher.name" key="supersede-field-searcher" class="eu.supersede.jira.plugins.customfields.SupersedeFieldSearcher">
-    <description key="supersede-field-searcher.description">The Supersede Field Searcher Plugin</description>
-    <valid-customfield-type package="eu.supersede.jira.plugins" key="supersede-customfield-searcher"/>
-    <resource name="search" type="velocity" location="/templates/customfields/supersede-field-searcher/search.vm"/>
-  </customfield-searcher>
+<atlassian-plugin key="${atlassian.plugin.key}" name="${project.name}"
+	plugins-version="2">
+	<plugin-info>
+		<description>${project.description}</description>
+		<version>${project.version}</version>
+		<vendor name="${project.organization.name}" url="${project.organization.url}" />
+		<param name="plugin-icon">images/pluginIcon.png</param>
+		<param name="plugin-logo">images/pluginLogo.png</param>
+	</plugin-info>
+	<!-- add our i18n resource -->
+	<resource type="i18n" name="i18n" location="supersede-jira-plugin" />
+	<!-- add our web resources -->
+	<web-resource key="supersede-jira-plugin-resources" name="supersede-jira-plugin Web Resources">
+		<dependency>com.atlassian.auiplugin:ajs</dependency>
+		<dependency>com.atlassian.auiplugin:dialog2</dependency>
+		<resource type="download" name="supersede-jira-plugin.css"
+			location="/css/supersede-jira-plugin.css" />
+		<resource type="download" name="supersede-jira-plugin.js"
+			location="/js/supersede-jira-plugin.js" />
+		<resource type="download" name="images/" location="/images" />
+		<resource type="download" name="js/" location="/js" />
+		<context>supersede-jira-plugin</context>
+	</web-resource>
+	<web-item name="supersedeItem" i18n-name-key="supersede-item.name"
+		key="supersede-item" section="system.top.navigation.bar" weight="1000">
+		<description key="supersede-item.description">SUPERSEDE Plugin</description>
+		<label key="supersede-item.label" />
+		<link linkId="supersede-dropdown-menu" />
+	</web-item>
+	<web-section name="supersedeSection" i18n-name-key="supersede-section.name"
+		key="supersede-section" location="supersede-dropdown-menu" weight="1000">
+		<description key="supersede-section.description">SUPERSEDE Section</description>
+	</web-section>
+	<web-item name="supersedeAdminItem" i18n-name-key="supersede-admin-item.name"
+		key="supersede-admin-item" section="supersede-dropdown-menu/supersede-section"
+		weight="1000">
+		<description key="supersede-admin-item.description">Configuration</description>
+		<label key="supersede-admin-item.label" />
+		<link linkId="supersede-admin-item-link">/plugins/servlet/supersede-cfg</link>
+	</web-item>
+	<web-item name="supersedeManItem" i18n-name-key="supersede-man-item.name"
+		key="supersede-man-item" section="supersede-dropdown-menu/supersede-section"
+		weight="1000">
+		<description key="supersede-man-item.description">Issues</description>
+		<label key="supersede-man-item.label" />
+		<link linkId="supersede-man-item-link">/plugins/servlet/supersede-man</link>
+	</web-item>
+	<servlet name="Supersede Man" i18n-name-key="supersede-man.name"
+		key="supersede-man" class="eu.supersede.jira.plugins.servlet.SupersedeMan">
+		<description key="supersede-man.description">SUPERSEDE Manager</description>
+		<url-pattern>/supersede-man</url-pattern>
+	</servlet>
+	<component-import key="templateRenderer"
+		interface="com.atlassian.templaterenderer.TemplateRenderer" filter="" />
+	<component-import key="userManager"
+		interface="com.atlassian.sal.api.user.UserManager" filter="" />
+	<component-import key="pluginSettingsFactory"
+		interface="com.atlassian.sal.api.pluginsettings.PluginSettingsFactory"
+		filter="" />
+	<component-import key="customFieldManager"
+		interface="com.atlassian.jira.issue.CustomFieldManager" filter="" />
+	<servlet name="Supersede Cfg" i18n-name-key="supersede-cfg.name"
+		key="supersede-cfg" class="eu.supersede.jira.plugins.servlet.SupersedeCfg">
+		<description key="supersede-cfg.description">SUPERSEDE Configuration</description>
+		<url-pattern>/supersede-cfg</url-pattern>
+	</servlet>
+	<customfield-type name="SUPERSEDE Custom Field"
+		i18n-name-key="supersede-custom-field.name" key="supersede-custom-field"
+		class="eu.supersede.jira.plugins.customfields.SupersedeCustomField">
+		<description key="supersede-custom-field.description">A custom field used to map SUPERSEDE
+			requirements/features
+		</description>
+		<resource name="view" type="velocity"
+			location="/templates/customfields/supersede-custom-field/view.vm" />
+		<resource name="edit" type="velocity"
+			location="/templates/customfields/supersede-custom-field/edit.vm" />
+	</customfield-type>
+	<customfield-searcher name="Supersede Field Searcher"
+		i18n-name-key="supersede-field-searcher.name" key="supersede-field-searcher"
+		class="eu.supersede.jira.plugins.customfields.SupersedeFieldSearcher">
+		<description key="supersede-field-searcher.description">The Supersede Field Searcher Plugin
+		</description>
+		<valid-customfield-type package="eu.supersede.jira.plugins"
+			key="supersede-customfield-searcher" />
+		<resource name="search" type="velocity"
+			location="/templates/customfields/supersede-field-searcher/search.vm" />
+	</customfield-searcher>
 </atlassian-plugin>

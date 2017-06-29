@@ -1,0 +1,41 @@
+<html>
+<head>
+</head>
+<body>
+	<div class="mod-header" id="data-section">
+	<h1> sono le  $date </h1>
+		<div>
+			<h2>Issue comparison</h2>
+			<span>
+					<button class="aui-button aui-button-secondary check-compare">Check
+						Supersede</button>
+			</span>
+		</div>
+		<div class="p-list">
+			<table class="aui table-truncate">
+				<thead>
+					<tr>
+						<th class="td-med">ID</th>
+						<th class="td-med">Anomaly Type</th>
+						<th class="td-max">JIRA value</th>
+						<th class="td-max">SS Value</th>
+						<th class="td-med">
+						<th>
+					</tr>
+				</thead>
+				<tbody class="projects-list">
+					#foreach( $difference in $differences )
+					<tr>
+						<td class="td-truncate">$difference.getId()</td>
+						<td class="td-truncate">$difference.getAnomalyType()</td>
+						<td class="td-truncate">$difference.getJIRAValue()</td>
+						<td class="td-truncate">$difference.getSSValue()</td>
+						<td class="td-truncate"><a href="#"> Fix </a></td>
+					</tr>
+					#end
+				</tbody>
+			</table>
+		</div>
+	</div>
+</body>
+</html>

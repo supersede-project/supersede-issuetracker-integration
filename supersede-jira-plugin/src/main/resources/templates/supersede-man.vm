@@ -2,29 +2,27 @@
 <head>
 <title>SUPERSEDE - Issue Manager</title>
 <meta name="decorator" content="atl.general">
-<style type="text/css">
-.table-truncate {
-	table-layout: fixed;
-}
+<script>
+	AJS.$(document).ready(function() {
+		jQuery('.alertsPage').click(function() {
+			console.log('refreshing alerts');
+			var self = jQuery(this);
+			$("#data-section").load("supersede-man?openAlerts=y");
+			$('.nav').removeClass("aui-nav-selected");
+			$('.alertsPage').addClass("aui-nav-selected");
+		});
 
-.td-small {
-	width: 5%;
-}
-
-.td-med {
-	width: 20%;
-}
-
-.td-max {
-	width: 60%
-}
-
-.td-truncate {
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-}
-</style>
+		jQuery('.comparePage').click(function() {
+			console.log('refreshing compare');
+			var self = jQuery(this);
+			$("#data-section").load("supersede-man?openCompare=y");
+			$('.nav').removeClass("aui-nav-selected");
+			$('.comparePage').addClass("aui-nav-selected");
+		});
+	});
+</script>
+<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+<script src="https://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
 </head>
 <body class="page-type-admin">
 	<header class="aui-page-header">
@@ -60,6 +58,7 @@
 
 	<div class="aui-page-panel" id="browse-issues-page">
 		<div class="aui-page-panel-inner">
+			<!-- 		Vertical "Projects" Navigator -->
 			<div class="aui-page-panel-nav">
 				<nav class="aui-navgroup aui-navgroup-vertical">
 					<div class="aui-navgroup-inner">
@@ -69,50 +68,38 @@
 							</h2>
 						</div>
 						<ul class="aui-nav">
-							<li class="aui-nav-selected"><a href="#">atos</a></li>
-							<li><a href="#">test</a></li>
+							<li class="aui-nav"><a href="#">atos</a></li>
+							<li class="aui-nav-selected"><a href="#">test</a></li>
+							<li class="aui-nav"><a href="#">proj1</a></li>
+							<li class="aui-nav"><a href="#">proj2</a></li>
+							<li class="aui-nav"><a href="#">proj3</a></li>
+							<li class="aui-nav"><a href="#">proj4</a></li>
 						</ul>
 					</div>
 				</nav>
-				<!-- .aui-page-panel-nav -->
 			</div>
-
 			<section class="aui-page-panel-content">
-
-				<div class="aui-tabs horizontal-tabs">
-					<ul class="tabs-menu">
-						<li class="menu-item active-tab"><a href="#mapped-issues">Mapped
-								Issues</a></li>
-						<li class="menu-item"><a href="#import">Import</a></li>
-						<li class="menu-item"><a href="#export">Export</a></li>
-						<li class="menu-item"><a href="#compare">Compare <aui-badge>$differences.size()</aui-badge></a>
-						</li>
-						<li class="menu-item"><a href="#alerts">Alerts </a></li>
-					</ul>
-
-					<div class="tabs-pane active-pane" id="mapped-issues">
-						#parse("/templates/supersede-man-mapped-issues-table.vm")</div>
-
-					<div class="tabs-pane" id="import">
-						#parse("/templates/supersede-man-import-table.vm")</div>
-
-					<div class="tabs-pane" id="export">
-						#parse("/templates/supersede-man-export.vm")</div>
-
-					<div class="tabs-pane" id="compare">
-						#parse("/templates/supersede-man-compare-table.vm")</div>
-						
-					<div class="tabs-pane" id="alerts">
-						#parse("/templates/supersede-man-alerts-table.vm")</div>
-
+				<!-- 			Horizontal Pages Navigator -->
+				<nav class="aui-navgroup aui-navgroup-horizontal">
+					<div class="aui-navgroup-inner">
+						<div class="aui-navgroup-primary">
+							<ul class="aui-nav">
+								<li class="nav comparePage"><a href="#">Comparison</a></li>
+								<li class="nav"><a href="#">Stranger Things</a></li>
+								<li class="nav"><a href="#">Other Things</a></li>
+								<li class="nav alertsPage aui-nav-selected"><a href="#">Alert
+										management</a></li>
+							</ul>
+						</div>
+					</div>
+				</nav>
+				<div class="aui-page-panel" id="pageContent">
+					<div id="data-section">
+						#parse("/templates/logic-supersede-man-alerts-table.vm")</div>
 				</div>
+
 			</section>
-
-			<!-- .aui-page-panel-content -->
-
 		</div>
-		<!-- .aui-page-panel-inner -->
-	</div>
 	</div>
 </body>
 </html>
