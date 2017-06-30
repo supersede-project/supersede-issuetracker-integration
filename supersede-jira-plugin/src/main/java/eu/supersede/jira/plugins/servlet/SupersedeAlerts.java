@@ -80,7 +80,7 @@ public class SupersedeAlerts extends HttpServlet {
 
 		loginLogic.loadConfiguration(pluginSettingsFactory.createGlobalSettings());
 	}
-	
+
 	/**
 	 * Perform a REST call (POST) asking SUPERSEDE to create a new requirement
 	 * with the given name and description.
@@ -188,7 +188,7 @@ public class SupersedeAlerts extends HttpServlet {
 			errors.add("invalid issue key " + issueKey);
 		}
 	}
-	
+
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		List<String> errors = new LinkedList<String>();
@@ -198,14 +198,21 @@ public class SupersedeAlerts extends HttpServlet {
 			String[] list = req.getParameter(PARAM_SELECTION_LIST).split(SEPARATOR);
 			for (int i = 0; i < list.length; i++) {
 				String alertId = list[i];
-//				boolean deleted = alertLogic.discardAlert(req, alertId);
-//				if(deleted){
-//					errors.add("alertId " + alertId + " deleted");
-//				}
-				int count = alertLogic.getAlertCount(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic, alertId);
+				boolean deleted = alertLogic.discardAlert(req, alertId);
+				if (deleted) {
+					errors.add("alertId " + alertId + " deleted");
+				}
+				// int count = alertLogic.getAlertCount(req,
+				// supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic,
+				// alertId);
 			}
 			doGet(req, resp);
 		}
+	}
+
+	@Override
+	protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		System.out.println("here");
 	}
 
 	@Override
@@ -237,9 +244,6 @@ public class SupersedeAlerts extends HttpServlet {
 					// attach file to the newly created issue
 					errors.add("importing " + a.getId());
 					issueLogic.attachToIssue(a, issueLogic.getIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issueID).get(0));
-
-					// TODO: attach to an issue
-
 				} else {
 					// attach to an existing issue
 					String[] issuesList = req.getParameter(PARAM_ISSUES_SELECTION_LIST).split(SEPARATOR);

@@ -100,7 +100,7 @@
 				</footer>
 			</section>
 
-			<!-- Render the delete dialog -->
+			<!-- DELETE DIALOG -->
 			<section role="dialog" id="delete-dialog"
 				class="aui-layer aui-dialog2 aui-dialog2-medium aui-dialog2-warning"
 				aria-hidden="true">
@@ -118,7 +118,7 @@
 				<footer class="aui-dialog2-footer">
 					<!-- Actions to render on the right of the footer -->
 					<div class="aui-dialog2-footer-actions">
-						<form action="supersede-man" method="post">
+						<form action="supersede-alerts" method="post">
 							<input type="hidden" class="selectionList" name="selectionList">
 							<input type="submit" id="dialog-submit-button"
 								class="aui-button aui-button-primary dialogButton"

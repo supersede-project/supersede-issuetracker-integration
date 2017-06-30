@@ -105,6 +105,12 @@
 			console.log('alert management')
 			$("#issuesSelectionList").val(issuesSelectionString);
 		});
+		
+		// DIALOG
+		jQuery('.dialogDeleteButton').click(function() {
+			console.log('alert management')
+			$("#selectionList").val(selectionString);
+		});
 	}
 </script>
 <meta name="decorator" content="atl.general">

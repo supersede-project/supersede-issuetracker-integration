@@ -9,10 +9,15 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.StringJoiner;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.parsers.DocumentBuilder;
@@ -120,11 +125,11 @@ public class AlertLogic {
 		// IssueLogic il = null;//IssueLogic.getInstance(issueService,
 		// projectService, searchService)
 		List<Issue> issuesList = il.getIssues(req, supersedeFieldId);
-		int c = 0;	
+		int c = 0;
 		for (Issue i : issuesList) {
 			Collection<Attachment> attachments = i.getAttachments();
 			for (Attachment a : attachments) {
-				if(a.getFilename().substring(0, a.getFilename().length() -4).equals(alertCode)){
+				if (a.getFilename().substring(0, a.getFilename().length() - 4).equals(alertCode)) {
 					c++;
 				}
 			}
@@ -143,26 +148,31 @@ public class AlertLogic {
 			} else {
 				return false;
 			}
-			URL url = new URL(loginLogic.getUrl() + "/supersede-dm-app/alerts/discard/8");
+			URL url = new URL(loginLogic.getUrl() + "/supersede-dm-app/alerts/discard");
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 			conn.setConnectTimeout(LoginLogic.CONN_TIMEOUT);
 			conn.setReadTimeout(LoginLogic.CONN_TIMEOUT);
-			conn.setDoOutput(true);
-			conn.setRequestMethod("DELETE");
-			conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-			// conn.setRequestProperty("Content-Type", "application/json");
-			// conn.setRequestProperty("Authorization",
-			// loginLogic.getBasicAuth());
-			conn.setRequestProperty("TenantId", loginLogic.getCurrentProject());
 			conn.setRequestProperty("Cookie", "SESSION=" + sessionId + ";");
-			conn.setRequestProperty("X-XSRF-TOKEN", loginLogic.authenticate(sessionId));
+			conn.setRequestMethod("POST");
+			conn.setDoOutput(true);
 
-			// OutputStreamWriter wr = new
-			// OutputStreamWriter(conn.getOutputStream());
-			// wr.write(alertId);
-			// wr.flush();
+			Map<String, String> arguments = new HashMap<>();
+			arguments.put("alertId", alertId);
+			StringJoiner sj = new StringJoiner("&");
+			for (Map.Entry<String, String> entry : arguments.entrySet())
+				sj.add(URLEncoder.encode(entry.getKey(), "UTF-8") + "=" + URLEncoder.encode(entry.getValue(), "UTF-8"));
+			byte[] out = sj.toString().getBytes(StandardCharsets.UTF_8);
+			int length = out.length;
 
+			conn.setFixedLengthStreamingMode(length);
+			conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+			conn.connect();
+			try (OutputStream os = conn.getOutputStream()) {
+				os.write(out);
+			}
 			response = conn.getResponseCode();
+
+			System.out.println(response);
 
 			// JSONObject req = new JSONObject();
 			// req.put("name", name);
@@ -219,8 +229,9 @@ public class AlertLogic {
 				Date d = new Date(/* o.getLong("timestamp") */);
 				a.setTimestamp(d.toString());
 				a.setDescription(r.getString("description"));
-				//TODO
-//				a.setCount(getAlertCount(req, supersedeFieldId, il, alertCode));
+				// TODO
+				// a.setCount(getAlertCount(req, supersedeFieldId, il,
+				// alertCode));
 				al.add(a);
 			}
 
