@@ -13,16 +13,13 @@
 package eu.supersede.jira.plugins.servlet;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +29,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,30 +37,11 @@ import com.atlassian.jira.bc.issue.IssueService.IssueResult;
 import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.bc.project.ProjectService;
 import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.config.IssueTypeManager;
 import com.atlassian.jira.issue.CustomFieldManager;
 import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.issue.IssueInputParameters;
 import com.atlassian.jira.issue.MutableIssue;
-import com.atlassian.jira.issue.attachment.CreateAttachmentParamsBean;
-import com.atlassian.jira.issue.context.GlobalIssueContext;
-import com.atlassian.jira.issue.context.JiraContextNode;
-import com.atlassian.jira.issue.customfields.CustomFieldSearcher;
-import com.atlassian.jira.issue.customfields.CustomFieldType;
-import com.atlassian.jira.issue.fields.CustomField;
-import com.atlassian.jira.issue.issuetype.IssueType;
-import com.atlassian.jira.issue.search.SearchException;
-import com.atlassian.jira.jql.builder.JqlClauseBuilder;
-import com.atlassian.jira.jql.builder.JqlQueryBuilder;
-import com.atlassian.jira.project.Project;
 import com.atlassian.jira.user.ApplicationUser;
-import com.atlassian.jira.util.json.JSONArray;
-import com.atlassian.jira.util.json.JSONException;
 import com.atlassian.jira.util.json.JSONObject;
-import com.atlassian.jira.web.bean.PagerFilter;
-import com.atlassian.jira.web.util.AttachmentException;
-import com.atlassian.query.Query;
-import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
@@ -74,6 +51,7 @@ import eu.supersede.jira.plugins.logic.AlertLogic;
 import eu.supersede.jira.plugins.logic.IssueLogic;
 import eu.supersede.jira.plugins.logic.LoginLogic;
 import eu.supersede.jira.plugins.logic.RequirementLogic;
+import eu.supersede.jira.plugins.logic.SupersedeCustomFieldLogic;
 
 /**
  * 
@@ -81,6 +59,11 @@ import eu.supersede.jira.plugins.logic.RequirementLogic;
  *
  */
 public class SupersedeMan extends HttpServlet {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2352887307960761479L;
+
 	private static final Logger log = LoggerFactory.getLogger(SupersedeMan.class);
 
 	/**
@@ -94,8 +77,6 @@ public class SupersedeMan extends HttpServlet {
 	 * value of the field is the id of the SUPERSEDE requirement or feature so
 	 * that the two can be synchronised.
 	 */
-	private final static String SUPERSEDE_FIELD_NAME = "Supersede", SUPERSEDE_FIELD_TYPE = "eu.supersede.jira.plugins.supersede-jira-plugin:supersede-custom-field", CUSTOM_FIELD_SEARCHER = "com.atlassian.jira.plugin.system.customfieldtypes:textsearcher";
-
 	// STATIC CUSTOM STRING AND FIELDS
 
 	private static final String SEPARATOR = ":::";
@@ -120,6 +101,8 @@ public class SupersedeMan extends HttpServlet {
 	private AlertLogic alertLogic;
 
 	private RequirementLogic requirementLogic;
+	
+	private SupersedeCustomFieldLogic supersedeCustomFieldLogic;
 
 	public SupersedeMan(IssueService issueService, ProjectService projectService, SearchService searchService, UserManager userManager, com.atlassian.jira.user.util.UserManager jiraUserManager, TemplateRenderer templateRenderer,
 			PluginSettingsFactory pluginSettingsFactory, CustomFieldManager customFieldManager) {
@@ -131,62 +114,9 @@ public class SupersedeMan extends HttpServlet {
 		loginLogic = LoginLogic.getInstance();
 		issueLogic = IssueLogic.getInstance(issueService, projectService, searchService);
 		alertLogic = AlertLogic.getInstance();
+		supersedeCustomFieldLogic = SupersedeCustomFieldLogic.getInstance(customFieldManager);
 		requirementLogic = RequirementLogic.getInstance(issueService, projectService, searchService);
 		loginLogic.loadConfiguration(pluginSettingsFactory.createGlobalSettings());
-	}
-
-	/**
-	 * Verifies the supersede field is available in the custom field manager. If
-	 * not, creates and associates it with all the issue types currently
-	 * available.
-	 * 
-	 * @throws Exception
-	 */
-	private void checkSupersedeField() throws Exception {
-		CustomFieldType supersedeFieldType = getSupersedeCustomFieldType();
-		CustomField supersedeField = getSupersedeCustomField(supersedeFieldType);
-		if (null == supersedeField) {
-			CustomFieldSearcher fieldSearcher = customFieldManager.getCustomFieldSearcher(CUSTOM_FIELD_SEARCHER);
-			List<JiraContextNode> contexts = new ArrayList<JiraContextNode>();
-			contexts.add(GlobalIssueContext.getInstance());
-			IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);
-			Collection<IssueType> issueTypes = issueTypeManager.getIssueTypes();
-			// add supersede to all issue types
-			List<IssueType> myIssueTypes = new LinkedList<IssueType>();
-			for (IssueType it : issueTypes) {
-				log.debug(it.getId() + " ", it.getName());
-				myIssueTypes.add(it);
-			}
-			supersedeField = customFieldManager.createCustomField(SUPERSEDE_FIELD_NAME, "SUPERSEDE powered issue", supersedeFieldType, fieldSearcher, contexts, myIssueTypes);
-			log.info("the supersede custom field has been installed to all the issue types");
-		} else {
-			log.info("the supersede custom field is already available");
-		}
-		supersedeFieldId = supersedeField.getIdAsLong();
-		log.debug("supersede custom field id is " + supersedeFieldId);
-	}
-
-	private CustomFieldType getSupersedeCustomFieldType() {
-		CustomFieldType supersedeFieldType = customFieldManager.getCustomFieldType(SUPERSEDE_FIELD_TYPE);
-		if (null == supersedeFieldType) {
-			log.error("no such custom field type found: " + SUPERSEDE_FIELD_TYPE);
-			for (CustomFieldType t : customFieldManager.getCustomFieldTypes()) {
-				log.debug(t.getName() + " " + t.getKey());
-			}
-			throw new NullPointerException("no " + SUPERSEDE_FIELD_TYPE + " custom field available");
-		}
-		return supersedeFieldType;
-	}
-
-	private CustomField getSupersedeCustomField(CustomFieldType supersedeFieldType) {
-		CustomField supersedeField = null;
-		Collection<CustomField> supersedeFields = customFieldManager.getCustomFieldObjectsByName(SUPERSEDE_FIELD_NAME);
-		for (CustomField cf : supersedeFields) {
-			if (cf.getCustomFieldType().equals(supersedeFieldType)) {
-				supersedeField = cf;
-			}
-		}
-		return supersedeField;
 	}
 
 	/**
@@ -275,7 +205,7 @@ public class SupersedeMan extends HttpServlet {
 		// 3. update the issue with the custom field "Supersede" set as the
 		// requirement id
 		if (null != requirementId) {
-			issueLogic.updateIssue(issue, user, requirementId, errors, getSupersedeCustomField(getSupersedeCustomFieldType()));
+			issueLogic.updateIssue(issue, user, requirementId, errors, supersedeCustomFieldLogic.getSupersedeCustomField());
 		}
 	}
 
@@ -297,16 +227,14 @@ public class SupersedeMan extends HttpServlet {
 		}
 	}
 
-	private String getCustomFieldId() {
-		return "customfield_" + supersedeFieldId;
-	}
+
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
 		Map<String, Object> context = Maps.newHashMap();
 		try {
-			checkSupersedeField();
+			supersedeCustomFieldLogic.checkSupersedeField();
 		} catch (Exception e) {
 			log.error("checking custom supersede field: " + e);
 		}
@@ -321,7 +249,7 @@ public class SupersedeMan extends HttpServlet {
 			if (isImport) {
 				Alert a = alertLogic.fetchAlerts(req, list[0]).get(0);
 				issueID = a.getId() + System.currentTimeMillis();
-				issueLogic.newIssue(req, "Issue " + a.getId(), a.getDescription(), issueID, errors, getSupersedeCustomField(getSupersedeCustomFieldType()));
+				issueLogic.newIssue(req, "Issue " + a.getId(), a.getDescription(), issueID, errors, supersedeCustomFieldLogic.getSupersedeCustomField());
 			}
 			Alert a = null;
 			for (int i = 0; i < list.length; i++) {
@@ -355,7 +283,7 @@ public class SupersedeMan extends HttpServlet {
 			List<Alert> alerts = alertLogic.fetchAlerts(req);
 			List<Issue> issues = issueLogic.getIssues(req, supersedeFieldId);
 			context.put("customFieldManager", customFieldManager);
-			context.put("customFieldId", getCustomFieldId());
+			context.put("customFieldId", supersedeCustomFieldLogic.getCustomFieldId());
 			context.put("issues", issues);
 			context.put("alerts", alerts);
 			context.put("date", new Date().toString());
@@ -367,7 +295,7 @@ public class SupersedeMan extends HttpServlet {
 			return;
 		} else if ("y".equals(req.getParameter("openCompare")) || "y".equals(req.getParameter("refreshCompare"))) {
 			// Reload just the alerts table template
-			List<Difference> differences = issueLogic.compareIssues(req, supersedeFieldId, getSupersedeCustomField(getSupersedeCustomFieldType()));
+			List<Difference> differences = issueLogic.compareIssues(req, supersedeFieldId, supersedeCustomFieldLogic.getSupersedeCustomField());
 			context.put("differences", differences);
 			context.put("date", new Date().toString());
 			if (req.getParameter("openCompare") != null && "y".equals(req.getParameter("openCompare"))) {
@@ -380,7 +308,7 @@ public class SupersedeMan extends HttpServlet {
 		// ---
 
 		// Render the list of issues (list.vm) if no params are passed in
-		List<Difference> differences = issueLogic.compareIssues(req, supersedeFieldId, getSupersedeCustomField(getSupersedeCustomFieldType()));
+		List<Difference> differences = issueLogic.compareIssues(req, supersedeFieldId, supersedeCustomFieldLogic.getSupersedeCustomField());
 
 		List<Issue> issues = issueLogic.getIssues(req, supersedeFieldId);
 		List<Requirement> requirements = new LinkedList<Requirement>();
@@ -395,7 +323,7 @@ public class SupersedeMan extends HttpServlet {
 		context.put("separator", SEPARATOR);
 		context.put("baseurl", ComponentAccessor.getApplicationProperties().getString("jira.baseurl"));
 		context.put("customFieldManager", customFieldManager);
-		context.put("customFieldId", getCustomFieldId());
+		context.put("customFieldId", supersedeCustomFieldLogic.getCustomFieldId());
 		resp.setContentType("text/html;charset=utf-8");
 		// Pass in the list of issues as the context
 		templateRenderer.render(MANAGER_BROWSER_TEMPLATE, context, resp.getWriter());

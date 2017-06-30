@@ -2,25 +2,6 @@
 <head>
 <title>SUPERSEDE - Issue Manager</title>
 <meta name="decorator" content="atl.general">
-<script>
-	AJS.$(document).ready(function() {
-		jQuery('.alertsPage').click(function() {
-			console.log('refreshing alerts');
-			var self = jQuery(this);
-			$("#data-section").load("supersede-man?openAlerts=y");
-			$('.nav').removeClass("aui-nav-selected");
-			$('.alertsPage').addClass("aui-nav-selected");
-		});
-
-		jQuery('.comparePage').click(function() {
-			console.log('refreshing compare');
-			var self = jQuery(this);
-			$("#data-section").load("supersede-man?openCompare=y");
-			$('.nav').removeClass("aui-nav-selected");
-			$('.comparePage').addClass("aui-nav-selected");
-		});
-	});
-</script>
 <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
 <script src="https://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
 </head>

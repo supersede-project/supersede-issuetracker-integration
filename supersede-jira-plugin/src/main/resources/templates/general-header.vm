@@ -1,0 +1,31 @@
+
+<header class="aui-page-header">
+	<div class="aui-page-header-inner">
+		<div class="aui-page-header-main">
+			<h1>
+				<img
+					src="$baseurl/download/resources/eu.supersede.jira.plugins.supersede-jira-plugin:supersede-jira-plugin-resources/images/supersede_color.png">
+				Issues Manager
+			</h1>
+			<!-- .aui-page-header-main -->
+		</div>
+	</div>
+	<!-- .aui-page-header-inner -->
+</header>
+
+#if ($errors && $errors.size()>0)
+<div class="content-container">
+	<div class="content-body">
+		<div class="aui-message error shadowed">
+			#foreach($error in $errors)
+			<p class="title">
+				<span class="aui-icon icon-error"></span> <strong>$error</strong>
+			</p>
+			#end
+		</div>
+		<!-- .aui-message -->
+	</div>
+</div>
+#end
+
+

@@ -14,11 +14,12 @@
 			var self = jQuery(this);
 			jQuery.ajax({
 				type : "get",
-				url : "supersede-man?refreshAlerts=y",
+				url : "supersede-alerts?refreshAlerts=y",
 				success : function(data) {
 					console.log('dom', self, data);
 					$("#data").html(data);
 					// self.parent().parent().remove();
+					AJS.tablessortable.setTableSortable(AJS.$(".sortableTable"));
 					onPageLoad();
 				},
 				error : function() {
@@ -33,7 +34,7 @@
 						// Write a string containing the IDs of selected
 						// alerts
 						selectionString += $(this).attr('id');
-						selectionString += $separator;
+						selectionString += '$separator';
 						$(".toEnable").prop('disabled', false);
 						$(".toEnable").prop('enabled', true);
 						alert(selectionString);
@@ -41,7 +42,7 @@
 						// Remove the selected ID if checkbox gets unchecked
 						selectionString = selectionString.replace($(this).attr(
 								'id')
-								+ $separator, '');
+								+ '$separator', '');
 						if (!selectionString) {
 							$(".toEnable").prop('disabled', true);
 							$(".toEnable").prop('enabled', false);
@@ -54,13 +55,13 @@
 						// Write a string containing the IDs of selected
 						// alerts
 						issuesSelectionString += $(this).attr('id');
-						issuesSelectionString += $separator;
+						issuesSelectionString += '$separator';
 						$(".toEnable").prop('disabled', false);
 						$(".toEnable").prop('enabled', true);
 					} else {
 						// Remove the selected ID if checkbox gets unchecked
 						issuesSelectionString = issuesSelectionString.replace(
-								$(this).attr('id') + $separator, '');
+								$(this).attr('id') + '$separator', '');
 						if (!issueSelectionString) {
 							$(".toEnable").prop('disabled', true);
 							$(".toEnable").prop('enabled', false);
@@ -102,12 +103,24 @@
 		});
 	}
 </script>
+<meta name="decorator" content="atl.general">
 $webResourceManager.requireResource("com.atlassian.auiplugin:dialog2")
+$webResourceManager.requireResource("com.atlassian.auiplugin:aui-experimental-table-sortable")
+<title>SUPERSEDE - Issue Manager</title>
 <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
 <script src="https://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
 </head>
-<body>
-	<div id="data">
-		#parse("/templates/content-supersede-man-alerts-table.vm")</div>
+<body class="page-type-admin">
+	<!--  parsing header -->
+	#parse("/templates/general-header.vm")
+	<div class="aui-page-panel" id="browse-issues-page">
+		<div class="aui-page-panel-inner">
+			<!-- parsing project list -->
+			#parse("/templates/general-project-list.vm")
+			<div id="data">
+				#parse("/templates/content-supersede-alerts.vm")</div>
+		</div>
+	</div>
+
 </body>
 </html>

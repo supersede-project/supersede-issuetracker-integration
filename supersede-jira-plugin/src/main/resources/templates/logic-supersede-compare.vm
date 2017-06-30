@@ -11,7 +11,7 @@
 			var self = jQuery(this);
 			jQuery.ajax({
 				type : "get",
-				url : "supersede-man?refreshCompare=y",
+				url : "supersede-compare?refreshCompare=y",
 				success : function(data) {
 					console.log('dom', self, data);
 					$("#data").html(data);
@@ -27,6 +27,6 @@
 </head>
 <body>
 	<div class="mod-header" id="data">
-		#parse("/templates/content-supersede-man-compare-table.vm")</div>
+		#parse("/templates/content-supersede-compare.vm")</div>
 </body>
 </html>

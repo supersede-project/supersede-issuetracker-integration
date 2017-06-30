@@ -1,0 +1,21 @@
+<html>
+<head>
+<title>SUPERSEDE - Issue Manager</title>
+<meta name="decorator" content="atl.general">
+<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+<script src="https://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+</head>
+<body class="page-type-admin">
+	<!--  parsing header -->
+	#parse("/templates/general-header.vm")
+	<div class="aui-page-panel" id="browse-issues-page">
+		<div class="aui-page-panel-inner">
+			<!-- parsing project list -->
+			#parse("/templates/general-project-list.vm")
+			<div id="data">
+				#parse("/templates/content-supersede-plan.vm")</div>
+		</div>
+	</div>
+
+</body>
+</html>

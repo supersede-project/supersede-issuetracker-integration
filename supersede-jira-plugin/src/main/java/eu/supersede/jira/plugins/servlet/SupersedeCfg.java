@@ -38,7 +38,12 @@ import com.google.common.collect.Maps;
  *
  */
 public class SupersedeCfg extends HttpServlet{
-    private static final Logger log = LoggerFactory.getLogger(SupersedeCfg.class);
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -8883489846712728448L;
+
+	private static final Logger log = LoggerFactory.getLogger(SupersedeCfg.class);
 
 	/**
 	 * Velocity model used to output the html
