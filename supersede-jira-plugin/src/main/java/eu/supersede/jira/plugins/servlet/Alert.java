@@ -7,6 +7,8 @@ public class Alert {
 	private String timestamp;
 	private String description;
 	private String[] issues;
+	private int count;
+
 
 	public String getId() {
 		return id;
@@ -54,5 +56,13 @@ public class Alert {
 
 	public void setIssues(String[] issues) {
 		this.issues = issues;
+	}
+	
+	public int getCount() {
+		return count;
+	}
+	
+	public void setCount(int count) {
+		this.count = count;
 	}
 }

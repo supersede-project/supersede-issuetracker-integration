@@ -219,6 +219,8 @@ public class AlertLogic {
 				Date d = new Date(/* o.getLong("timestamp") */);
 				a.setTimestamp(d.toString());
 				a.setDescription(r.getString("description"));
+				//TODO
+//				a.setCount(getAlertCount(req, supersedeFieldId, il, alertCode));
 				al.add(a);
 			}
 

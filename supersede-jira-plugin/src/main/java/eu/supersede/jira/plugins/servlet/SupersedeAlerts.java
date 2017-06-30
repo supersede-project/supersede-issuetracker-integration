@@ -188,6 +188,25 @@ public class SupersedeAlerts extends HttpServlet {
 			errors.add("invalid issue key " + issueKey);
 		}
 	}
+	
+	@Override
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		List<String> errors = new LinkedList<String>();
+		if (!"".equals(req.getParameter("deleteAction")) && req.getParameter("deleteAction") != null) {
+			// true = import clicked - false = attach clicked
+			boolean isDelete = "Delete".equals(req.getParameter(PARAM_ACTION));
+			String[] list = req.getParameter(PARAM_SELECTION_LIST).split(SEPARATOR);
+			for (int i = 0; i < list.length; i++) {
+				String alertId = list[i];
+//				boolean deleted = alertLogic.discardAlert(req, alertId);
+//				if(deleted){
+//					errors.add("alertId " + alertId + " deleted");
+//				}
+				int count = alertLogic.getAlertCount(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic, alertId);
+			}
+			doGet(req, resp);
+		}
+	}
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

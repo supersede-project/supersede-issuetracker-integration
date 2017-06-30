@@ -89,6 +89,10 @@
 		AJS.$("#dialog-show-button").click(function() {
 			AJS.dialog2("#demo-dialog").show();
 		});
+		
+		AJS.$("#dialog-delete-button").click(function(){
+			AJS.dialog2("#delete-dialog").show();
+		});
 
 		// Hides the dialog
 		AJS.$("#dialog-close-button").click(function(e) {
