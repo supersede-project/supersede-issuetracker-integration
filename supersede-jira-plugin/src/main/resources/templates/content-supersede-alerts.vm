@@ -1,33 +1,74 @@
 <html>
 <head>
+<style type="text/css">
+.table-truncate {
+	table-layout: fixed;
+}
+
+.td-small {
+	width: 5%;
+}
+
+.td-med {
+	width: 10%;
+}
+
+.td-max {
+	width: 60%
+}
+
+.td-truncate {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.searchPane {
+	display: inline;
+}
+
+.buttonPane {
+	display: flex
+}
+
+.alertManagement {
+	margin-left: 20px;
+}
+</style>
 </head>
 <body>
 	<div>
 		<h2>Alerts</h2>
 		<span>
-			<button class="aui-button aui-button-secondary check-alerts">Check
-				Supersede</button>
+			<button class="aui-button aui-button-secondary check-alerts">
+				<span class="glyphicon glyphicon-repeat"></span> Check Supersede
+			</button>
 		</span>
+		<div class="searchPane">
+			<!-- VALUTARE SE USARE UNA FORM O LANCIARE L'AGGIORNAMENTO DELLA TABELLA COME GIA SI FA ADESSO VIA GET -->
+			<input style="margin-left: 100px" name="Search"
+				placeholder="Search...">
+			<button class="aui-button aui-button-primary">
+				<span class="glyphicon glyphicon-search"></span>
+			</button>
+		</div>
 	</div>
 	<div id="data-section">
 		<div class="p-list">
-			<table class="aui aui-table-sortable sortableTable">
+			<table class="aui table-truncate aui-table-sortable sortableTable">
 				<thead>
 					<tr>
-						<th class="td-med">Click me</th>
-						<th class="td-med"></th>
-						<th class="td-max">ID</th>
-						<th class="td-med">App. ID</th>
+						<th class="td-small"></th>
+						<th class="td-med">ID</th>
+						<th class="td-small">App. ID</th>
 						<th class="td-med">Timestamp</th>
-						<th class="td-med">Description</th>
+						<th class="td-max">Description</th>
 						<th class="td-med">Attachments</th>
 					</tr>
 				</thead>
 				<tbody class="projects-list">
 					#foreach( $alert in $alerts )
 					<tr>
-						<td class="td-truncate"><input class="opener" type="submit">
-						</td>
 						<td class="td-truncate"><input class="chkSelected checkbox"
 							type="checkbox" id=$alert.getId()></td>
 						<td class="td-truncate">$alert.getId()</td>
@@ -132,10 +173,10 @@
 			</section>
 
 			<div class="aui-group">
-				<div class="aui-item" style="display: flex">
-					<form action="supersede-alerts" method="get">
+				<div style="float: left" class="aui-item buttonPane">
+					<form style="float: left" action="supersede-alerts" method="get">
 						<input type="hidden" class="selectionList" name="selectionList">
-						<button name="action" value="Import"
+						<button style="margin-left: 20px" name="action" value="Import"
 							class="aui-button aui-button-primary alertManagement toEnable">
 							<span class="glyphicon glyphicon-plus"></span> <span
 								class="submit-text">Create Issue</span>
@@ -149,8 +190,8 @@
 					<input style="margin-left: 20px" type="checkbox"
 						class="alertManagement" name="deleteOnClick" value="" />Delete on
 					create or attach
-					<button style="margin-left: 20px" id="dialog-delete-button"
-						class="aui-button alertManagement toEnable">
+					<button id="dialog-delete-button"
+						class="aui-button aui-button-primary alertManagement toEnable">
 						<span class="glyphicon glyphicon-trash"></span> Delete...
 					</button>
 				</div>

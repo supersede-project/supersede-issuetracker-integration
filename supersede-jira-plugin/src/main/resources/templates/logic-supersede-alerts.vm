@@ -39,7 +39,7 @@
 						selectionString += '$separator';
 						$(".toEnable").prop('disabled', false);
 						$(".toEnable").prop('enabled', true);
-						alert(selectionString);
+// 						alert(selectionString);
 					} else {
 						// Remove the selected ID if checkbox gets unchecked
 						selectionString = selectionString.replace($(this).attr(

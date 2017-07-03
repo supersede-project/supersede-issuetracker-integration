@@ -16,10 +16,10 @@
 #if ($errors && $errors.size()>0)
 <div class="content-container">
 	<div class="content-body">
-		<div class="aui-message-info shadowed">
+		<div class="aui-message aui-message-info shadowed">
 			#foreach($error in $errors)
 			<p class="title">
-				<span class="aui-icon icon-info"></span> <strong>Creata issue: <a href="$baseurl/browse/$error">$error</a></strong>
+				<span class="glyphicon glyphicon-ok"></span> <strong>Done: <a href="$baseurl/browse/$error">$error</a></strong>
 			</p>
 			#end
 		</div>
