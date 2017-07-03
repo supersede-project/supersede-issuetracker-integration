@@ -246,8 +246,9 @@ public class SupersedeAlerts extends HttpServlet {
 					// attach to an existing issue
 					String[] issuesList = req.getParameter(PARAM_ISSUES_SELECTION_LIST).split(SEPARATOR);
 					for (int j = 0; j < issuesList.length; j++) {
-						errors.add("attaching " + a.getId());
-						issueLogic.attachToIssue(a, issueLogic.getIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issuesList[j]).get(0));
+						Issue issue = issueLogic.getIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issuesList[j]).get(0);
+						errors.add(issue != null ? issue.getKey() : "attaching " + a.getId());
+						issueLogic.attachToIssue(a, issue);
 					}
 					// TODO: retrieve hidden input issue number
 					// TODO: attach to that issue
