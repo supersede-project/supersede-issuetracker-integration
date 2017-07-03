@@ -1,86 +1,88 @@
-<html>
-<head>
-<title>SUPERSEDE - Issue Manager</title>
-<meta name="decorator" content="atl.general">
-<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
-<script src="https://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
-</head>
-<body class="page-type-admin">
-	<header class="aui-page-header">
-		<div class="aui-page-header-inner">
-			<div class="aui-page-header-main">
-				<h1>
-					<img
-						src="$baseurl/download/resources/eu.supersede.jira.plugins.supersede-jira-plugin:supersede-jira-plugin-resources/images/supersede_color.png">
-					Issues Manager
-				</h1>
-				<!-- .aui-page-header-main -->
-			</div>
-		</div>
-		<!-- .aui-page-header-inner -->
-	</header>
+<!-- <html> -->
+<!-- <head> -->
+<!-- <title>SUPERSEDE - Issue Manager</title> -->
+<!-- <meta name="decorator" content="atl.general"> -->
+<!-- <script src="https://code.jquery.com/jquery-1.10.2.js"></script> -->
+<!-- <script src="https://code.jquery.com/ui/1.10.4/jquery-ui.js"></script> -->
+<!--     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> -->
+<!--         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"> -->
+<!-- </head> -->
+<!-- <body class="page-type-admin"> -->
+<!-- 	<header class="aui-page-header"> -->
+<!-- 		<div class="aui-page-header-inner"> -->
+<!-- 			<div class="aui-page-header-main"> -->
+<!-- 				<h1> -->
+<!-- 					<img -->
+<!-- 						src="$baseurl/download/resources/eu.supersede.jira.plugins.supersede-jira-plugin:supersede-jira-plugin-resources/images/supersede_color.png"> -->
+<!-- 					Issues Manager -->
+<!-- 				</h1> -->
+<!-- 				.aui-page-header-main -->
+<!-- 			</div> -->
+<!-- 		</div> -->
+<!-- 		<!-- .aui-page-header-inner --> -->
+<!-- 	</header> -->
 
-	#if ($errors && $errors.size()>0)
-	<div class="content-container">
-		<div class="content-body">
-			<div class="aui-message error shadowed">
-				#foreach($error in $errors)
-				<p class="title">
-					<span class="aui-icon icon-error"></span> <strong>$error</strong>
-				</p>
-				#end
-			</div>
-			<!-- .aui-message -->
-		</div>
-	</div>
-	#end
+<!-- 	#if ($errors && $errors.size()>0) -->
+<!-- 	<div class="content-container"> -->
+<!-- 		<div class="content-body"> -->
+<!-- 			<div class="aui-message error shadowed"> -->
+<!-- 				#foreach($error in $errors) -->
+<!-- 				<p class="title"> -->
+<!-- 					<span class="aui-icon icon-error"></span> <strong>$error</strong> -->
+<!-- 				</p> -->
+<!-- 				#end -->
+<!-- 			</div> -->
+<!-- 			<!-- .aui-message --> -->
+<!-- 		</div> -->
+<!-- 	</div> -->
+<!-- 	#end -->
 
 
 
-	<div class="aui-page-panel" id="browse-issues-page">
-		<div class="aui-page-panel-inner">
-			<!-- 		Vertical "Projects" Navigator -->
-			<div class="aui-page-panel-nav">
-				<nav class="aui-navgroup aui-navgroup-vertical">
-					<div class="aui-navgroup-inner">
-						<div class="aui-nav-heading">
-							<h2>
-								<strong>Projects</strong>
-							</h2>
-						</div>
-						<ul class="aui-nav">
-							<li class="aui-nav"><a href="#">atos</a></li>
-							<li class="aui-nav-selected"><a href="#">test</a></li>
-							<li class="aui-nav"><a href="#">proj1</a></li>
-							<li class="aui-nav"><a href="#">proj2</a></li>
-							<li class="aui-nav"><a href="#">proj3</a></li>
-							<li class="aui-nav"><a href="#">proj4</a></li>
-						</ul>
-					</div>
-				</nav>
-			</div>
-			<section class="aui-page-panel-content">
-				<!-- 			Horizontal Pages Navigator -->
-				<nav class="aui-navgroup aui-navgroup-horizontal">
-					<div class="aui-navgroup-inner">
-						<div class="aui-navgroup-primary">
-							<ul class="aui-nav">
-								<li class="nav comparePage"><a href="#">Comparison</a></li>
-								<li class="nav"><a href="#">Stranger Things</a></li>
-								<li class="nav"><a href="#">Other Things</a></li>
-								<li class="nav alertsPage aui-nav-selected"><a href="#">Alert
-										management</a></li>
-							</ul>
-						</div>
-					</div>
-				</nav>
-				<div class="aui-page-panel" id="pageContent">
-					<div id="data-section">
-						#parse("/templates/logic-supersede-man-alerts-table.vm")</div>
-				</div>
+<!-- 	<div class="aui-page-panel" id="browse-issues-page"> -->
+<!-- 		<div class="aui-page-panel-inner"> -->
+<!-- 			<!-- 		Vertical "Projects" Navigator --> -->
+<!-- 			<div class="aui-page-panel-nav"> -->
+<!-- 				<nav class="aui-navgroup aui-navgroup-vertical"> -->
+<!-- 					<div class="aui-navgroup-inner"> -->
+<!-- 						<div class="aui-nav-heading"> -->
+<!-- 							<h2> -->
+<!-- 								<strong>Projects</strong> -->
+<!-- 							</h2> -->
+<!-- 						</div> -->
+<!-- 						<ul class="aui-nav"> -->
+<!-- 							<li class="aui-nav"><a href="#">atos</a></li> -->
+<!-- 							<li class="aui-nav-selected"><a href="#">test</a></li> -->
+<!-- 							<li class="aui-nav"><a href="#">proj1</a></li> -->
+<!-- 							<li class="aui-nav"><a href="#">proj2</a></li> -->
+<!-- 							<li class="aui-nav"><a href="#">proj3</a></li> -->
+<!-- 							<li class="aui-nav"><a href="#">proj4</a></li> -->
+<!-- 						</ul> -->
+<!-- 					</div> -->
+<!-- 				</nav> -->
+<!-- 			</div> -->
+<!-- 			<section class="aui-page-panel-content"> -->
+<!-- 							Horizontal Pages Navigator -->
+<!-- 				<nav class="aui-navgroup aui-navgroup-horizontal"> -->
+<!-- 					<div class="aui-navgroup-inner"> -->
+<!-- 						<div class="aui-navgroup-primary"> -->
+<!-- 							<ul class="aui-nav"> -->
+<!-- 								<li class="nav comparePage"><a href="#">Comparison</a></li> -->
+<!-- 								<li class="nav"><a href="#">Stranger Things</a></li> -->
+<!-- 								<li class="nav"><a href="#">Other Things</a></li> -->
+<!-- 								<li class="nav alertsPage aui-nav-selected"><a href="#">Alert -->
+<!-- 										management</a></li> -->
+<!-- 							</ul> -->
+<!-- 						</div> -->
+<!-- 					</div> -->
+<!-- 				</nav> -->
+<!-- 				<div class="aui-page-panel" id="pageContent"> -->
+<!-- 					<div id="data-section"> -->
+<!-- 						#parse("/templates/logic-supersede-man-alerts-table.vm")</div> -->
+<!-- 				</div> -->
 
-			</section>
-		</div>
-	</div>
-</body>
-</html>
+<!-- 			</section> -->
+<!-- 		</div> -->
+<!-- 	</div> -->
+<!-- </body> -->
+<!-- </html> -->

@@ -1,6 +1,5 @@
 <html>
 <head>
-
 </head>
 <body>
 	<div>
@@ -133,21 +132,27 @@
 			</section>
 
 			<div class="aui-group">
-				<div class="aui-item">
+				<div class="aui-item" style="display: flex">
 					<form action="supersede-alerts" method="get">
 						<input type="hidden" class="selectionList" name="selectionList">
-						<input
-							class="aui-button aui-button-primary alertManagement toEnable"
-							type="submit" name="action" value="Import">
-						<!-- <input
-								class="aui-button aui-button-secondary alertManagement"
-								id="dialog-show-button" type="submit" name="action"
-								value="Attach">-->
+						<button name="action" value="Import"
+							class="aui-button aui-button-primary alertManagement toEnable">
+							<span class="glyphicon glyphicon-plus"></span> <span
+								class="submit-text">Create Issue</span>
+						</button>
 					</form>
-					<button id="dialog-show-button"
-						class="aui-button aui-button-secondary alertManagement toEnable">Attach</button>
-					<button id="dialog-delete-button"
-						class="aui-button alertManagement toEnable">Delete</button>
+					<button style="margin-left: 20px" id="dialog-show-button"
+						class="aui-button aui-button-secondary alertManagement toEnable">
+						<span class="glyphicon glyphicon-paperclip"></span> Attach to
+						issue...
+					</button>
+					<input style="margin-left: 20px" type="checkbox"
+						class="alertManagement" name="deleteOnClick" value="" />Delete on
+					create or attach
+					<button style="margin-left: 20px" id="dialog-delete-button"
+						class="aui-button alertManagement toEnable">
+						<span class="glyphicon glyphicon-trash"></span> Delete...
+					</button>
 				</div>
 			</div>
 		</div>
