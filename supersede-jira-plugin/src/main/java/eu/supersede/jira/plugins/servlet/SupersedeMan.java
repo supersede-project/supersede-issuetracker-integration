@@ -232,101 +232,101 @@ public class SupersedeMan extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
-		Map<String, Object> context = Maps.newHashMap();
-		try {
-			supersedeCustomFieldLogic.checkSupersedeField();
-		} catch (Exception e) {
-			log.error("checking custom supersede field: " + e);
-		}
-		// process request
-		List<String> errors = new LinkedList<String>();
-		if (!"".equals(req.getParameter(PARAM_ACTION)) && req.getParameter(PARAM_ACTION) != null) {
-			// true = import clicked - false = attach clicked
-			boolean isImport = "Import".equals(req.getParameter(PARAM_ACTION));
-			// I retrieve Alert list anyway, both buttons require it
-			String[] list = req.getParameter(PARAM_SELECTION_LIST).split(SEPARATOR);
-			String issueID = "";
-			if (isImport) {
-				Alert a = alertLogic.fetchAlerts(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic, list[0]).get(0);
-				issueID = a.getId() + System.currentTimeMillis();
-				issueLogic.newIssue(req, "Issue " + a.getId(), a.getDescription(), issueID, errors, supersedeCustomFieldLogic.getSupersedeCustomField());
-			}
-			Alert a = null;
-			for (int i = 0; i < list.length; i++) {
-				a = alertLogic.fetchAlerts(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic, list[i]).get(0);
-				if (isImport) {
-					// attach file to the newly created issue
-					errors.add("importing " + a.getId());
-					issueLogic.attachToIssue(a, issueLogic.getIssues(req, supersedeFieldId, issueID).get(0));
-
-					// TODO: attach to an issue
-
-				} else {
-					// attach to an existing issue
-					String[] issuesList = req.getParameter(PARAM_ISSUES_SELECTION_LIST).split(SEPARATOR);
-					for (int j = 0; j < issuesList.length; j++) {
-						errors.add("attaching " + a.getId());
-						issueLogic.attachToIssue(a, issueLogic.getIssues(req, supersedeFieldId, issuesList[j]).get(0));
-					}
-					// TODO: retrieve hidden input issue number
-					// TODO: attach to that issue
-
-				}
-			}
-
-			// FIXME: FIELDS BELOW HAVE TO BE REMOVED OR MOVED IN OTHER TABS IN
-			// FINAL VERSION
-		} else if ("y".equals(req.getParameter("export"))) {
-			errors.add("exporting " + req.getParameter("issuekey"));
-			newRequirement(req, errors);
-		} else if ("y".equals(req.getParameter("openAlerts")) || "y".equals(req.getParameter("refreshAlerts"))) {
-			List<Alert> alerts = alertLogic.fetchAlerts(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic);
-			List<Issue> issues = issueLogic.getIssues(req, supersedeFieldId);
-			context.put("customFieldManager", customFieldManager);
-			context.put("customFieldId", supersedeCustomFieldLogic.getCustomFieldId());
-			context.put("issues", issues);
-			context.put("alerts", alerts);
-			context.put("date", new Date().toString());
-			if (req.getParameter("openAlerts") != null && "y".equals(req.getParameter("openAlerts"))) {
-				templateRenderer.render("/templates/logic-supersede-man-alerts-table.vm", context, resp.getWriter());
-			} else {
-				templateRenderer.render("/templates/content-supersede-man-alerts-table.vm", context, resp.getWriter());
-			}
-			return;
-		} else if ("y".equals(req.getParameter("openCompare")) || "y".equals(req.getParameter("refreshCompare"))) {
-			// Reload just the alerts table template
-			List<Difference> differences = issueLogic.compareIssues(req, supersedeFieldId, supersedeCustomFieldLogic.getSupersedeCustomField());
-			context.put("differences", differences);
-			context.put("date", new Date().toString());
-			if (req.getParameter("openCompare") != null && "y".equals(req.getParameter("openCompare"))) {
-				templateRenderer.render("/templates/logic-supersede-man-compare-table.vm", context, resp.getWriter());
-			} else {
-				templateRenderer.render("/templates/content-supersede-man-compare-table.vm", context, resp.getWriter());
-			}
-			return;
-		}
-		// ---
-
-		// Render the list of issues (list.vm) if no params are passed in
-		List<Difference> differences = issueLogic.compareIssues(req, supersedeFieldId, supersedeCustomFieldLogic.getSupersedeCustomField());
-
-		List<Issue> issues = issueLogic.getIssues(req, supersedeFieldId);
-		List<Requirement> requirements = new LinkedList<Requirement>();
-		requirementLogic.getRequirements(req, requirements, supersedeFieldId);
-		List<Alert> alerts = alertLogic.fetchAlerts(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic);
-
-		context.put("alerts", alerts);
-		context.put("issues", issues);
-		context.put("requirements", requirements);
-		context.put("differences", differences);
-		context.put("errors", errors);
-		context.put("separator", SEPARATOR);
-		context.put("baseurl", ComponentAccessor.getApplicationProperties().getString("jira.baseurl"));
-		context.put("customFieldManager", customFieldManager);
-		context.put("customFieldId", supersedeCustomFieldLogic.getCustomFieldId());
-		resp.setContentType("text/html;charset=utf-8");
-		// Pass in the list of issues as the context
-		templateRenderer.render(MANAGER_BROWSER_TEMPLATE, context, resp.getWriter());
+//		Map<String, Object> context = Maps.newHashMap();
+//		try {
+//			supersedeCustomFieldLogic.checkSupersedeField();
+//		} catch (Exception e) {
+//			log.error("checking custom supersede field: " + e);
+//		}
+//		// process request
+//		List<String> errors = new LinkedList<String>();
+//		if (!"".equals(req.getParameter(PARAM_ACTION)) && req.getParameter(PARAM_ACTION) != null) {
+//			// true = import clicked - false = attach clicked
+//			boolean isImport = "Import".equals(req.getParameter(PARAM_ACTION));
+//			// I retrieve Alert list anyway, both buttons require it
+//			String[] list = req.getParameter(PARAM_SELECTION_LIST).split(SEPARATOR);
+//			String issueID = "";
+//			if (isImport) {
+//				Alert a = alertLogic.fetchAlerts(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic, list[0]).get(0);
+//				issueID = a.getId() + System.currentTimeMillis();
+//				issueLogic.newIssue(req, "Issue " + a.getId(), a.getDescription(), issueID, errors, supersedeCustomFieldLogic.getSupersedeCustomField());
+//			}
+//			Alert a = null;
+//			for (int i = 0; i < list.length; i++) {
+//				a = alertLogic.fetchAlerts(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic, list[i]).get(0);
+//				if (isImport) {
+//					// attach file to the newly created issue
+//					errors.add("importing " + a.getId());
+//					issueLogic.attachToIssue(a, issueLogic.getIssues(req, supersedeFieldId, issueID).get(0));
+//
+//					// TODO: attach to an issue
+//
+//				} else {
+//					// attach to an existing issue
+//					String[] issuesList = req.getParameter(PARAM_ISSUES_SELECTION_LIST).split(SEPARATOR);
+//					for (int j = 0; j < issuesList.length; j++) {
+//						errors.add("attaching " + a.getId());
+//						issueLogic.attachToIssue(a, issueLogic.getIssues(req, supersedeFieldId, issuesList[j]).get(0));
+//					}
+//					// TODO: retrieve hidden input issue number
+//					// TODO: attach to that issue
+//
+//				}
+//			}
+//
+//			// FIXME: FIELDS BELOW HAVE TO BE REMOVED OR MOVED IN OTHER TABS IN
+//			// FINAL VERSION
+//		} else if ("y".equals(req.getParameter("export"))) {
+//			errors.add("exporting " + req.getParameter("issuekey"));
+//			newRequirement(req, errors);
+//		} else if ("y".equals(req.getParameter("openAlerts")) || "y".equals(req.getParameter("refreshAlerts"))) {
+//			List<Alert> alerts = alertLogic.fetchAlerts(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic);
+//			List<Issue> issues = issueLogic.getIssues(req, supersedeFieldId);
+//			context.put("customFieldManager", customFieldManager);
+//			context.put("customFieldId", supersedeCustomFieldLogic.getCustomFieldId());
+//			context.put("issues", issues);
+//			context.put("alerts", alerts);
+//			context.put("date", new Date().toString());
+//			if (req.getParameter("openAlerts") != null && "y".equals(req.getParameter("openAlerts"))) {
+//				templateRenderer.render("/templates/logic-supersede-man-alerts-table.vm", context, resp.getWriter());
+//			} else {
+//				templateRenderer.render("/templates/content-supersede-man-alerts-table.vm", context, resp.getWriter());
+//			}
+//			return;
+//		} else if ("y".equals(req.getParameter("openCompare")) || "y".equals(req.getParameter("refreshCompare"))) {
+//			// Reload just the alerts table template
+//			List<Difference> differences = issueLogic.compareIssues(req, supersedeFieldId, supersedeCustomFieldLogic.getSupersedeCustomField());
+//			context.put("differences", differences);
+//			context.put("date", new Date().toString());
+//			if (req.getParameter("openCompare") != null && "y".equals(req.getParameter("openCompare"))) {
+//				templateRenderer.render("/templates/logic-supersede-man-compare-table.vm", context, resp.getWriter());
+//			} else {
+//				templateRenderer.render("/templates/content-supersede-man-compare-table.vm", context, resp.getWriter());
+//			}
+//			return;
+//		}
+//		// ---
+//
+//		// Render the list of issues (list.vm) if no params are passed in
+//		List<Difference> differences = issueLogic.compareIssues(req, supersedeFieldId, supersedeCustomFieldLogic.getSupersedeCustomField());
+//
+//		List<Issue> issues = issueLogic.getIssues(req, supersedeFieldId);
+//		List<Requirement> requirements = new LinkedList<Requirement>();
+//		requirementLogic.getRequirements(req, requirements, supersedeFieldId);
+//		List<Alert> alerts = alertLogic.fetchAlerts(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic);
+//
+//		context.put("alerts", alerts);
+//		context.put("issues", issues);
+//		context.put("requirements", requirements);
+//		context.put("differences", differences);
+//		context.put("errors", errors);
+//		context.put("separator", SEPARATOR);
+//		context.put("baseurl", ComponentAccessor.getApplicationProperties().getString("jira.baseurl"));
+//		context.put("customFieldManager", customFieldManager);
+//		context.put("customFieldId", supersedeCustomFieldLogic.getCustomFieldId());
+//		resp.setContentType("text/html;charset=utf-8");
+//		// Pass in the list of issues as the context
+//		templateRenderer.render(MANAGER_BROWSER_TEMPLATE, context, resp.getWriter());
 	}
 
 }

@@ -56,6 +56,7 @@ public class SupersedeAlerts extends HttpServlet {
 	private static final String PARAM_ACTION = "action";
 	private static final String PARAM_SELECTION_LIST = "selectionList";
 	private static final String PARAM_ISSUES_SELECTION_LIST = "issuesSelectionList";
+	private static final String PARAM_SEARCH_ALERTS = "searchAlertsInput";
 
 	// END CUSTOM STRING AND FIELDS SECTION
 
@@ -228,13 +229,13 @@ public class SupersedeAlerts extends HttpServlet {
 			String issueID = "";
 			IssueResult newIssue = null;
 			if (isImport) {
-				Alert a = alertLogic.fetchAlerts(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic, list[0]).get(0);
+				Alert a = alertLogic.fetchAlerts(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic, list[0], "").get(0);
 				issueID = a.getId() + System.currentTimeMillis();
 				newIssue = issueLogic.newIssue(req, "Issue " + a.getId(), a.getDescription(), issueID, errors, supersedeCustomFieldLogic.getSupersedeCustomField());
 			}
 			Alert a = null;
 			for (int i = 0; i < list.length; i++) {
-				a = alertLogic.fetchAlerts(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic, list[i]).get(0);
+				a = alertLogic.fetchAlerts(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic, list[i], "").get(0);
 				if (isImport) {
 					// attach file to the newly created issue
 					errors.add(newIssue != null ? newIssue.getIssue().getKey() : "importing " + a.getId());//else (theoretically) will never be reached
@@ -260,6 +261,17 @@ public class SupersedeAlerts extends HttpServlet {
 			// FINAL VERSION
 		} else if ("y".equals(req.getParameter("refreshAlerts"))) {
 			List<Alert> alerts = alertLogic.fetchAlerts(req,supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic);
+			List<Issue> issues = issueLogic.getIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId());
+			context.put("customFieldManager", customFieldManager);
+			context.put("customFieldId", supersedeCustomFieldLogic.getSupersedeFieldId());
+			context.put("issues", issues);
+			context.put("alerts", alerts);
+			context.put("date", new Date().toString());
+			templateRenderer.render("/templates/content-supersede-alerts.vm", context, resp.getWriter());
+			return;
+		} else if ("y".equals(req.getParameter("searchAlerts"))) {
+			String searchAlerts = req.getParameter(PARAM_SEARCH_ALERTS);
+			List<Alert> alerts = alertLogic.fetchAlerts(req,supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic, "", searchAlerts);
 			List<Issue> issues = issueLogic.getIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId());
 			context.put("customFieldManager", customFieldManager);
 			context.put("customFieldId", supersedeCustomFieldLogic.getSupersedeFieldId());

@@ -61,10 +61,10 @@ public class AlertLogic {
 
 	public List<Alert> fetchAlerts(HttpServletRequest req, Long supersedeFieldId, IssueLogic il) {
 		// retrieves a list of all alerts on SS
-		return fetchAlerts(req, supersedeFieldId, il, "");
+		return fetchAlerts(req, supersedeFieldId, il, "", "");
 	}
 
-	public List<Alert> fetchAlerts(HttpServletRequest req, Long supersedeFieldId, IssueLogic il, String alertId) {
+	public List<Alert> fetchAlerts(HttpServletRequest req, Long supersedeFieldId, IssueLogic il, String alertId, String searchAlerts) {
 		List<Alert> alerts = new LinkedList<Alert>();
 		try {
 			// retrieve the list of all alerts from the specified tenant
@@ -101,7 +101,7 @@ public class AlertLogic {
 					// We retrieve a list of alerts because there could be more
 					// than one request per alert.
 					// Every request could have different descriptions.
-					List<Alert> a = parseJSONAsAlert(o, req, supersedeFieldId, il);
+					List<Alert> a = parseJSONAsAlert(o, req, supersedeFieldId, il, searchAlerts);
 					alerts.addAll(a);
 				} catch (Exception e) {
 					log.error("parsing ", o);
@@ -201,7 +201,7 @@ public class AlertLogic {
 		return response == HttpURLConnection.HTTP_OK;
 	}
 
-	private List<Alert> parseJSONAsAlert(JSONObject o, HttpServletRequest req, Long supersedeFieldId, IssueLogic il) {
+	private List<Alert> parseJSONAsAlert(JSONObject o, HttpServletRequest req, Long supersedeFieldId, IssueLogic il, String searchAlerts) {
 		List<Alert> al = new LinkedList<Alert>();
 		try {
 			// Retrieval of requests linked to every alert
@@ -221,6 +221,11 @@ public class AlertLogic {
 				a.setDescription(r.getString("description"));
 				//TODO
 				a.setCount(getAlertCount(req, supersedeFieldId, il, o.getString("id")));
+				if(searchAlerts != null && !searchAlerts.isEmpty()){
+					if(a.getId().contains(searchAlerts) || a.getDescription().contains(searchAlerts)){
+						al.add(a);
+					}
+				} else
 				al.add(a);
 			}
 
