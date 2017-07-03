@@ -19,7 +19,7 @@
 		<div class="aui-message-info shadowed">
 			#foreach($error in $errors)
 			<p class="title">
-				<span class="aui-icon icon-info"></span> <strong>$error</strong>
+				<span class="aui-icon icon-info"></span> <strong>Creata issue: <a href="$baseurl/browse/$error">$error</a></strong>
 			</p>
 			#end
 		</div>

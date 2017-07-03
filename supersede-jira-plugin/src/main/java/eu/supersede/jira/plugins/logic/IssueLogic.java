@@ -154,8 +154,9 @@ public class IssueLogic {
 		newIssue(req, req.getParameter("name"), req.getParameter("description"), req.getParameter("id"), errors, supersedeField);
 	}
 
-	public void newIssue(HttpServletRequest req, String name, String description, String id,
+	public IssueResult newIssue(HttpServletRequest req, String name, String description, String id,
 			Collection<String> errors, CustomField supersedeField) {
+		IssueResult issue = null;
 		ApplicationUser user = loginLogic.getCurrentUser(req);
 		// Perform creation if the "new" param is passed in
 		// First we need to validate the new issue being created
@@ -191,10 +192,11 @@ public class IssueLogic {
 				}
 				log.error("cannot add issue for requirement " + id);
 			} else {
-				IssueResult issue = issueService.create(user, result);
+				issue = issueService.create(user, result);
 				log.info("added issue for requirement " + id);
 			}
 		}
+		return issue;
 	}
 	
 	public void updateIssue(MutableIssue issue, ApplicationUser user, String requirementId,

@@ -27,6 +27,7 @@ import com.atlassian.jira.bc.project.ProjectService;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.CustomFieldManager;
 import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.util.json.JSONObject;
@@ -225,17 +226,18 @@ public class SupersedeAlerts extends HttpServlet {
 			// I retrieve Alert list anyway, both buttons require it
 			String[] list = req.getParameter(PARAM_SELECTION_LIST).split(SEPARATOR);
 			String issueID = "";
+			IssueResult newIssue = null;
 			if (isImport) {
 				Alert a = alertLogic.fetchAlerts(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic, list[0]).get(0);
 				issueID = a.getId() + System.currentTimeMillis();
-				issueLogic.newIssue(req, "Issue " + a.getId(), a.getDescription(), issueID, errors, supersedeCustomFieldLogic.getSupersedeCustomField());
+				newIssue = issueLogic.newIssue(req, "Issue " + a.getId(), a.getDescription(), issueID, errors, supersedeCustomFieldLogic.getSupersedeCustomField());
 			}
 			Alert a = null;
 			for (int i = 0; i < list.length; i++) {
 				a = alertLogic.fetchAlerts(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic, list[i]).get(0);
 				if (isImport) {
 					// attach file to the newly created issue
-					errors.add("importing " + a.getId());
+					errors.add(newIssue != null ? newIssue.getIssue().getKey() : "importing " + a.getId());//else (theoretically) will never be reached
 					issueLogic.attachToIssue(a, issueLogic.getIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issueID).get(0));
 
 					// TODO: attach to an issue
