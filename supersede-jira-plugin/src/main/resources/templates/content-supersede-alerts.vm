@@ -18,9 +18,9 @@
 						<th class="td-med"></th>
 						<th class="td-max">ID</th>
 						<th class="td-med">App. ID</th>
-						<th class="td-max">Timestamp</th>
-						<th class="td-max">Description</th>
-						<th class="td-max">Conteggio</th>
+						<th class="td-med">Timestamp</th>
+						<th class="td-med">Description</th>
+						<th class="td-med">Attachments</th>
 					</tr>
 				</thead>
 				<tbody class="projects-list">

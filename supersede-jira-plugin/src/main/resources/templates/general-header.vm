@@ -16,10 +16,10 @@
 #if ($errors && $errors.size()>0)
 <div class="content-container">
 	<div class="content-body">
-		<div class="aui-message error shadowed">
+		<div class="aui-message-info shadowed">
 			#foreach($error in $errors)
 			<p class="title">
-				<span class="aui-icon icon-error"></span> <strong>$error</strong>
+				<span class="aui-icon icon-info"></span> <strong>$error</strong>
 			</p>
 			#end
 		</div>

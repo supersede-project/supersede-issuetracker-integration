@@ -80,7 +80,7 @@ public class SupersedeAlerts extends HttpServlet {
 
 		loginLogic.loadConfiguration(pluginSettingsFactory.createGlobalSettings());
 	}
-
+	
 	/**
 	 * Perform a REST call (POST) asking SUPERSEDE to create a new requirement
 	 * with the given name and description.
@@ -188,7 +188,7 @@ public class SupersedeAlerts extends HttpServlet {
 			errors.add("invalid issue key " + issueKey);
 		}
 	}
-
+	
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		List<String> errors = new LinkedList<String>();
@@ -198,21 +198,14 @@ public class SupersedeAlerts extends HttpServlet {
 			String[] list = req.getParameter(PARAM_SELECTION_LIST).split(SEPARATOR);
 			for (int i = 0; i < list.length; i++) {
 				String alertId = list[i];
-				boolean deleted = alertLogic.discardAlert(req, alertId);
-				if (deleted) {
-					errors.add("alertId " + alertId + " deleted");
-				}
-				// int count = alertLogic.getAlertCount(req,
-				// supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic,
-				// alertId);
+//				boolean deleted = alertLogic.discardAlert(req, alertId);
+//				if(deleted){
+//					errors.add("alertId " + alertId + " deleted");
+//				}
+				//int count = alertLogic.getAlertCount(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic, alertId);
 			}
 			doGet(req, resp);
 		}
-	}
-
-	@Override
-	protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		System.out.println("here");
 	}
 
 	@Override
@@ -233,17 +226,20 @@ public class SupersedeAlerts extends HttpServlet {
 			String[] list = req.getParameter(PARAM_SELECTION_LIST).split(SEPARATOR);
 			String issueID = "";
 			if (isImport) {
-				Alert a = alertLogic.fetchAlerts(req, list[0]).get(0);
+				Alert a = alertLogic.fetchAlerts(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic, list[0]).get(0);
 				issueID = a.getId() + System.currentTimeMillis();
 				issueLogic.newIssue(req, "Issue " + a.getId(), a.getDescription(), issueID, errors, supersedeCustomFieldLogic.getSupersedeCustomField());
 			}
 			Alert a = null;
 			for (int i = 0; i < list.length; i++) {
-				a = alertLogic.fetchAlerts(req, list[i]).get(0);
+				a = alertLogic.fetchAlerts(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic, list[i]).get(0);
 				if (isImport) {
 					// attach file to the newly created issue
 					errors.add("importing " + a.getId());
 					issueLogic.attachToIssue(a, issueLogic.getIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issueID).get(0));
+
+					// TODO: attach to an issue
+
 				} else {
 					// attach to an existing issue
 					String[] issuesList = req.getParameter(PARAM_ISSUES_SELECTION_LIST).split(SEPARATOR);
@@ -260,7 +256,7 @@ public class SupersedeAlerts extends HttpServlet {
 			// FIXME: FIELDS BELOW HAVE TO BE REMOVED OR MOVED IN OTHER TABS IN
 			// FINAL VERSION
 		} else if ("y".equals(req.getParameter("refreshAlerts"))) {
-			List<Alert> alerts = alertLogic.fetchAlerts(req);
+			List<Alert> alerts = alertLogic.fetchAlerts(req,supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic);
 			List<Issue> issues = issueLogic.getIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId());
 			context.put("customFieldManager", customFieldManager);
 			context.put("customFieldId", supersedeCustomFieldLogic.getSupersedeFieldId());
@@ -284,7 +280,7 @@ public class SupersedeAlerts extends HttpServlet {
 
 		List<Issue> issues = issueLogic.getIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId());
 		List<Requirement> requirements = new LinkedList<Requirement>();
-		List<Alert> alerts = alertLogic.fetchAlerts(req);
+		List<Alert> alerts = alertLogic.fetchAlerts(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic);
 
 		context.put("alerts", alerts);
 		context.put("issues", issues);

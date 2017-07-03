@@ -9,15 +9,10 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.StringJoiner;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.parsers.DocumentBuilder;
@@ -64,12 +59,12 @@ public class AlertLogic {
 		return logic;
 	}
 
-	public List<Alert> fetchAlerts(HttpServletRequest req) {
+	public List<Alert> fetchAlerts(HttpServletRequest req, Long supersedeFieldId, IssueLogic il) {
 		// retrieves a list of all alerts on SS
-		return fetchAlerts(req, "");
+		return fetchAlerts(req, supersedeFieldId, il, "");
 	}
 
-	public List<Alert> fetchAlerts(HttpServletRequest req, String alertId) {
+	public List<Alert> fetchAlerts(HttpServletRequest req, Long supersedeFieldId, IssueLogic il, String alertId) {
 		List<Alert> alerts = new LinkedList<Alert>();
 		try {
 			// retrieve the list of all alerts from the specified tenant
@@ -106,7 +101,7 @@ public class AlertLogic {
 					// We retrieve a list of alerts because there could be more
 					// than one request per alert.
 					// Every request could have different descriptions.
-					List<Alert> a = parseJSONAsAlert(o);
+					List<Alert> a = parseJSONAsAlert(o, req, supersedeFieldId, il);
 					alerts.addAll(a);
 				} catch (Exception e) {
 					log.error("parsing ", o);
@@ -121,15 +116,15 @@ public class AlertLogic {
 		return alerts;
 	}
 
-	public int getAlertCount(HttpServletRequest req, Long supersedeFieldId, IssueLogic il, String alertCode) {
+	public int getAlertCount(HttpServletRequest req, Long supersedeFieldId, IssueLogic il, String alertId) {
 		// IssueLogic il = null;//IssueLogic.getInstance(issueService,
 		// projectService, searchService)
 		List<Issue> issuesList = il.getIssues(req, supersedeFieldId);
-		int c = 0;
+		int c = 0;	
 		for (Issue i : issuesList) {
 			Collection<Attachment> attachments = i.getAttachments();
 			for (Attachment a : attachments) {
-				if (a.getFilename().substring(0, a.getFilename().length() - 4).equals(alertCode)) {
+				if(a.getFilename().substring(0, a.getFilename().length() -4).equals(alertId)){
 					c++;
 				}
 			}
@@ -148,31 +143,26 @@ public class AlertLogic {
 			} else {
 				return false;
 			}
-			URL url = new URL(loginLogic.getUrl() + "/supersede-dm-app/alerts/discard");
+			URL url = new URL(loginLogic.getUrl() + "/supersede-dm-app/alerts/discard/8");
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 			conn.setConnectTimeout(LoginLogic.CONN_TIMEOUT);
 			conn.setReadTimeout(LoginLogic.CONN_TIMEOUT);
-			conn.setRequestProperty("Cookie", "SESSION=" + sessionId + ";");
-			conn.setRequestMethod("POST");
 			conn.setDoOutput(true);
+			conn.setRequestMethod("DELETE");
+			conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+			// conn.setRequestProperty("Content-Type", "application/json");
+			// conn.setRequestProperty("Authorization",
+			// loginLogic.getBasicAuth());
+			conn.setRequestProperty("TenantId", loginLogic.getCurrentProject());
+			conn.setRequestProperty("Cookie", "SESSION=" + sessionId + ";");
+			conn.setRequestProperty("X-XSRF-TOKEN", loginLogic.authenticate(sessionId));
 
-			Map<String, String> arguments = new HashMap<>();
-			arguments.put("alertId", alertId);
-			StringJoiner sj = new StringJoiner("&");
-			for (Map.Entry<String, String> entry : arguments.entrySet())
-				sj.add(URLEncoder.encode(entry.getKey(), "UTF-8") + "=" + URLEncoder.encode(entry.getValue(), "UTF-8"));
-			byte[] out = sj.toString().getBytes(StandardCharsets.UTF_8);
-			int length = out.length;
+			// OutputStreamWriter wr = new
+			// OutputStreamWriter(conn.getOutputStream());
+			// wr.write(alertId);
+			// wr.flush();
 
-			conn.setFixedLengthStreamingMode(length);
-			conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
-			conn.connect();
-			try (OutputStream os = conn.getOutputStream()) {
-				os.write(out);
-			}
 			response = conn.getResponseCode();
-
-			System.out.println(response);
 
 			// JSONObject req = new JSONObject();
 			// req.put("name", name);
@@ -211,7 +201,7 @@ public class AlertLogic {
 		return response == HttpURLConnection.HTTP_OK;
 	}
 
-	private List<Alert> parseJSONAsAlert(JSONObject o) {
+	private List<Alert> parseJSONAsAlert(JSONObject o, HttpServletRequest req, Long supersedeFieldId, IssueLogic il) {
 		List<Alert> al = new LinkedList<Alert>();
 		try {
 			// Retrieval of requests linked to every alert
@@ -229,9 +219,8 @@ public class AlertLogic {
 				Date d = new Date(/* o.getLong("timestamp") */);
 				a.setTimestamp(d.toString());
 				a.setDescription(r.getString("description"));
-				// TODO
-				// a.setCount(getAlertCount(req, supersedeFieldId, il,
-				// alertCode));
+				//TODO
+				a.setCount(getAlertCount(req, supersedeFieldId, il, o.getString("id")));
 				al.add(a);
 			}
 

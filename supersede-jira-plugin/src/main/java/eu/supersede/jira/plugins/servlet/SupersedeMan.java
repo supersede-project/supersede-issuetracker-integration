@@ -247,13 +247,13 @@ public class SupersedeMan extends HttpServlet {
 			String[] list = req.getParameter(PARAM_SELECTION_LIST).split(SEPARATOR);
 			String issueID = "";
 			if (isImport) {
-				Alert a = alertLogic.fetchAlerts(req, list[0]).get(0);
+				Alert a = alertLogic.fetchAlerts(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic, list[0]).get(0);
 				issueID = a.getId() + System.currentTimeMillis();
 				issueLogic.newIssue(req, "Issue " + a.getId(), a.getDescription(), issueID, errors, supersedeCustomFieldLogic.getSupersedeCustomField());
 			}
 			Alert a = null;
 			for (int i = 0; i < list.length; i++) {
-				a = alertLogic.fetchAlerts(req, list[i]).get(0);
+				a = alertLogic.fetchAlerts(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic, list[i]).get(0);
 				if (isImport) {
 					// attach file to the newly created issue
 					errors.add("importing " + a.getId());
@@ -280,7 +280,7 @@ public class SupersedeMan extends HttpServlet {
 			errors.add("exporting " + req.getParameter("issuekey"));
 			newRequirement(req, errors);
 		} else if ("y".equals(req.getParameter("openAlerts")) || "y".equals(req.getParameter("refreshAlerts"))) {
-			List<Alert> alerts = alertLogic.fetchAlerts(req);
+			List<Alert> alerts = alertLogic.fetchAlerts(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic);
 			List<Issue> issues = issueLogic.getIssues(req, supersedeFieldId);
 			context.put("customFieldManager", customFieldManager);
 			context.put("customFieldId", supersedeCustomFieldLogic.getCustomFieldId());
@@ -313,7 +313,7 @@ public class SupersedeMan extends HttpServlet {
 		List<Issue> issues = issueLogic.getIssues(req, supersedeFieldId);
 		List<Requirement> requirements = new LinkedList<Requirement>();
 		requirementLogic.getRequirements(req, requirements, supersedeFieldId);
-		List<Alert> alerts = alertLogic.fetchAlerts(req);
+		List<Alert> alerts = alertLogic.fetchAlerts(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic);
 
 		context.put("alerts", alerts);
 		context.put("issues", issues);
