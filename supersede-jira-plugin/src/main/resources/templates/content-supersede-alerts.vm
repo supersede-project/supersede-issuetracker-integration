@@ -45,10 +45,9 @@
 			</button>
 		</span>
 		<div class="searchPane">
-			<!-- VALUTARE SE USARE UNA FORM O LANCIARE L'AGGIORNAMENTO DELLA TABELLA COME GIA SI FA ADESSO VIA GET -->
-			<input style="margin-left: 100px" name="Search"
+			<input style="margin-left: 100px" name="searchAlertsInput" id="searchAlertsInput"
 				placeholder="Search...">
-			<button class="aui-button aui-button-primary">
+			<button class="aui-button aui-button-primary searchBtn">
 				<span class="glyphicon glyphicon-search"></span>
 			</button>
 		</div>

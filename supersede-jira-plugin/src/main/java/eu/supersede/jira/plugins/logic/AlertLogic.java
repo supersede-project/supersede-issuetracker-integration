@@ -222,7 +222,8 @@ public class AlertLogic {
 				//TODO
 				a.setCount(getAlertCount(req, supersedeFieldId, il, o.getString("id")));
 				if(searchAlerts != null && !searchAlerts.isEmpty()){
-					if(a.getId().contains(searchAlerts) || a.getDescription().contains(searchAlerts)){
+					searchAlerts = searchAlerts.toLowerCase();
+					if(a.getId().toLowerCase().contains(searchAlerts) || a.getDescription().toLowerCase().contains(searchAlerts)){
 						al.add(a);
 					}
 				} else

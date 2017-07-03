@@ -29,6 +29,36 @@
 						}
 					});
 				});
+		
+		jQuery('.searchBtn').click(
+				function() {
+					var self = jQuery(this);
+					var searchStr = $('#searchAlertsInput').val();
+					if(!searchStr){
+						searchStr = "";
+					}
+					jQuery.ajax({
+						type : "get",
+						url : "supersede-alerts?searchAlerts=y&searchAlertsInput="+ searchStr,
+						success : function(data) {
+							console.log('dom', self, data);
+							$("#data").html(data);
+							// self.parent().parent().remove();
+							AJS.tablessortable.setTableSortable(AJS
+									.$(".sortableTable"));
+							onPageLoad();
+						},
+						error : function() {
+							console.log('error', arguments);
+						}
+					});
+				});
+		
+		jQuery("#searchAlertsInput").keyup(function(event){
+		    if(event.keyCode == 13){
+		        $(".searchBtn").click();
+		    }
+		});
 
 		jQuery('.chkSelected').click(
 				function() {
@@ -111,6 +141,11 @@
 		// DIALOG
 		jQuery('.dialogDeleteButton').click(function() {
 			console.log('alert management')
+			$("#selectionList").val(selectionString);
+		});
+		
+		// DIALOG
+		jQuery('.searchBtn').click(function() {
 			$("#selectionList").val(selectionString);
 		});
 	}
