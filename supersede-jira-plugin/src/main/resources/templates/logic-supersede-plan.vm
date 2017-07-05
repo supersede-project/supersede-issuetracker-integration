@@ -1,12 +1,9 @@
-$webResourceManager.requireResourcesForContext("angular.context")
 <html>
 <head>
 <title>SUPERSEDE - Issue Manager</title>
 <meta name="decorator" content="atl.general">
-<!-- Latest compiled and minified CSS -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-<!-- Latest compiled and minified JavaScript -->
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+$webResourceManager.requireResourcesForContext("angular.context")
 </head>
 <body class="page-type-admin">
 	<!--  parsing header -->
@@ -15,8 +12,7 @@ $webResourceManager.requireResourcesForContext("angular.context")
 		<div class="aui-page-panel-inner">
 			<!-- parsing project list -->
 			#parse("/templates/general-project-list.vm")
-			<div id="data">
-				#parse("/templates/content-supersede-plan.vm")</div>
+			<div id="data">#parse("/templates/content-supersede-plan.vm")</div>
 		</div>
 	</div>
 

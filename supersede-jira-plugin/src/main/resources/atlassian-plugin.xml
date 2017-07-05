@@ -15,7 +15,8 @@
 	<web-resource key="supersede-jira-plugin-resources" name="supersede-jira-plugin Web Resources">
 		<dependency>com.atlassian.auiplugin:ajs</dependency>
 		<dependency>com.atlassian.auiplugin:dialog2</dependency>
-		<dependency>com.atlassian.auiplugin:aui-experimental-table-sortable</dependency>
+		<dependency>com.atlassian.auiplugin:aui-experimental-table-sortable
+		</dependency>
 		<dependency>com.atlassian.auiplugin:aui-inline-dialog2</dependency>
 		<resource type="download" name="supersede-jira-plugin.css"
 			location="/css/supersede-jira-plugin.css" />
@@ -35,24 +36,22 @@
 		key="supersede-section" location="supersede-dropdown-menu" weight="1000">
 		<description key="supersede-section.description">SUPERSEDE Section</description>
 	</web-section>
-	
+
 	<web-resource name="Angular" key="angular">
-		<resource type="download" name="jquery-2.1.4.min.js"
-			location="/js/jquery-3.2.0.min.js" />
-		<resource type="download" name="jquery-ui-1.12.min.js"
-			location="/js/jquery-ui-1.12.min.js" />
 		<resource type="download" name="jqx.base.css" location="/css/jqx.base.css" />
 		<resource type="download" name="jqx.summer.css" location="/css/jqx.summer.css" />
 		<resource type="download" name="angular.min.js" location="/js/angular.min.js" />
 		<resource type="download" name="jqxcore.js" location="/js/jqxcore.js" />
 		<resource type="download" name="jqxexpander.js" location="/js/jqxexpander.js" />
-		<resource type="download" name="jqxSortable" location="/js/jqxsortable.js" />
+		<resource type="download" name="jqxsortable.js" location="/js/jqxsortable.js" />
+		<resource type="download" name="images/" location="/images" />
 		<context>angular.context</context>
 	</web-resource>
-	
+
 	<web-resource name="sortable" key="sortable">
-	<resource type="download" name="sortable.js" location="/js/sortable.js" />
-	<context>sortable.context</context>
+		<!-- <resource type="download" name="sortable.js" location="/js/sortable.js" 
+			/> -->
+		<context>sortable.context</context>
 	</web-resource>
 
 	<component-import key="templateRenderer"
@@ -72,7 +71,8 @@
 		i18n-name-key="supersede-custom-field.name" key="supersede-custom-field"
 		class="eu.supersede.jira.plugins.customfields.SupersedeCustomField">
 		<description key="supersede-custom-field.description">A custom field used to map SUPERSEDE
-			requirements/features</description>
+			requirements/features
+		</description>
 		<resource name="view" type="velocity"
 			location="/templates/customfields/supersede-custom-field/view.vm" />
 		<resource name="edit" type="velocity"

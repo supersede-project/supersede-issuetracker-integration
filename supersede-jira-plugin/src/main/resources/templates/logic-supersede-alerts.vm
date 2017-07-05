@@ -2,7 +2,7 @@
 <head>
 <script>
 	AJS.$(document).ready(function() {
-// 		require(['aui/inline-dialog2']);
+		// 		require(['aui/inline-dialog2']);
 		onPageLoad();
 	});
 
@@ -30,35 +30,39 @@
 						}
 					});
 				});
-		
-		jQuery('.searchBtn').click(
-				function() {
-					var self = jQuery(this);
-					var searchStr = $('#searchAlertsInput').val();
-					if(!searchStr){
-						searchStr = "";
-					}
-					jQuery.ajax({
-						type : "get",
-						url : "supersede-alerts?searchAlerts=y&searchAlertsInput="+ searchStr,
-						success : function(data) {
-							console.log('dom', self, data);
-							$("#data").html(data);
-							// self.parent().parent().remove();
-							AJS.tablessortable.setTableSortable(AJS
-									.$(".sortableTable"));
-							onPageLoad();
-						},
-						error : function() {
-							console.log('error', arguments);
-						}
-					});
-				});
-		
-		jQuery("#searchAlertsInput").keyup(function(event){
-		    if(event.keyCode == 13){
-		        $(".searchBtn").click();
-		    }
+
+		jQuery('.searchBtn')
+				.click(
+						function() {
+							var self = jQuery(this);
+							var searchStr = $('#searchAlertsInput').val();
+							if (!searchStr) {
+								searchStr = "";
+							}
+							jQuery
+									.ajax({
+										type : "get",
+										url : "supersede-alerts?searchAlerts=y&searchAlertsInput="
+												+ searchStr,
+										success : function(data) {
+											console.log('dom', self, data);
+											$("#data").html(data);
+											// self.parent().parent().remove();
+											AJS.tablessortable
+													.setTableSortable(AJS
+															.$(".sortableTable"));
+											onPageLoad();
+										},
+										error : function() {
+											console.log('error', arguments);
+										}
+									});
+						});
+
+		jQuery("#searchAlertsInput").keyup(function(event) {
+			if (event.keyCode == 13) {
+				$(".searchBtn").click();
+			}
 		});
 
 		jQuery('.chkSelected').click(
@@ -70,7 +74,7 @@
 						selectionString += '$separator';
 						$(".toEnable").prop('disabled', false);
 						$(".toEnable").prop('enabled', true);
-// 						alert(selectionString);
+						// 						alert(selectionString);
 					} else {
 						// Remove the selected ID if checkbox gets unchecked
 						selectionString = selectionString.replace($(this).attr(
@@ -144,28 +148,21 @@
 			console.log('alert management')
 			$("#selectionList").val(selectionString);
 		});
-		
+
 		// DIALOG
 		jQuery('.searchBtn').click(function() {
 			$("#selectionList").val(selectionString);
 		});
-		
-// 		jQuery('.clickable-dialog').click(function() {
-// 			$(".clickable-dialog").prop('href', '#7');
-// 		});
+
+		// 		jQuery('.clickable-dialog').click(function() {
+		// 			$(".clickable-dialog").prop('href', '#7');
+		// 		});
 	}
 </script>
 <meta name="decorator" content="atl.general">
-$webResourceManager.requireResource("com.atlassian.auiplugin:dialog2")
-$webResourceManager.requireResource("com.atlassian.auiplugin:aui-experimental-table-sortable")
-$webResourceManager.requireResource("com.atlassian.auiplugin:aui-inline-dialog2")
+$webResourceManager.requireResource("com.atlassian.auiplugin:dialog2") $webResourceManager.requireResource("com.atlassian.auiplugin:aui-experimental-table-sortable") $webResourceManager.requireResource("com.atlassian.auiplugin:aui-inline-dialog2")
 <title>SUPERSEDE - Issue Manager</title>
-<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
-<script src="https://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
-<script
-	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-<link rel="stylesheet"
-	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 </head>
 <body class="page-type-admin">
 	<!--  parsing header -->
@@ -174,8 +171,7 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:aui-inline-dialog2"
 		<div class="aui-page-panel-inner">
 			<!-- parsing project list -->
 			#parse("/templates/general-project-list.vm")
-			<div id="data">
-				#parse("/templates/content-supersede-alerts.vm")</div>
+			<div id="data">#parse("/templates/content-supersede-alerts.vm")</div>
 		</div>
 	</div>
 
