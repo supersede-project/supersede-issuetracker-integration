@@ -35,7 +35,25 @@
 		key="supersede-section" location="supersede-dropdown-menu" weight="1000">
 		<description key="supersede-section.description">SUPERSEDE Section</description>
 	</web-section>
-
+	
+	<web-resource name="Angular" key="angular">
+		<resource type="download" name="jquery-2.1.4.min.js"
+			location="/js/jquery-3.2.0.min.js" />
+		<resource type="download" name="jquery-ui-1.12.min.js"
+			location="/js/jquery-ui-1.12.min.js" />
+		<resource type="download" name="jqx.base.css" location="/css/jqx.base.css" />
+		<resource type="download" name="jqx.summer.css" location="/css/jqx.summer.css" />
+		<resource type="download" name="angular.min.js" location="/js/angular.min.js" />
+		<resource type="download" name="jqxcore.js" location="/js/jqxcore.js" />
+		<resource type="download" name="jqxexpander.js" location="/js/jqxexpander.js" />
+		<resource type="download" name="jqxSortable" location="/js/jqxsortable.js" />
+		<context>angular.context</context>
+	</web-resource>
+	
+	<web-resource name="sortable" key="sortable">
+	<resource type="download" name="sortable.js" location="/js/sortable.js" />
+	<context>sortable.context</context>
+	</web-resource>
 
 	<component-import key="templateRenderer"
 		interface="com.atlassian.templaterenderer.TemplateRenderer" filter="" />

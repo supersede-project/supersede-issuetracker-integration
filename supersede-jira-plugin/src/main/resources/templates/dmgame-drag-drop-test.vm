@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title id="Description">Mockup for Requirements Ordering</title>
+<style>
+h1 {
+	text-align: center;
+}
+
+#sortable {
+	margin: 0 auto;
+	padding: 5px;
+	width: 520px;
+}
+
+#sortable>div {
+	border-radius: 5px;
+	margin: 5px;
+}
+
+#sortable div {
+	padding: 5px;
+}
+
+#sortable div:hover {
+	border: 1px solid #356AA0;
+}
+</style>
+$webResourceManager.requireResourcesForContext("sortable.context")
+</head>
+<body>
+	<h1>Mockup for Requirements Ordering</h1>
+	<div id="sortable" ng-app="orderReqs" ng-controller="reqsCtrl">
+		<div ng-repeat="x in requirements" class="jqxexpander" style="min-width: 500px">
+			<div>
+				<strong>{{x.id + ': ' + x.title}}</strong>
+			</div>
+			<div style="background-color: #ffd11a">
+				<strong>Description</strong>: {{x.description}}<br> <strong>Characteristics</strong>: {{x.characteristics}}<br> <strong>Issue</strong>: <a href={{x.link}} target="_blank">{{x.link}}</a>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

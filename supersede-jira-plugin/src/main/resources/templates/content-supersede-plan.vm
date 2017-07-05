@@ -1,1 +1,1 @@
-Hello moto
+#parse("/templates/dmgame-drag-drop-test.vm")
