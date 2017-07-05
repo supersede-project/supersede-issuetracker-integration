@@ -110,7 +110,7 @@ public class LoginLogic {
 		Map<String, List<String>> map = conn.getHeaderFields();
 		List<String> cookies = map.get("Set-Cookie");
 
-		if (authToken == null || authToken.isEmpty()) {
+//		if (authToken == null || authToken.isEmpty()) {
 			String xsrf = null;
 			for (String s : cookies) {
 				String[] split = s.split("=");
@@ -122,7 +122,7 @@ public class LoginLogic {
 			}
 			authToken = xsrf;
 			System.out.println("XSRF token is " + xsrf);
-		}
+//		}
 		return authToken;
 	}
 

@@ -45,8 +45,8 @@
 			</button>
 		</span>
 		<div class="searchPane">
-			<input style="margin-left: 100px" name="searchAlertsInput" id="searchAlertsInput"
-				placeholder="Search...">
+			<input style="margin-left: 100px" name="searchAlertsInput"
+				id="searchAlertsInput" placeholder="Search...">
 			<button class="aui-button aui-button-primary searchBtn">
 				<span class="glyphicon glyphicon-search"></span>
 			</button>
@@ -74,11 +74,33 @@
 						<td class="td-truncate">$alert.getApplicationId()</td>
 						<td class="td-truncate">$alert.getTimestamp()</td>
 						<td class="td-truncate">$alert.getDescription()</td>
-						<td class="td-truncate">$alert.getCount()</td>
+						<td class="td-truncate"><a data-aui-trigger
+							aria-controls="more-details" href="#more-details">$alert.getCount()</a>
+						</td>
 					</tr>
 					#end
 				</tbody>
 			</table>
+
+			#foreach( $alert in $alerts )
+			<aui-inline-dialog id="more-details"> <!-- $alert.getId()> -->
+			TEST
+<!-- 			<div> -->
+<!-- 				<table class="aui table-truncate"> -->
+<!-- 					<tbody class="projects-list"> -->
+<!-- 						#foreach($issue in $alert.getIssues()) -->
+<!-- 						<tr> -->
+<!-- 							<td class="td-truncate">$issue</td> -->
+<!-- 						</tr> -->
+<!-- 						#end -->
+<!-- 					</tbody> -->
+<!-- 				</table> -->
+<!-- 			</div> -->
+			</aui-inline-dialog>
+			#end
+
+
+
 
 			<!-- Create a trigger which will be used by the JavaScript -->
 			<!-- <button id="dialog-show-button" class="aui-button">Show
@@ -151,8 +173,19 @@
 					</a>
 				</header>
 				<!-- Main dialog content -->
-				<div class="aui-dialog2-content">Cancellare gli alerts
-					selezionati?</div>
+				<div class="aui-dialog2-content">
+					Delete selected alerts?
+					<table class="aui table-truncate">
+						<tbody class="project-list">
+							#foreach( $alert in $alerts )
+							<tr>
+								<td class="td-truncate">$alert.getId()</td>
+								<td class="td-truncate">$alert.getApplicationId()</td>
+							</tr>
+							#end
+						</tbody>
+					</table>
+				</div>
 				<!-- Dialog footer -->
 				<footer class="aui-dialog2-footer">
 					<!-- Actions to render on the right of the footer -->

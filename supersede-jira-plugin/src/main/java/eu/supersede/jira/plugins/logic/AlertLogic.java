@@ -9,10 +9,14 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.parsers.DocumentBuilder;
@@ -116,20 +120,22 @@ public class AlertLogic {
 		return alerts;
 	}
 
-	public int getAlertCount(HttpServletRequest req, Long supersedeFieldId, IssueLogic il, String alertId) {
+	public Set<String> getRelatedIssues(HttpServletRequest req, Long supersedeFieldId, IssueLogic il, String alertId) {
 		// IssueLogic il = null;//IssueLogic.getInstance(issueService,
 		// projectService, searchService)
 		List<Issue> issuesList = il.getIssues(req, supersedeFieldId);
-		int c = 0;	
+		int c = 0;
+		Set<String> issues = new HashSet<String>();
 		for (Issue i : issuesList) {
 			Collection<Attachment> attachments = i.getAttachments();
-			for (Attachment a : attachments) {
+			attachements : for (Attachment a : attachments) {
 				if(a.getFilename().substring(0, a.getFilename().length() -4).equals(alertId)){
-					c++;
+					issues.add(i.getKey());
+					break attachements;
 				}
 			}
 		}
-		return c;
+		return issues;
 	}
 
 	public boolean discardAlert(HttpServletRequest req, String alertId) {
@@ -143,7 +149,7 @@ public class AlertLogic {
 			} else {
 				return false;
 			}
-			URL url = new URL(loginLogic.getUrl() + "/supersede-dm-app/alerts/discard/8");
+			URL url = new URL(loginLogic.getUrl() + "/supersede-dm-app/alerts/discard/"+alertId);
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 			conn.setConnectTimeout(LoginLogic.CONN_TIMEOUT);
 			conn.setReadTimeout(LoginLogic.CONN_TIMEOUT);
@@ -151,8 +157,7 @@ public class AlertLogic {
 			conn.setRequestMethod("DELETE");
 			conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 			// conn.setRequestProperty("Content-Type", "application/json");
-			// conn.setRequestProperty("Authorization",
-			// loginLogic.getBasicAuth());
+//			 conn.setRequestProperty("Authorization", loginLogic.getBasicAuth());
 			conn.setRequestProperty("TenantId", loginLogic.getCurrentProject());
 			conn.setRequestProperty("Cookie", "SESSION=" + sessionId + ";");
 			conn.setRequestProperty("X-XSRF-TOKEN", loginLogic.authenticate(sessionId));
@@ -163,6 +168,7 @@ public class AlertLogic {
 			// wr.flush();
 
 			response = conn.getResponseCode();
+//			conn.getInputStream();
 
 			// JSONObject req = new JSONObject();
 			// req.put("name", name);
@@ -220,7 +226,17 @@ public class AlertLogic {
 				a.setTimestamp(d.toString());
 				a.setDescription(r.getString("description"));
 				//TODO
-				a.setCount(getAlertCount(req, supersedeFieldId, il, o.getString("id")));
+				Set<String> issues = getRelatedIssues(req, supersedeFieldId, il, o.getString("id")); 
+				a.setCount(issues.size());
+				String[] issuesArray = issues.toArray(new String[issues.size()]);
+				Arrays.sort(issuesArray, new Comparator<String>() {
+
+					@Override
+					public int compare(String o1, String o2) {
+						return o1.compareTo(o2);
+					}
+				});
+				a.setIssues(issuesArray);
 				if(searchAlerts != null && !searchAlerts.isEmpty()){
 					searchAlerts = searchAlerts.toLowerCase();
 					if(a.getId().toLowerCase().contains(searchAlerts) || a.getDescription().toLowerCase().contains(searchAlerts)){

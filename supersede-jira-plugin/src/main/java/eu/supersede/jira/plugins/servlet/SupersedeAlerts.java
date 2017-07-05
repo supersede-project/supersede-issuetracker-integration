@@ -200,10 +200,10 @@ public class SupersedeAlerts extends HttpServlet {
 			String[] list = req.getParameter(PARAM_SELECTION_LIST).split(SEPARATOR);
 			for (int i = 0; i < list.length; i++) {
 				String alertId = list[i];
-//				boolean deleted = alertLogic.discardAlert(req, alertId);
-//				if(deleted){
-//					errors.add("alertId " + alertId + " deleted");
-//				}
+				boolean deleted = alertLogic.discardAlert(req, alertId);
+				if(deleted){
+					errors.add("alertId " + alertId + " deleted");
+				}
 				//int count = alertLogic.getAlertCount(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic, alertId);
 			}
 			doGet(req, resp);
