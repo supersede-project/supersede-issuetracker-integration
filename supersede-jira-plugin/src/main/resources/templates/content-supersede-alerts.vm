@@ -99,11 +99,6 @@
 			<!-- 				<p>CIAO</p> -->
 			<!-- 			</div> -->
 			<!-- 			</aui-inline-dialog> -->
-			<aui-inline-dialog id="a_14973459238301_">
-			<div>
-				<p>CIAO</p>
-			</div>
-			</aui-inline-dialog>
 
 
 			<!-- Create a trigger which will be used by the JavaScript -->
