@@ -18,10 +18,6 @@
 		<dependency>com.atlassian.auiplugin:aui-experimental-table-sortable
 		</dependency>
 		<dependency>com.atlassian.auiplugin:aui-inline-dialog2</dependency>
-		<resource type="download" name="supersede-jira-plugin.css"
-			location="/css/supersede-jira-plugin.css" />
-		<resource type="download" name="supersede-jira-plugin.js"
-			location="/js/supersede-jira-plugin.js" />
 		<resource type="download" name="images/" location="/images" />
 		<resource type="download" name="js/" location="/js" />
 		<context>supersede-jira-plugin</context>
@@ -37,6 +33,8 @@
 		<description key="supersede-section.description">SUPERSEDE Section</description>
 	</web-section>
 
+	<!-- RESOURCES FOR ANGULAR AND JQWIDGETS PAGE -->
+
 	<web-resource name="Angular" key="angular">
 		<resource type="download" name="jqx.base.css" location="/css/jqx.base.css" />
 		<resource type="download" name="jqx.summer.css" location="/css/jqx.summer.css" />
@@ -48,10 +46,27 @@
 		<context>angular.context</context>
 	</web-resource>
 
-	<web-resource name="sortable" key="sortable">
-		<!-- <resource type="download" name="sortable.js" location="/js/sortable.js" 
-			/> -->
+	<web-resource name="sortable" key="sortablePageScript">
+		<resource type="download" name="dmgame-drag-drop-test.css"
+			location="/css/dmgame-drag-drop-test.css" />
+		<resource type="download" name="sortable.js" location="/js/sortable.js" />
 		<context>sortable.context</context>
+	</web-resource>
+
+	<!-- RESOURCES FOR ISSUES MANAGER PAGE -->
+	<web-resource name="LogicAlerts" key="LogicAlerts">
+		<resource type="download" name="logic-supersede-alerts.js"
+			location="/js/logic-supersede-alerts.js" />
+		<context>logic-supersede-alerts.context</context>
+	</web-resource>
+
+
+	<web-resource name="ContentAlerts" key="ContentAlerts">
+		<resource type="download" name="content-supersede-alerts.css"
+			location="/css/content-supersede-alerts.css" />
+		<resource type="download" name="content-supersede-alerts.js"
+			location="/js/content-supersede-alerts.js" />
+		<context>content-supersede-alerts.context</context>
 	</web-resource>
 
 	<component-import key="templateRenderer"

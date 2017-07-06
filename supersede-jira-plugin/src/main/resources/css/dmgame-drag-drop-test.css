@@ -1,0 +1,22 @@
+h1 {
+	text-align: center;
+}
+
+#sortable {
+	margin: 0 auto;
+	padding: 5px;
+	width: 520px;
+}
+
+#sortable>div {
+	border-radius: 5px;
+	margin: 5px;
+}
+
+#sortable div {
+	padding: 5px;
+}
+
+#sortable div:hover {
+	border: 1px solid #356AA0;
+}

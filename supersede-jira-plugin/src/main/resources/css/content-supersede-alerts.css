@@ -1,0 +1,42 @@
+.table-truncate {
+	table-layout: fixed;
+}
+
+.td-tiny {
+	width: 5%;
+}
+
+.td-small {
+	width: 10%;
+}
+
+.td-med {
+	width: 15%;
+}
+
+.td-max {
+	width: 40%
+}
+
+.td-truncate {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.searchPane {
+	float: left;
+	margin-left: 50px;
+}
+
+.refreshPane {
+	float: left;
+}
+
+.buttonPane {
+	display: flex
+}
+
+.alertManagement {
+	margin-left: 20px;
+}
