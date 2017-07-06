@@ -35,6 +35,9 @@
 	margin-left: 20px;
 }
 </style>
+<script>
+	require([ 'aui/inline-dialog2' ]);
+</script>
 </head>
 <body>
 	<div>
@@ -75,31 +78,32 @@
 						<td class="td-truncate">$alert.getTimestamp()</td>
 						<td class="td-truncate">$alert.getDescription()</td>
 						<td class="td-truncate"><a data-aui-trigger
-							aria-controls="more-details" href="#more-details">$alert.getCount()</a>
-						</td>
+							aria-controls=$alert.getFilteredId() href="#">$alert.getCount()</a>
+							<aui-inline-dialog id=$alert.getFilteredId()>
+							#foreach( $issue in $alert.getIssues())
+							<table>
+								<tbody>
+									<tr>
+										<a href="$baseurl/browse/$issue">$issue</a>
+									</tr>
+								</tbody>
+							</table>
+							#end </aui-inline-dialog></td>
 					</tr>
 					#end
 				</tbody>
 			</table>
 
-			#foreach( $alert in $alerts )
-			<aui-inline-dialog id="more-details"> <!-- $alert.getId()> -->
-			TEST
-<!-- 			<div> -->
-<!-- 				<table class="aui table-truncate"> -->
-<!-- 					<tbody class="projects-list"> -->
-<!-- 						#foreach($issue in $alert.getIssues()) -->
-<!-- 						<tr> -->
-<!-- 							<td class="td-truncate">$issue</td> -->
-<!-- 						</tr> -->
-<!-- 						#end -->
-<!-- 					</tbody> -->
-<!-- 				</table> -->
-<!-- 			</div> -->
+			<!-- 			<aui-inline-dialog id="1"> -->
+			<!-- 			<div> -->
+			<!-- 				<p>CIAO</p> -->
+			<!-- 			</div> -->
+			<!-- 			</aui-inline-dialog> -->
+			<aui-inline-dialog id="a_14973459238301_">
+			<div>
+				<p>CIAO</p>
+			</div>
 			</aui-inline-dialog>
-			#end
-
-
 
 
 			<!-- Create a trigger which will be used by the JavaScript -->

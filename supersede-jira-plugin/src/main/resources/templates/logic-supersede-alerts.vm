@@ -2,7 +2,6 @@
 <head>
 <script>
 	AJS.$(document).ready(function() {
-		// 		require(['aui/inline-dialog2']);
 		onPageLoad();
 	});
 
@@ -154,15 +153,18 @@
 			$("#selectionList").val(selectionString);
 		});
 
-		// 		jQuery('.clickable-dialog').click(function() {
-		// 			$(".clickable-dialog").prop('href', '#7');
-		// 		});
+		// 				jQuery('.clickable-dialog').mousedown(function() {
+		// 					$(".clickable-dialog").prop('href', '#'+$(this).prop('id'));
+		// 				});
 	}
 </script>
 <meta name="decorator" content="atl.general">
-$webResourceManager.requireResource("com.atlassian.auiplugin:dialog2") $webResourceManager.requireResource("com.atlassian.auiplugin:aui-experimental-table-sortable") $webResourceManager.requireResource("com.atlassian.auiplugin:aui-inline-dialog2")
+$webResourceManager.requireResource("com.atlassian.auiplugin:dialog2")
+$webResourceManager.requireResource("com.atlassian.auiplugin:aui-experimental-table-sortable")
+$webResourceManager.requireResource("com.atlassian.auiplugin:aui-inline-dialog2")
 <title>SUPERSEDE - Issue Manager</title>
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 </head>
 <body class="page-type-admin">
 	<!--  parsing header -->

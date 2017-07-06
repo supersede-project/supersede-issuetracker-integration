@@ -221,6 +221,7 @@ public class AlertLogic {
 				Alert a = new Alert();
 				a.setApplicationId(o.getString("applicationId"));
 				a.setId(o.getString("id"));
+				a.setFilteredId("alert"+o.getString("id").replace('-', '_'));
 				a.setTenant(o.getString("tenant"));
 				Date d = new Date(/* o.getLong("timestamp") */);
 				a.setTimestamp(d.toString());
