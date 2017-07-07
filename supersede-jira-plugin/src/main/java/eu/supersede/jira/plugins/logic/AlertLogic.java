@@ -168,7 +168,7 @@ public class AlertLogic {
 			// wr.flush();
 
 			response = conn.getResponseCode();
-//			conn.getInputStream();
+			conn.getInputStream();
 
 			// JSONObject req = new JSONObject();
 			// req.put("name", name);

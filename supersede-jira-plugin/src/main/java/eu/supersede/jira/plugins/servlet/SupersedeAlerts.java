@@ -240,9 +240,6 @@ public class SupersedeAlerts extends HttpServlet {
 					// attach file to the newly created issue
 					errors.add(newIssue != null ? newIssue.getIssue().getKey() : "importing " + a.getId());//else (theoretically) will never be reached
 					issueLogic.attachToIssue(a, issueLogic.getIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issueID).get(0));
-
-					// TODO: attach to an issue
-
 				} else {
 					// attach to an existing issue
 					String[] issuesList = req.getParameter(PARAM_ISSUES_SELECTION_LIST).split(SEPARATOR);
@@ -251,9 +248,13 @@ public class SupersedeAlerts extends HttpServlet {
 						errors.add(issue != null ? issue.getKey() : "attaching " + a.getId());
 						issueLogic.attachToIssue(a, issue);
 					}
-					// TODO: retrieve hidden input issue number
-					// TODO: attach to that issue
-
+				}
+				
+				if(req.getParameter("chkDeleteStatus") != null && "true".equals(req.getParameter("chkDeleteStatus"))) {
+					System.out.println("DELETE CHECKBOX TRIGGERED");
+					if(alertLogic.discardAlert(req, a.getId())){
+						errors.add("alertId " + a.getId() + " deleted");
+					}
 				}
 			}
 

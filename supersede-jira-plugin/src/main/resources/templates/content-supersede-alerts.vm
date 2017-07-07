@@ -102,7 +102,7 @@
 					<!-- Actions to render on the right of the footer -->
 					<div class="aui-dialog2-footer-actions">
 						<form action="supersede-alerts" method="get">
-							<input type="hidden" class="selectionList" name="selectionList"> <input type="hidden" id="issuesSelectionList" name="issuesSelectionList">
+							<input type="hidden" class="selectionList" name="selectionList"> <input type="hidden" id="issuesSelectionList" name="issuesSelectionList"> <input type="hidden" class="chkDeleteStatus" name="chkDeleteStatus">
 							<button id="dialog-submit-button" class="aui-button aui-button-primary dialogButton toEnableDialog" name="action">Confirm</button>
 						</form>
 						<button id="dialog-close-button" class="aui-button aui-button-link">Close</button>
@@ -151,6 +151,7 @@
 				<div style="float: left" class="aui-item buttonPane">
 					<form style="float: left" action="supersede-alerts" method="get">
 						<input type="hidden" class="selectionList" name="selectionList">
+						 <input type="hidden" class="chkDeleteStatus" name="chkDeleteStatus">
 						<button style="margin-left: 20px" name="action" value="Import" class="aui-button aui-button-primary alertManagement toEnable">
 							<span class="glyphicon glyphicon-plus"></span> <span class="submit-text">Create Issue</span>
 						</button>
@@ -158,7 +159,7 @@
 					<button style="margin-left: 20px" id="dialog-show-button" class="aui-button aui-button-secondary alertManagement toEnable">
 						<span class="glyphicon glyphicon-paperclip"></span> Attach to issue...
 					</button>
-					<input style="margin-left: 20px" type="checkbox" class="alertManagement toEnable" name="deleteOnClick" value="" />Delete on create or attach
+					<input style="margin-left: 20px" type="checkbox" id="chkDeleteOnClick" class="toEnable" name="chkDeleteOnClick" value="" />Delete on create or attach
 					<button id="dialog-delete-button" class="aui-button aui-button-primary alertManagement toEnable">
 						<span class="glyphicon glyphicon-trash"></span> Delete...
 					</button>

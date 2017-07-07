@@ -64,15 +64,15 @@ function onPageLoad() {
 					// Write a string containing the IDs of selected
 					// alerts
 					selectionString += $(this).attr('id');
-					selectionString += '$separator';
+					selectionString += ':::';
 					$(".toEnable").prop('disabled', false);
 					$(".toEnable").prop('enabled', true);
-//					 alert(selectionString);
+					// alert(selectionString);
 				} else {
 					// Remove the selected ID if checkbox gets unchecked
 					selectionString = selectionString.replace($(this)
 							.attr('id')
-							+ '$separator', '');
+							+ ':::', '');
 					if (!selectionString) {
 						$(".toEnable").prop('disabled', true);
 						$(".toEnable").prop('enabled', false);
@@ -85,20 +85,31 @@ function onPageLoad() {
 					// Write a string containing the IDs of selected
 					// alerts
 					issuesSelectionString += $(this).attr('id');
-					issuesSelectionString += '$separator';
+					issuesSelectionString += ':::';
 					$(".toEnableDialog").prop('disabled', false);
 					$(".toEnableDialog").prop('enabled', true);
 				} else {
 					// Remove the selected ID if checkbox gets unchecked
 					issuesSelectionString = issuesSelectionString.replace($(
 							this).attr('id')
-							+ '$separator', '');
+							+ ':::', '');
 					if (!issuesSelectionString) {
 						$(".toEnableDialog").prop('disabled', true);
 						$(".toEnableDialog").prop('enabled', false);
 					}
 				}
 			});
+
+	jQuery('#chkDeleteOnClick').click(function() {
+		alert("triggereabbd")
+		if ($(this).prop('checked')) {
+			$(".chkDeleteStatus").val("true");
+		} else {
+			$(".chkDeleteStatus").val("true");
+		}
+		alert($(this).prop('checked'));
+	});
+
 	var opt = {
 		autoOpen : false,
 		modal : true,
