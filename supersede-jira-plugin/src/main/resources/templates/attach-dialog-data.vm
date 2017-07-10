@@ -1,0 +1,24 @@
+<div class="aui-dialog2-content" id="attach-dialog-data">
+	<table class="aui table-truncate ">
+		<thead>
+			<tr>
+				<th class="td-tiny"></th>
+				<th>ID</th>
+				<th>SS ID</th>
+				<th>Description</th>
+			</tr>
+		</thead>
+		<tbody class="projects-list">
+			#foreach( $issue in $issues )
+			<tr>
+				<td class="td-truncate"><input
+					class="dialogChkSelected checkbox" type="checkbox"
+					id=$issue.getCustomFieldValue($customFieldManager.getCustomFieldObject($customFieldId))></td>
+				<td class="td-truncate">$issue.getKey()</td>
+				<td class="td-truncate">$issue.getCustomFieldValue($customFieldManager.getCustomFieldObject($customFieldId))</td>
+				<td class="td-truncate">$issue.getSummary()</td>
+			</tr>
+			#end
+		</tbody>
+	</table>
+</div>

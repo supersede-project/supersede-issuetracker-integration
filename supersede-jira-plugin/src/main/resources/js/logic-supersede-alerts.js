@@ -51,6 +51,37 @@ function onPageLoad() {
 					}
 				});
 			});
+	
+	jQuery('.searchBtnDialog').click(
+			function() {
+				alert("Entrato");
+				$("#selectionList").val(selectionString);
+				var self = jQuery(this);
+				var searchStr = $('#searchAlertsInput').val();
+				var searchIssueStr = $('#searchIssuesDialogInput').val();
+				if (!searchStr) {
+					searchStr = " ";
+				}
+				if (!searchIssueStr) {
+					searchIssueStr = " ";
+				}
+				jQuery.ajax({
+					type : "get",
+					url : "supersede-alerts?searchIssues=y&searchAlertsInput="
+							+ searchStr+"&searchIssuesInput="+searchIssueStr,
+					success : function(data) {
+						console.log('dom', self, data);
+						$("#attach-dialog-data").html(data);
+						// self.parent().parent().remove();
+						AJS.tablessortable.setTableSortable(AJS
+								.$(".sortableTable"));
+						onPageLoad();
+					},
+					error : function() {
+						console.log('error', arguments);
+					}
+				});
+			});
 
 	jQuery("#searchAlertsInput").keyup(function(event) {
 		if (event.keyCode == 13) {

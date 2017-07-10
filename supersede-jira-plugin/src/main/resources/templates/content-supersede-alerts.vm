@@ -13,7 +13,8 @@
 		</div>
 		<!-- 		SEARCH FIELD AND BUTTON -->
 		<div class="searchPane">
-			<input name="searchAlertsInput" id="searchAlertsInput" placeholder="Search...">
+			<input name="searchAlertsInput" id="searchAlertsInput"
+				placeholder="Search...">
 			<button class="aui-button aui-button-primary searchBtn">
 				<span class="glyphicon glyphicon-search"></span>
 			</button>
@@ -37,13 +38,17 @@
 				<tbody class="projects-list">
 					#foreach( $alert in $alerts )
 					<tr>
-						<td class="td-truncate"><input class="chkSelected checkbox" type="checkbox" id=$alert.getId()></td>
+						<td class="td-truncate"><input class="chkSelected checkbox"
+							type="checkbox" id=$alert.getId()></td>
 						<td class="td-truncate">$alert.getId()</td>
 						<td class="td-truncate">$alert.getApplicationId()</td>
 						<td class="td-truncate">$alert.getTimestamp()</td>
 						<td class="td-truncate">$alert.getDescription()</td>
-						<td class="td-truncate"><a data-aui-trigger aria-controls=$alert.getFilteredId() href="#">$alert.getCount()</a> <!-- 						INLINE DIALOG (RELATED TO ROW)  --> <aui-inline-dialog id=$alert.getFilteredId()> #foreach( $issue in
-							$alert.getIssues())
+						<td class="td-truncate"><a data-aui-trigger
+							aria-controls=$alert.getFilteredId() href="#">$alert.getCount()</a>
+							<!-- 						INLINE DIALOG (RELATED TO ROW)  --> <aui-inline-dialog
+								id=$alert.getFilteredId()> #foreach( $issue
+							in $alert.getIssues())
 							<table>
 								<tbody>
 									<tr>
@@ -58,66 +63,57 @@
 			</table>
 
 			<!-- ATTACH DIALOG -->
-			<section role="dialog" id="demo-dialog" class="aui-layer aui-dialog2 aui-dialog2-medium" aria-hidden="true">
+			<section role="dialog" id="demo-dialog"
+				class="aui-layer aui-dialog2 aui-dialog2-medium" aria-hidden="true">
 				<!-- Dialog header -->
 				<header class="aui-dialog2-header">
 					<!-- The dialog's title -->
 					<h2 class="aui-dialog2-header-main">Select the issue(s):</h2>
 					<!-- Actions to render on the right of the header -->
 					<div class="aui-dialog2-header-secondary searchPaneDialog">
-						<input name="searchIssuesDialogInput" id="searchIssuesDialogInput" placeholder="Search...">
+						<input name="searchIssuesDialogInput" id="searchIssuesDialogInput"
+							placeholder="Search...">
 						<button class="aui-button aui-button-primary searchBtnDialog">
 							<span class="glyphicon glyphicon-search"></span>
 						</button>
 					</div>
 					<!-- Close icon -->
-					<a class="aui-dialog2-header-close"> <span class="aui-icon aui-icon-small aui-iconfont-close-dialog">Close</span>
+					<a class="aui-dialog2-header-close"> <span
+						class="aui-icon aui-icon-small aui-iconfont-close-dialog">Close</span>
 					</a>
 				</header>
 				<!-- Main dialog content -->
-				<div class="aui-dialog2-content">
-					<table class="aui table-truncate ">
-						<thead>
-							<tr>
-								<th class="td-tiny"></th>
-								<th>ID</th>
-								<th>SS ID</th>
-								<th>Description</th>
-							</tr>
-						</thead>
-						<tbody class="projects-list">
-							#foreach( $issue in $issues )
-							<tr>
-								<td class="td-truncate"><input class="dialogChkSelected checkbox" type="checkbox" id=$issue.getCustomFieldValue($customFieldManager.getCustomFieldObject($customFieldId))></td>
-								<td class="td-truncate">$issue.getKey()</td>
-								<td class="td-truncate">$issue.getCustomFieldValue($customFieldManager.getCustomFieldObject($customFieldId))</td>
-								<td class="td-truncate">$issue.getSummary()</td>
-							</tr>
-							#end
-						</tbody>
-					</table>
-				</div>
+				<div id="attach-dialog-data">#parse("/templates/attach-dialog-data.vm")</div>
 				<!-- Dialog footer -->
 				<footer class="aui-dialog2-footer">
 					<!-- Actions to render on the right of the footer -->
 					<div class="aui-dialog2-footer-actions">
 						<form action="supersede-alerts" method="get">
-							<input type="hidden" class="selectionList" name="selectionList"> <input type="hidden" id="issuesSelectionList" name="issuesSelectionList"> <input type="hidden" class="chkDeleteStatus" name="chkDeleteStatus">
-							<button id="dialog-submit-button" class="aui-button aui-button-primary dialogButton toEnableDialog" name="action">Confirm</button>
+							<input type="hidden" class="selectionList" name="selectionList">
+							<input type="hidden" id="issuesSelectionList"
+								name="issuesSelectionList"> <input type="hidden"
+								class="chkDeleteStatus" name="chkDeleteStatus">
+							<button id="dialog-submit-button"
+								class="aui-button aui-button-primary dialogButton toEnableDialog"
+								name="action">Confirm</button>
 						</form>
-						<button id="dialog-close-button" class="aui-button aui-button-link">Close</button>
+						<button id="dialog-close-button"
+							class="aui-button aui-button-link">Close</button>
 					</div>
 					<!-- HINT TEXT -->
 				</footer>
 			</section>
 
 			<!-- DELETE DIALOG -->
-			<section role="dialog" id="delete-dialog" class="aui-layer aui-dialog2 aui-dialog2-medium aui-dialog2-warning" aria-hidden="true">
+			<section role="dialog" id="delete-dialog"
+				class="aui-layer aui-dialog2 aui-dialog2-medium aui-dialog2-warning"
+				aria-hidden="true">
 				<!-- Dialog header -->
 				<header class="aui-dialog2-header">
 					<h2 class="aui-dialog2-header-main">Delete selected issue(s)?</h2>
 					<!-- Close icon -->
-					<a class="aui-dialog2-header-close"> <span class="aui-icon aui-icon-small aui-iconfont-close-dialog">Close</span>
+					<a class="aui-dialog2-header-close"> <span
+						class="aui-icon aui-icon-small aui-iconfont-close-dialog">Close</span>
 					</a>
 				</header>
 				<!-- Main dialog content -->
@@ -138,9 +134,13 @@
 					<!-- Actions to render on the right of the footer -->
 					<div class="aui-dialog2-footer-actions">
 						<form action="supersede-alerts" method="post">
-							<input type="hidden" class="selectionList" name="selectionList"> <input type="submit" id="dialog-submit-button" class="aui-button aui-button-primary dialogButton" name="deleteAction" value="Delete">
+							<input type="hidden" class="selectionList" name="selectionList">
+							<input type="submit" id="dialog-submit-button"
+								class="aui-button aui-button-primary dialogButton"
+								name="deleteAction" value="Delete">
 						</form>
-						<button id="dialog-close-button" class="aui-button aui-button-link">Close</button>
+						<button id="dialog-close-button"
+							class="aui-button aui-button-link">Close</button>
 					</div>
 					<!-- HINT TEXT -->
 				</footer>
@@ -151,16 +151,24 @@
 				<div style="float: left" class="aui-item buttonPane">
 					<form style="float: left" action="supersede-alerts" method="get">
 						<input type="hidden" class="selectionList" name="selectionList">
-						 <input type="hidden" class="chkDeleteStatus" name="chkDeleteStatus">
-						<button style="margin-left: 20px" name="action" value="Import" class="aui-button aui-button-primary alertManagement toEnable">
-							<span class="glyphicon glyphicon-plus"></span> <span class="submit-text">Create Issue</span>
+						<input type="hidden" class="chkDeleteStatus"
+							name="chkDeleteStatus">
+						<button style="margin-left: 20px" name="action" value="Import"
+							class="aui-button aui-button-primary alertManagement toEnable">
+							<span class="glyphicon glyphicon-plus"></span> <span
+								class="submit-text">Create Issue</span>
 						</button>
 					</form>
-					<button style="margin-left: 20px" id="dialog-show-button" class="aui-button aui-button-secondary alertManagement toEnable">
-						<span class="glyphicon glyphicon-paperclip"></span> Attach to issue...
+					<button style="margin-left: 20px" id="dialog-show-button"
+						class="aui-button aui-button-secondary alertManagement toEnable">
+						<span class="glyphicon glyphicon-paperclip"></span> Attach to
+						issue...
 					</button>
-					<input style="margin-left: 20px" type="checkbox" id="chkDeleteOnClick" class="toEnable" name="chkDeleteOnClick" value="" />Delete on create or attach
-					<button id="dialog-delete-button" class="aui-button aui-button-primary alertManagement toEnable">
+					<input style="margin-left: 20px" type="checkbox"
+						id="chkDeleteOnClick" class="toEnable" name="chkDeleteOnClick"
+						value="" />Delete on create or attach
+					<button id="dialog-delete-button"
+						class="aui-button aui-button-primary alertManagement toEnable">
 						<span class="glyphicon glyphicon-trash"></span> Delete...
 					</button>
 				</div>

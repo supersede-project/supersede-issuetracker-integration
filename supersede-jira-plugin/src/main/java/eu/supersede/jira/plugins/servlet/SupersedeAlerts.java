@@ -57,6 +57,7 @@ public class SupersedeAlerts extends HttpServlet {
 	private static final String PARAM_SELECTION_LIST = "selectionList";
 	private static final String PARAM_ISSUES_SELECTION_LIST = "issuesSelectionList";
 	private static final String PARAM_SEARCH_ALERTS = "searchAlertsInput";
+	private static final String PARAM_SEARCH_ISSUES = "searchIssuesInput";
 
 	// END CUSTOM STRING AND FIELDS SECTION
 
@@ -287,6 +288,18 @@ public class SupersedeAlerts extends HttpServlet {
 			context.put("differences", differences);
 			context.put("date", new Date().toString());
 			templateRenderer.render("/templates/content-supersede-man-compare-table.vm", context, resp.getWriter());
+			return;
+		} else if ("y".equals(req.getParameter("searchIssues"))) {
+			String searchAlerts = req.getParameter(PARAM_SEARCH_ALERTS);
+			String searchIssues = req.getParameter(PARAM_SEARCH_ISSUES);
+			List<Alert> alerts = alertLogic.fetchAlerts(req,supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic, "", searchAlerts);
+			List<Issue> issues = issueLogic.getIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId(), searchIssues);
+			context.put("customFieldManager", customFieldManager);
+			context.put("customFieldId", supersedeCustomFieldLogic.getSupersedeFieldId());
+			context.put("issues", issues);
+			context.put("alerts", alerts);
+			context.put("date", new Date().toString());
+			templateRenderer.render("/templates/attach-dialog-data.vm", context, resp.getWriter());
 			return;
 		}
 		// ---
