@@ -37,45 +37,44 @@ import eu.supersede.jira.plugins.servlet.Requirement;
 import eu.supersede.jira.plugins.servlet.XMLFileGenerator;
 
 public class IssueLogic {
-	
+
 	private static IssueLogic logic;
-	
+
 	private LoginLogic loginLogic;
-	
+
 	private RequirementLogic requirementsLogic;
-	
+
 	private IssueService issueService;
-	
+
 	private ProjectService projectService;
-	
+
 	private SearchService searchService;
-	
+
 	private static final Logger log = LoggerFactory.getLogger(IssueLogic.class);
-	
-	private IssueLogic(IssueService issueService, ProjectService projectService, SearchService searchService){
+
+	private IssueLogic(IssueService issueService, ProjectService projectService, SearchService searchService) {
 		loginLogic = LoginLogic.getInstance();
 		requirementsLogic = RequirementLogic.getInstance(issueService, projectService, searchService);
 		this.issueService = issueService;
 		this.projectService = projectService;
 		this.searchService = searchService;
 	}
-	
-	public static IssueLogic getInstance(IssueService issueService, ProjectService projectService, SearchService searchService){
-		if(logic == null){
+
+	public static IssueLogic getInstance(IssueService issueService, ProjectService projectService, SearchService searchService) {
+		if (logic == null) {
 			logic = new IssueLogic(issueService, projectService, searchService);
 		}
 		return logic;
 	}
-	
+
 	public List<Issue> getIssues(HttpServletRequest req, Long supersedeFieldId) {
 		return getIssues(req, supersedeFieldId, null);
 	}
-	
-	public IssueResult getIssue(ApplicationUser user, String issueKey){
+
+	public IssueResult getIssue(ApplicationUser user, String issueKey) {
 		return issueService.getIssue(user, issueKey);
 	}
-	
-	
+
 	/**
 	 * Retrieve the issues with a valid supersede field set
 	 * 
@@ -98,7 +97,9 @@ public class IssueLogic {
 		jqlClauseBuilder.customField(supersedeFieldId).isNotEmpty().and().project(loginLogic.getCurrentProject());
 		if (id != null) {
 			// if an ID is provided, use in in filter
-			jqlClauseBuilder.and().customField(supersedeFieldId).like(id);
+			// ID MUST BE the beginnning of the string. You cannot put a
+			// wildcard at the beginning of the search
+			jqlClauseBuilder.and().sub().customField(supersedeFieldId).like(id + "*").or().field("key").eq(id).or().field("summary").like(id + "*").endsub();
 		}
 		Query query = jqlClauseBuilder.buildQuery();
 		// A page filter is used to provide pagination. Let's use an unlimited
@@ -123,8 +124,7 @@ public class IssueLogic {
 		// Our JQL clause is simple project="TUTORIAL"
 		// com.atlassian.query.Query query =
 		// jqlClauseBuilder.project("TEST").buildQuery();
-		Query query = jqlClauseBuilder.customField(supersedeFieldId).like(requirementId).and()
-				.project(loginLogic.getCurrentProject()).buildQuery();
+		Query query = jqlClauseBuilder.customField(supersedeFieldId).like(requirementId).and().project(loginLogic.getCurrentProject()).buildQuery();
 		log.debug(query.getQueryString());
 		log.debug(query.getWhereClause().toString());
 		// A page filter is used to provide pagination. Let's use an unlimited
@@ -149,13 +149,12 @@ public class IssueLogic {
 		}
 		return issues.get(0);
 	}
-	
+
 	private void newIssue(HttpServletRequest req, Collection<String> errors, CustomField supersedeField) {
 		newIssue(req, req.getParameter("name"), req.getParameter("description"), req.getParameter("id"), errors, supersedeField);
 	}
 
-	public IssueResult newIssue(HttpServletRequest req, String name, String description, String id,
-			Collection<String> errors, CustomField supersedeField) {
+	public IssueResult newIssue(HttpServletRequest req, String name, String description, String id, Collection<String> errors, CustomField supersedeField) {
 		IssueResult issue = null;
 		ApplicationUser user = loginLogic.getCurrentUser(req);
 		// Perform creation if the "new" param is passed in
@@ -175,8 +174,7 @@ public class IssueLogic {
 		// We hard-code the project name to be the project with the TUTORIAL key
 		Project project = projectService.getProjectByKey(user, loginLogic.getCurrentProject().toUpperCase()).getProject();
 		if (null == project) {
-			errors.add("Cannot add issue for requirement " + id + ": no such project "
-					+ loginLogic.getCurrentProject());
+			errors.add("Cannot add issue for requirement " + id + ": no such project " + loginLogic.getCurrentProject());
 		} else {
 			issueInputParameters.setProjectId(project.getId());
 			// We also hard-code the issueType to be a "bug" == 1
@@ -198,9 +196,8 @@ public class IssueLogic {
 		}
 		return issue;
 	}
-	
-	public void updateIssue(MutableIssue issue, ApplicationUser user, String requirementId,
-			Collection<String> errors, CustomField supersedeField) {
+
+	public void updateIssue(MutableIssue issue, ApplicationUser user, String requirementId, Collection<String> errors, CustomField supersedeField) {
 
 		issue.setCustomFieldValue(supersedeField, requirementId);
 		Object customField = issue.getCustomFieldValue(supersedeField);
@@ -208,8 +205,7 @@ public class IssueLogic {
 
 		IssueInputParameters issueInputParameters = issueService.newIssueInputParameters();
 		issueInputParameters.addCustomFieldValue(supersedeField.getId(), requirementId);
-		IssueService.UpdateValidationResult updateRes = issueService.validateUpdate(user, issue.getId(),
-				issueInputParameters);
+		IssueService.UpdateValidationResult updateRes = issueService.validateUpdate(user, issue.getId(), issueInputParameters);
 
 		if (updateRes.getErrorCollection().hasAnyErrors()) {
 			Map<String, String> errorsMap = updateRes.getErrorCollection().getErrors();
@@ -225,7 +221,7 @@ public class IssueLogic {
 			log.debug("updated custom field: ", updatedField);
 		}
 	}
-	
+
 	public void attachToIssue(Alert source, Issue target) {
 		// If "Attach" button was clicked in alert table
 		XMLFileGenerator xml = new XMLFileGenerator(source.getId(), new Date());
@@ -234,8 +230,7 @@ public class IssueLogic {
 			return;
 		}
 
-		CreateAttachmentParamsBean capb = new CreateAttachmentParamsBean.Builder(tmpFile, source.getId()+".xml", "application/xml",
-				null, target).build();
+		CreateAttachmentParamsBean capb = new CreateAttachmentParamsBean.Builder(tmpFile, source.getId() + ".xml", "application/xml", null, target).build();
 		try {
 			ComponentAccessor.getAttachmentManager().createAttachment(capb);
 		} catch (AttachmentException e) {

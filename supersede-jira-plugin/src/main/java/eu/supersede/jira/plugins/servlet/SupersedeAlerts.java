@@ -290,14 +290,10 @@ public class SupersedeAlerts extends HttpServlet {
 			templateRenderer.render("/templates/content-supersede-man-compare-table.vm", context, resp.getWriter());
 			return;
 		} else if ("y".equals(req.getParameter("searchIssues"))) {
-			String searchAlerts = req.getParameter(PARAM_SEARCH_ALERTS);
-			String searchIssues = req.getParameter(PARAM_SEARCH_ISSUES);
-			List<Alert> alerts = alertLogic.fetchAlerts(req,supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic, "", searchAlerts);
-			List<Issue> issues = issueLogic.getIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId(), searchIssues);
+			List<Issue> issues = issueLogic.getIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId(), req.getParameter(PARAM_SEARCH_ISSUES));
 			context.put("customFieldManager", customFieldManager);
 			context.put("customFieldId", supersedeCustomFieldLogic.getSupersedeFieldId());
 			context.put("issues", issues);
-			context.put("alerts", alerts);
 			context.put("date", new Date().toString());
 			templateRenderer.render("/templates/attach-dialog-data.vm", context, resp.getWriter());
 			return;
@@ -305,16 +301,16 @@ public class SupersedeAlerts extends HttpServlet {
 		// ---
 
 		// Render the list of issues (list.vm) if no params are passed in
-		List<Difference> differences = issueLogic.compareIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId(), supersedeCustomFieldLogic.getSupersedeCustomField());
+//		List<Difference> differences = issueLogic.compareIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId(), supersedeCustomFieldLogic.getSupersedeCustomField());
 
 		List<Issue> issues = issueLogic.getIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId());
-		List<Requirement> requirements = new LinkedList<Requirement>();
+//		List<Requirement> requirements = new LinkedList<Requirement>();
 		List<Alert> alerts = alertLogic.fetchAlerts(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic);
 
 		context.put("alerts", alerts);
 		context.put("issues", issues);
-		context.put("requirements", requirements);
-		context.put("differences", differences);
+//		context.put("requirements", requirements);
+//		context.put("differences", differences);
 		context.put("errors", errors);
 		context.put("separator", SEPARATOR);
 		context.put("baseurl", ComponentAccessor.getApplicationProperties().getString("jira.baseurl"));

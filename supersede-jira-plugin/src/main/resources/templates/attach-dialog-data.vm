@@ -1,5 +1,5 @@
-<div class="aui-dialog2-content" id="attach-dialog-data">
-	<table class="aui table-truncate ">
+<div class="aui-dialog2-content">
+	<table class="aui table-truncate aui-table-sortable sortableDialogTable ">
 		<thead>
 			<tr>
 				<th class="td-tiny"></th>
@@ -8,12 +8,10 @@
 				<th>Description</th>
 			</tr>
 		</thead>
-		<tbody class="projects-list">
+		<tbody class="issues-list">
 			#foreach( $issue in $issues )
 			<tr>
-				<td class="td-truncate"><input
-					class="dialogChkSelected checkbox" type="checkbox"
-					id=$issue.getCustomFieldValue($customFieldManager.getCustomFieldObject($customFieldId))></td>
+				<td class="td-truncate"><input class="dialogChkSelected checkbox" type="checkbox" id=$issue.getCustomFieldValue($customFieldManager.getCustomFieldObject($customFieldId))></td>
 				<td class="td-truncate">$issue.getKey()</td>
 				<td class="td-truncate">$issue.getCustomFieldValue($customFieldManager.getCustomFieldObject($customFieldId))</td>
 				<td class="td-truncate">$issue.getSummary()</td>

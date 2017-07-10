@@ -54,17 +54,21 @@ function onPageLoad() {
 	
 	jQuery('.searchBtnDialog').click(
 			function() {
-				alert("Entrato");
+				alert("Entrato62");
 				$("#selectionList").val(selectionString);
 				var self = jQuery(this);
 				var searchStr = $('#searchAlertsInput').val();
 				var searchIssueStr = $('#searchIssuesDialogInput').val();
+				alert($('#searchIssuesDialogInput').val());
 				if (!searchStr) {
 					searchStr = " ";
 				}
 				if (!searchIssueStr) {
 					searchIssueStr = " ";
 				}
+				
+				alert(searchIssueStr + "IS SEARCHISSUESTR");
+				alert(searchStr + "IS SEARCHSTR");
 				jQuery.ajax({
 					type : "get",
 					url : "supersede-alerts?searchIssues=y&searchAlertsInput="
@@ -74,8 +78,7 @@ function onPageLoad() {
 						$("#attach-dialog-data").html(data);
 						// self.parent().parent().remove();
 						AJS.tablessortable.setTableSortable(AJS
-								.$(".sortableTable"));
-						onPageLoad();
+								.$(".sortableDialogTable"));
 					},
 					error : function() {
 						console.log('error', arguments);
