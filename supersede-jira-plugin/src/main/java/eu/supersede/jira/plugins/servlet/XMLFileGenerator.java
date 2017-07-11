@@ -20,7 +20,13 @@ import org.w3c.dom.Element;
 public class XMLFileGenerator {
 
 	private String id;
-	private Date date;
+	private String[] issues;
+	private String applicationId;
+	private String tenant;
+	private String creationDate;
+	private String description;
+	private Date date; // for testing purposes, if date changes during jira use,
+						// new data was loaded
 
 	public XMLFileGenerator() {
 		super();
@@ -29,6 +35,16 @@ public class XMLFileGenerator {
 	public XMLFileGenerator(String id, Date date) {
 		this.id = id;
 		this.date = date;
+	}
+
+	public XMLFileGenerator(Alert a) {
+		this.id = a.getId();
+		this.issues = a.getIssues();
+		this.tenant = a.getTenant();
+		this.description = a.getDescription();
+		this.applicationId = a.getApplicationId();
+		this.creationDate = a.getTimestamp();
+		this.date = new Date();
 	}
 
 	public String getId() {
@@ -47,44 +63,49 @@ public class XMLFileGenerator {
 		this.date = date;
 	}
 
+	public String[] getIssues() {
+		return issues;
+	}
+
+	public void setIssues(String[] issues) {
+		this.issues = issues;
+	}
+
+	public String getApplicationId() {
+		return applicationId;
+	}
+
+	public void setApplicationId(String applicationId) {
+		this.applicationId = applicationId;
+	}
+
+	public String getTenant() {
+		return tenant;
+	}
+
+	public void setTenant(String tenant) {
+		this.tenant = tenant;
+	}
+
+	public String getCreationDate() {
+		return creationDate;
+	}
+
+	public void setCreationDate(String creationDate) {
+		this.creationDate = creationDate;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
 	public File generateXMLFile() {
 		try {
-			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-
-			// == ROOT DOCUMENTS SECTION
-			// issue root element
-			Document doc = docBuilder.newDocument();
-			Element rootElement = doc.createElement("jira");
-			doc.appendChild(rootElement);
-
-			// issue element
-			Element issue = doc.createElement("issue");
-			rootElement.appendChild(issue);
-
-			// === ATTRIBUTES SECTION ===
-			// set attribute to issue element (<issue id="..">)
-			// shorter way
-			// issue.setAttribute("id", id);
-			Attr attr = doc.createAttribute("id");
-			attr.setValue(id);
-			issue.setAttributeNode(attr);
-
-			// timestamp elements
-			Element timestamp = doc.createElement("timestamp");
-			timestamp.appendChild(doc.createTextNode(date.toString()));
-			issue.appendChild(timestamp);
-
-			// type elements (HARDCODED)
-			Element type = doc.createElement("type");
-			type.appendChild(doc.createTextNode("JIRA ISSUE"));
-			issue.appendChild(type);
-
-			// priority elements (HARDCODED)
-			Element priority = doc.createElement("priority");
-			priority.appendChild(doc.createTextNode("100"));
-			issue.appendChild(priority);
-
+			Document doc = buildXMLData();
 			// === OUTPUT SECTION ===
 			// write the content into xml file
 			TransformerFactory transformerFactory = TransformerFactory.newInstance();
@@ -108,6 +129,59 @@ public class XMLFileGenerator {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	
+	/**
+	 * Builds the XML file structure
+	 * 
+	 * Example:
+	 * 
+	 * <alert id="foo">
+	 *     <creationDate></creationDate>
+	 *     <description></description>
+	 *     <applicationId></applicationId>
+	 *     <timestamp><timestamp>
+	 * </alert>
+	 * 
+	 * @return
+	 * @throws ParserConfigurationException
+	 */
+	public Document buildXMLData() throws ParserConfigurationException {
+		DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+
+		// == ROOT DOCUMENTS SECTION
+		// issue root element
+		Document doc = docBuilder.newDocument();
+		Element rootAlert = doc.createElement("alert");
+		doc.appendChild(rootAlert);
+
+		// === ATTRIBUTES SECTION ===
+		// set attribute to alert element (<alert id="..">)
+		// shorter way
+		// alert.setAttribute("id", id);
+		Attr attr = doc.createAttribute("id");
+		attr.setValue(getId());
+		rootAlert.setAttributeNode(attr);
+
+		// description elements
+		Element description = doc.createElement("description");
+		description.appendChild(doc.createTextNode(getDescription()));
+		rootAlert.appendChild(description);
+
+		// application Id elements
+		Element priority = doc.createElement("applicationId");
+		priority.appendChild(doc.createTextNode(getApplicationId()));
+		rootAlert.appendChild(priority);
+
+		// timestamp elements
+		Element timestamp = doc.createElement("timestamp");
+		timestamp.appendChild(doc.createTextNode(getDate().toString()));
+		rootAlert.appendChild(timestamp);
+
+		return doc;
+
 	}
 
 }

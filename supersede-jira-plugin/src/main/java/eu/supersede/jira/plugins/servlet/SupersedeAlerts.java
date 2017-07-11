@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Collection;
@@ -16,19 +17,29 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
 
 import com.atlassian.jira.bc.issue.IssueService;
 import com.atlassian.jira.bc.issue.IssueService.IssueResult;
 import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.bc.project.ProjectService;
 import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.event.ComponentManagerShutdownEvent;
 import com.atlassian.jira.issue.CustomFieldManager;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.issue.MutableIssue;
+import com.atlassian.jira.project.Project;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.util.json.JSONObject;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
@@ -40,6 +51,7 @@ import eu.supersede.jira.plugins.logic.AlertLogic;
 import eu.supersede.jira.plugins.logic.IssueLogic;
 import eu.supersede.jira.plugins.logic.LoginLogic;
 import eu.supersede.jira.plugins.logic.SupersedeCustomFieldLogic;
+import webwork.action.ActionContext;
 
 public class SupersedeAlerts extends HttpServlet {
 
@@ -58,6 +70,7 @@ public class SupersedeAlerts extends HttpServlet {
 	private static final String PARAM_ISSUES_SELECTION_LIST = "issuesSelectionList";
 	private static final String PARAM_SEARCH_ALERTS = "searchAlertsInput";
 	private static final String PARAM_SEARCH_ISSUES = "searchIssuesInput";
+	private static final String PARAM_XML_ALERT = "xmlAlertId";
 
 	// END CUSTOM STRING AND FIELDS SECTION
 
@@ -83,7 +96,7 @@ public class SupersedeAlerts extends HttpServlet {
 
 		loginLogic.loadConfiguration(pluginSettingsFactory.createGlobalSettings());
 	}
-	
+
 	/**
 	 * Perform a REST call (POST) asking SUPERSEDE to create a new requirement
 	 * with the given name and description.
@@ -191,7 +204,7 @@ public class SupersedeAlerts extends HttpServlet {
 			errors.add("invalid issue key " + issueKey);
 		}
 	}
-	
+
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		List<String> errors = new LinkedList<String>();
@@ -202,10 +215,12 @@ public class SupersedeAlerts extends HttpServlet {
 			for (int i = 0; i < list.length; i++) {
 				String alertId = list[i];
 				boolean deleted = alertLogic.discardAlert(req, alertId);
-				if(deleted){
+				if (deleted) {
 					errors.add("alertId " + alertId + " deleted");
 				}
-				//int count = alertLogic.getAlertCount(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic, alertId);
+				// int count = alertLogic.getAlertCount(req,
+				// supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic,
+				// alertId);
 			}
 			doGet(req, resp);
 		}
@@ -220,6 +235,13 @@ public class SupersedeAlerts extends HttpServlet {
 		} catch (Exception e) {
 			log.error("checking custom supersede field: " + e);
 		}
+		context.put("customFieldManager", customFieldManager);
+		context.put("customFieldId", supersedeCustomFieldLogic.getSupersedeFieldId());
+		// PROJECTS RETRIEVAL, NEEDED BY ANY APP
+
+		List<Project> projects = ComponentAccessor.getProjectManager().getProjectObjects();
+		context.put("projects", projects);
+
 		// process request
 		List<String> errors = new LinkedList<String>();
 		if (!"".equals(req.getParameter(PARAM_ACTION)) && req.getParameter(PARAM_ACTION) != null) {
@@ -239,7 +261,7 @@ public class SupersedeAlerts extends HttpServlet {
 				a = alertLogic.fetchAlerts(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic, list[i], "").get(0);
 				if (isImport) {
 					// attach file to the newly created issue
-					errors.add(newIssue != null ? newIssue.getIssue().getKey() : "importing " + a.getId());//else (theoretically) will never be reached
+					errors.add(newIssue != null ? newIssue.getIssue().getKey() : "importing " + a.getId());// else
 					issueLogic.attachToIssue(a, issueLogic.getIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issueID).get(0));
 				} else {
 					// attach to an existing issue
@@ -250,22 +272,17 @@ public class SupersedeAlerts extends HttpServlet {
 						issueLogic.attachToIssue(a, issue);
 					}
 				}
-				
-				if(req.getParameter("chkDeleteStatus") != null && "true".equals(req.getParameter("chkDeleteStatus"))) {
-					System.out.println("DELETE CHECKBOX TRIGGERED");
-					if(alertLogic.discardAlert(req, a.getId())){
+
+				if (req.getParameter("chkDeleteStatus") != null && "true".equals(req.getParameter("chkDeleteStatus"))) {
+					if (alertLogic.discardAlert(req, a.getId())) {
 						errors.add("alertId " + a.getId() + " deleted");
 					}
 				}
 			}
 
-			// FIXME: FIELDS BELOW HAVE TO BE REMOVED OR MOVED IN OTHER TABS IN
-			// FINAL VERSION
 		} else if ("y".equals(req.getParameter("refreshAlerts"))) {
-			List<Alert> alerts = alertLogic.fetchAlerts(req,supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic);
+			List<Alert> alerts = alertLogic.fetchAlerts(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic);
 			List<Issue> issues = issueLogic.getIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId());
-			context.put("customFieldManager", customFieldManager);
-			context.put("customFieldId", supersedeCustomFieldLogic.getSupersedeFieldId());
 			context.put("issues", issues);
 			context.put("alerts", alerts);
 			context.put("date", new Date().toString());
@@ -273,10 +290,8 @@ public class SupersedeAlerts extends HttpServlet {
 			return;
 		} else if ("y".equals(req.getParameter("searchAlerts"))) {
 			String searchAlerts = req.getParameter(PARAM_SEARCH_ALERTS);
-			List<Alert> alerts = alertLogic.fetchAlerts(req,supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic, "", searchAlerts);
+			List<Alert> alerts = alertLogic.fetchAlerts(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic, "", searchAlerts);
 			List<Issue> issues = issueLogic.getIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId());
-			context.put("customFieldManager", customFieldManager);
-			context.put("customFieldId", supersedeCustomFieldLogic.getSupersedeFieldId());
 			context.put("issues", issues);
 			context.put("alerts", alerts);
 			context.put("date", new Date().toString());
@@ -291,31 +306,26 @@ public class SupersedeAlerts extends HttpServlet {
 			return;
 		} else if ("y".equals(req.getParameter("searchIssues"))) {
 			List<Issue> issues = issueLogic.getIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId(), req.getParameter(PARAM_SEARCH_ISSUES));
-			context.put("customFieldManager", customFieldManager);
-			context.put("customFieldId", supersedeCustomFieldLogic.getSupersedeFieldId());
 			context.put("issues", issues);
 			context.put("date", new Date().toString());
 			templateRenderer.render("/templates/attach-dialog-data.vm", context, resp.getWriter());
 			return;
+		} else if ("y".equals(req.getParameter("xmlAlert"))) {
+			String xmlAlert = req.getParameter(PARAM_XML_ALERT);
+			List<Alert> alerts = alertLogic.fetchAlerts(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic, "", xmlAlert);
+			resp.setContentType("text/xml;charset=utf-8");
+			context.put("alert", alerts.get(0));
+			templateRenderer.render("/templates/xml-alert.vm", context, resp.getWriter());
+			return;
 		}
-		// ---
-
-		// Render the list of issues (list.vm) if no params are passed in
-//		List<Difference> differences = issueLogic.compareIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId(), supersedeCustomFieldLogic.getSupersedeCustomField());
-
 		List<Issue> issues = issueLogic.getIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId());
-//		List<Requirement> requirements = new LinkedList<Requirement>();
 		List<Alert> alerts = alertLogic.fetchAlerts(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic);
 
 		context.put("alerts", alerts);
 		context.put("issues", issues);
-//		context.put("requirements", requirements);
-//		context.put("differences", differences);
 		context.put("errors", errors);
 		context.put("separator", SEPARATOR);
 		context.put("baseurl", ComponentAccessor.getApplicationProperties().getString("jira.baseurl"));
-		context.put("customFieldManager", customFieldManager);
-		context.put("customFieldId", supersedeCustomFieldLogic.getCustomFieldId());
 		resp.setContentType("text/html;charset=utf-8");
 		// Pass in the list of issues as the context
 		templateRenderer.render("/templates/logic-supersede-alerts.vm", context, resp.getWriter());

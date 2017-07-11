@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<alert id="$alert.getId()"> 
+	<description>$alert.getDescription()</description> 
+	<applicationId>$alert.getApplicationId()</applicationId> 
+	<timestamp>$alert.getTimestamp()</timestamp>
+	<issues>
+		 #foreach( $issue in $alert.getIssues())
+			<issue key="$issue"/>
+		#end
+	</issues>
+</alert>

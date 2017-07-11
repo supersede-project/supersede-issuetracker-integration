@@ -224,7 +224,7 @@ public class IssueLogic {
 
 	public void attachToIssue(Alert source, Issue target) {
 		// If "Attach" button was clicked in alert table
-		XMLFileGenerator xml = new XMLFileGenerator(source.getId(), new Date());
+		XMLFileGenerator xml = new XMLFileGenerator(source);
 		File tmpFile = xml.generateXMLFile();
 		if (tmpFile == null) {
 			return;

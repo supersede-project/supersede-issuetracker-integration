@@ -1,5 +1,6 @@
 AJS.$(document).ready(function() {
 	onPageLoad();
+	$(".projectElement").first().addClass('aui-nav-selected').removeClass('aui-nav');
 });
 
 function onPageLoad() {
@@ -7,7 +8,7 @@ function onPageLoad() {
 	$(".toEnableDialog").prop('disabled', true);
 	var selectionString = '';
 	var issuesSelectionString = '';
-
+	
 	jQuery('.check-alerts').click(function() {
 		var self = jQuery(this);
 		jQuery.ajax({
@@ -161,7 +162,7 @@ function onPageLoad() {
 
 	// Shows the dialog when the "Show dialog" button is clicked
 	AJS.$("#dialog-show-button").click(function() {
-		AJS.dialog2("#demo-dialog").show();
+		AJS.dialog2("#attach-dialog").show();
 	});
 
 	AJS.$("#dialog-delete-button").click(function() {
@@ -171,7 +172,7 @@ function onPageLoad() {
 	// Hides the dialog
 	AJS.$("#dialog-close-button").click(function(e) {
 		e.preventDefault();
-		AJS.dialog2("#demo-dialog").hide();
+		AJS.dialog2("#attach-dialog").hide();
 	});
 
 	// DIALOG
@@ -184,6 +185,12 @@ function onPageLoad() {
 	jQuery('.dialogDeleteButton').click(function() {
 		console.log('alert management')
 		$("#selectionList").val(selectionString);
+	});
+	
+	jQuery('.projectElement').click(function() {
+		$(".projectElement").removeClass('aui-nav-selected');
+		$(".projectElement").addClass('aui-nav');
+		$(this).removeClass('aui-nav').addClass('aui-nav-selected');
 	});
 
 	// MOVED TO THE .searchBtn function above

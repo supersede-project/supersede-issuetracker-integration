@@ -59,6 +59,13 @@
 			location="/js/logic-supersede-alerts.js" />
 		<context>logic-supersede-alerts.context</context>
 	</web-resource>
+	
+	<!-- RESOURCES FOR XML ALERT PAGE -->
+	<web-resource name="xmlAlert" key="xmlAlert">
+		<resource type="download" name="css/"
+			location="/css" />
+		<context>xml-alert.context</context>
+	</web-resource>
 
 
 	<web-resource name="ContentAlerts" key="ContentAlerts">
