@@ -83,7 +83,7 @@
 					</a>
 				</header>
 				<!-- Main dialog content -->
-				<div id="attach-dialog-data">#parse("/templates/attach-dialog-data.vm")</div>
+				<div id="attach-dialog-data" class="dialogDataView">#parse("/templates/attach-dialog-data.vm")</div>
 				<!-- Dialog footer -->
 				<footer class="aui-dialog2-footer">
 					<!-- Actions to render on the right of the footer -->
@@ -95,7 +95,7 @@
 								class="chkDeleteStatus" name="chkDeleteStatus">
 							<button id="dialog-submit-button"
 								class="aui-button aui-button-primary dialogButton toEnableDialog"
-								name="action">Confirm</button>
+								name="action" value="Attach">Attach</button>
 						</form>
 						<button id="dialog-close-button"
 							class="aui-button aui-button-link">Close</button>
@@ -117,7 +117,7 @@
 					</a>
 				</header>
 				<!-- Main dialog content -->
-				<div class="aui-dialog2-content">
+				<div class="aui-dialog2-content dialogDataView">
 					<table class="aui table-truncate">
 						<tbody class="project-list">
 							#foreach( $alert in $alerts )

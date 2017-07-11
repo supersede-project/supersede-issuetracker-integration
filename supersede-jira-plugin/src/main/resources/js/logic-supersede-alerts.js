@@ -74,6 +74,8 @@ function onPageLoad() {
 						// self.parent().parent().remove();
 						AJS.tablessortable.setTableSortable(AJS
 								.$(".sortableDialogTable"));
+						onPageLoad();
+						alert("load!");
 					},
 					error : function() {
 						console.log('error', arguments);
@@ -113,6 +115,7 @@ function onPageLoad() {
 				if ($(this).prop('checked')) {
 					// Write a string containing the IDs of selected
 					// alerts
+					alert("entered");
 					issuesSelectionString += $(this).attr('id');
 					issuesSelectionString += ':::';
 					$(".toEnableDialog").prop('disabled', false);
