@@ -1,23 +1,33 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
-<xs:element name="id" type="xs:string"/>
-<xs:element name="description" type="xs:string"/>
-<xs:element name="timestamp" type="xs:string"/>
-<xs:element name="application_id" type="xs:string"/>
-<xs:element name="title" type="xs:string"/>
+	<xs:element name="description" type="xs:string" />
+	<xs:element name="application_id" type="xs:string" />
+	<xs:element name="id" type="xs:string" />
+	<xs:element name="timestamp" type="xs:string" />
+	<xs:element name="key" type="xs:string" />
 
-<xs:element name="alert">
-  <xs:complexType>
-    <xs:sequence>
-      <xs:element ref="id"/>
-      <xs:element ref="title"/>
-      <xs:element ref="description"/>
-      <xs:element ref="timestamp"/>
-      <xs:element ref="application_id"/>
-    </xs:sequence>
-  </xs:complexType>
-</xs:element>
+	<xs:element name="alert">
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:restriction base="xs:string">
+					<xs:attribute name="id" type="xs:string" />
+				</xs:restriction>
+			</xs:complexContent>
+			<xs:sequence>
+				<xs:element ref="description" />
+				<xs:element ref="application_id" />
+				<xs:element ref="timestamp" />
+				<xs:element name="issue">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element ref="key" />
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
 
 
 </xs:schema>
