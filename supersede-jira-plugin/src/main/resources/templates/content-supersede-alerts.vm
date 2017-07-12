@@ -130,11 +130,11 @@
 				<div style="float: left" class="aui-item buttonPane">
 					<form style="float: left" action="supersede-alerts" method="get">
 						<input type="hidden" class="selectionList" name="selectionList"> <input type="hidden" class="chkDeleteStatus" name="chkDeleteStatus">
-						<button style="margin-left: 20px" name="action" value="Import" class="aui-button aui-button-primary alertManagement toEnable">
+						<button style="margin-left: 20px" name="action" value="Import" class="aui-button aui-button-primary alertManagement toEnable" id="import-tooltip" title="Create a new issue attaching this alert">
 							<span class="glyphicon glyphicon-plus"></span> <span class="submit-text">Create Issue</span>
 						</button>
 					</form>
-					<button style="margin-left: 20px" id="dialog-show-button" class="aui-button aui-button-secondary alertManagement toEnable">
+					<button style="margin-left: 20px" id="dialog-show-button" class="aui-button aui-button-secondary alertManagement toEnable" id="attach-tooltip" title="Attach this alert to an issue">
 						<span class="glyphicon glyphicon-paperclip"></span> Attach to issue...
 					</button>
 					<input style="margin-left: 20px" type="checkbox" id="chkDeleteOnClick" class="toEnable" name="chkDeleteOnClick" value="" />Delete on create or attach
