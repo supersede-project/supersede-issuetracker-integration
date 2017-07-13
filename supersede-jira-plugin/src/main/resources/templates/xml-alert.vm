@@ -1,11 +1,89 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<alert id="$alert.getId()"> 
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="#stylesheet"?>
+<!DOCTYPE doc [
+<!ATTLIST xsl:stylesheet
+id ID #REQUIRED>
+]>
+<doc>
+ <!--Start XSL-->
+ <xsl:stylesheet id="stylesheet"
+  version="1.0"
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform" >
+
+  <xsl:template match="xsl:stylesheet" />
+
+  <xsl:template match="/doc">
+   <html>
+    <head>
+     <style>
+      h2{
+      font-family: Courier, Courier New, monospace;
+      font-size: 32px;
+      text-decoration: underline;
+      }
+      body{
+      font-family: Courier New, monospace;
+      }
+      p{
+      font-size: 16px;
+      }
+      table{
+      font-size: 14px;
+      }
+      .alert{
+      text-align:left;
+      }
+      .description{
+      text-align:center;
+      }
+      .applicationId{
+      text-align:center;
+      }
+      .rating{
+      text-align:right;
+      }
+      .timestamp{
+      text-align:center;
+      }
+	  .issue{
+      text-align:center;
+      }
+	  .issues{
+      text-align:center;
+      }
+     </style>
+    </head>
+    <body>
+    <table border="1">
+      <tr>
+       <th>Alert</th>
+       <th>Description</th>
+       <th>App. ID</th>
+       <th>Timestamp</th>
+       <th>Issues</th>
+      </tr>
+         <tr style="background-color:#fff;">
+          <td class="alert"><xsl:value-of select="alert"/></td>
+          <td class="description"><xsl:value-of select="description"/></td>
+          <td class="applicationId"><xsl:value-of select="applicationId"/></td>
+          <td class="timestamp"><xsl:value-of select="timestamp" /></td>
+		  <td class="issues"><xsl:value-of select="issues" /></td>
+         </tr>
+     </table>
+    </body>
+   </html>
+  </xsl:template>
+ </xsl:stylesheet>
+
+ <!--Start XML-->
+   <alert id="$alert.getId()">$alert.getId()</alert>
 	<description>$alert.getDescription()</description> 
 	<applicationId>$alert.getApplicationId()</applicationId> 
 	<timestamp>$alert.getTimestamp()</timestamp>
-	<issues>
+		<issues>
 		 #foreach( $issue in $alert.getIssues())
-			<issue key="$issue"/>
+			<issue key="$issue">$issue</issue>
 		#end
-	</issues>
-</alert>
+		</issues>
+  <!--Rest of XML-->
+</doc>

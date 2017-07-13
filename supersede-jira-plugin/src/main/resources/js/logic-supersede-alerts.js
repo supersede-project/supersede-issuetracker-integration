@@ -76,7 +76,7 @@ function onPageLoad() {
 						AJS.tablessortable.setTableSortable(AJS
 								.$(".sortableDialogTable"));
 						onPageLoad();
-						alert("load!");
+						//alert("load!");
 					},
 					error : function() {
 						console.log('error', arguments);
@@ -116,7 +116,7 @@ function onPageLoad() {
 				if ($(this).prop('checked')) {
 					// Write a string containing the IDs of selected
 					// alerts
-					alert("entered");
+					//alert("entered");
 					issuesSelectionString += $(this).attr('id');
 					issuesSelectionString += ':::';
 					$(".toEnableDialog").prop('disabled', false);
@@ -134,13 +134,13 @@ function onPageLoad() {
 			});
 
 	jQuery('#chkDeleteOnClick').click(function() {
-		alert("triggereabbd")
+		//alert("triggereabbd")
 		if ($(this).prop('checked')) {
 			$(".chkDeleteStatus").val("true");
 		} else {
 			$(".chkDeleteStatus").val("true");
 		}
-		alert($(this).prop('checked'));
+		//alert($(this).prop('checked'));
 	});
 
 	var opt = {
@@ -192,6 +192,8 @@ function onPageLoad() {
 		$(".projectElement").addClass('aui-nav');
 		$(this).removeClass('aui-nav').addClass('aui-nav-selected');
 	});
+	
+	AJS.$(".simple-tooltip").tooltip();
 
 	// MOVED TO THE .searchBtn function above
 	// jQuery('.searchBtn').click(function() {

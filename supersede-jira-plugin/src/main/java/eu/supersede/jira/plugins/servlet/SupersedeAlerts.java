@@ -312,7 +312,7 @@ public class SupersedeAlerts extends HttpServlet {
 			return;
 		} else if ("y".equals(req.getParameter("xmlAlert"))) {
 			String xmlAlert = req.getParameter(PARAM_XML_ALERT);
-			List<Alert> alerts = alertLogic.fetchAlerts(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic, "", xmlAlert);
+			List<Alert> alerts = alertLogic.fetchAlerts(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic, xmlAlert, "");
 			resp.setContentType("text/xml;charset=utf-8");
 			context.put("alert", alerts.get(0));
 			templateRenderer.render("/templates/xml-alert.vm", context, resp.getWriter());
