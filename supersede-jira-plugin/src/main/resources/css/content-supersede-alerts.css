@@ -42,6 +42,7 @@
 }
 
 .dialogDataView {
-	height: 60%;
+	min-width:parent;
+	max-height: 60%;
 	display: inline-block;
 }

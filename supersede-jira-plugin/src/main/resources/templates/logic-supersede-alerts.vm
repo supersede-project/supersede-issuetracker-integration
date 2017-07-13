@@ -2,10 +2,8 @@
 <head>
 $webResourceManager.requireResourcesForContext("logic-supersede-alerts.context")
 <meta name="decorator" content="atl.general">
-$webResourceManager.requireResource("com.atlassian.auiplugin:dialog2")
-$webResourceManager.requireResource("com.atlassian.auiplugin:aui-experimental-tooltips") 
-$webResourceManager.requireResource("com.atlassian.auiplugin:aui-experimental-table-sortable") 
-$webResourceManager.requireResource("com.atlassian.auiplugin:aui-inline-dialog2")
+$webResourceManager.requireResource("com.atlassian.auiplugin:dialog2") $webResourceManager.requireResource("com.atlassian.auiplugin:aui-experimental-tooltips") $webResourceManager.requireResource("com.atlassian.auiplugin:aui-experimental-table-sortable")
+$webResourceManager.requireResource("com.atlassian.auiplugin:aui-inline-dialog2") $webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2") $webResourceManager.requireResource("com.atlassian.auiplugin:aui-label")
 <title>SUPERSEDE - Issue Manager</title>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 </head>

@@ -1,6 +1,7 @@
 AJS.$(document).ready(function() {
 	onPageLoad();
 	$(".projectElement").first().addClass('aui-nav-selected').removeClass('aui-nav');
+	AJS.$('#project-select').auiSelect2();
 });
 
 function onPageLoad() {
@@ -161,8 +162,12 @@ function onPageLoad() {
 	});
 
 	// Shows the dialog when the "Show dialog" button is clicked
-	AJS.$("#dialog-show-button").click(function() {
+	AJS.$("#attach-dialog-show-button").click(function() {
 		AJS.dialog2("#attach-dialog").show();
+	});
+	
+	AJS.$("#import-dialog-show-button").click(function() {
+		AJS.dialog2("#import-dialog").show();
 	});
 
 	AJS.$("#dialog-delete-button").click(function() {
@@ -194,6 +199,11 @@ function onPageLoad() {
 	});
 	
 	AJS.$(".simple-tooltip").tooltip();
+	
+	$('#project-select').change(function() {
+		alert($(this).val());
+	    $('.projectField').val($(this).val());
+	});
 
 	// MOVED TO THE .searchBtn function above
 	// jQuery('.searchBtn').click(function() {

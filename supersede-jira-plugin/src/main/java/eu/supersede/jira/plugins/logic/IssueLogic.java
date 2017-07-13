@@ -94,7 +94,7 @@ public class IssueLogic {
 		// jqlClauseBuilder.project("TEST").buildQuery();
 
 		// Build the basic Jql query
-		jqlClauseBuilder.customField(supersedeFieldId).isNotEmpty().and().project(loginLogic.getCurrentProject());
+		jqlClauseBuilder.customField(supersedeFieldId).isNotEmpty().and().project(req.getParameter("projectField") != null ? req.getParameter("projectField") : loginLogic.getCurrentProject());
 		if (id != null) {
 			// if an ID is provided, use in in filter
 			// ID MUST BE the beginnning of the string. You cannot put a
@@ -151,10 +151,10 @@ public class IssueLogic {
 	}
 
 	private void newIssue(HttpServletRequest req, Collection<String> errors, CustomField supersedeField) {
-		newIssue(req, req.getParameter("name"), req.getParameter("description"), req.getParameter("id"), errors, supersedeField);
+		newIssue(req, req.getParameter("name"), req.getParameter("description"), req.getParameter("id"), errors, supersedeField, loginLogic.getCurrentProject().toUpperCase());
 	}
 
-	public IssueResult newIssue(HttpServletRequest req, String name, String description, String id, Collection<String> errors, CustomField supersedeField) {
+	public IssueResult newIssue(HttpServletRequest req, String name, String description, String id, Collection<String> errors, CustomField supersedeField, String projectId) {
 		IssueResult issue = null;
 		ApplicationUser user = loginLogic.getCurrentUser(req);
 		// Perform creation if the "new" param is passed in
@@ -172,7 +172,8 @@ public class IssueLogic {
 		// issueInputParameters.setAssigneeId(user.getName());
 		issueInputParameters.setReporterId(user.getName());
 		// We hard-code the project name to be the project with the TUTORIAL key
-		Project project = projectService.getProjectByKey(user, loginLogic.getCurrentProject().toUpperCase()).getProject();
+		Project project = projectService.getProjectByKey(user,
+				/* loginLogic.getCurrentProject().toUpperCase() */ projectId).getProject();
 		if (null == project) {
 			errors.add("Cannot add issue for requirement " + id + ": no such project " + loginLogic.getCurrentProject());
 		} else {

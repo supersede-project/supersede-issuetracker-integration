@@ -57,6 +57,40 @@
 				</tbody>
 			</table>
 
+			<!-- PROJECT SELECTION IMPORT DIALOG -->
+			<section role="dialog" id="import-dialog" class="aui-layer aui-dialog2 aui-dialog2-medium" aria-hidden="true">
+				<!-- Dialog header -->
+				<header class="aui-dialog2-header">
+					<!-- The dialog's title -->
+					<h2 class="aui-dialog2-header-main">Select a project:</h2>
+					<!-- Close icon -->
+					<a class="aui-dialog2-header-close"> <span class="aui-icon aui-icon-small aui-iconfont-close-dialog">Close</span>
+					</a>
+
+				</header>
+				<!-- Main dialog content -->
+				<div class="aui-dialog2-content">
+					<form class="aui">
+					<aui-label for="my-toggle">Project where alert(s) will be imported:</aui-label>
+						<select id="project-select"> #foreach($project in $projects)
+							<option value=$project.getKey()>$project.getKey()</option> #end
+						</select>
+					</form>
+				</div>
+				<!-- Dialog footer -->
+				<footer class="aui-dialog2-footer">
+					<!-- Actions to render on the right of the footer -->
+					<div class="aui-dialog2-footer-actions">
+						<form action="supersede-alerts" method="get">
+							<input type="hidden" class="selectionList" name="selectionList"> <input type="hidden" class="chkDeleteStatus" name="chkDeleteStatus"> <input type="hidden" class="projectField" name="projectField">
+							<button id="dialog-submit-button" class="aui-button aui-button-primary dialogButton" name="action" value="Import">Create issue</button>
+						</form>
+					</div>
+					<!-- HINT TEXT -->
+				</footer>
+			</section>
+
+
 			<!-- ATTACH DIALOG -->
 			<section role="dialog" id="attach-dialog" class="aui-layer aui-dialog2 aui-dialog2-medium" aria-hidden="true">
 				<!-- Dialog header -->
@@ -81,9 +115,7 @@
 					<!-- Actions to render on the right of the footer -->
 					<div class="aui-dialog2-footer-actions">
 						<form action="supersede-alerts" method="get">
-							<input type="hidden" class="selectionList" name="selectionList"> 
-							<input type="hidden" id="issuesSelectionList" name="issuesSelectionList"> 
-							<input type="hidden" class="chkDeleteStatus" name="chkDeleteStatus">
+							<input type="hidden" class="selectionList" name="selectionList"> <input type="hidden" id="issuesSelectionList" name="issuesSelectionList"> <input type="hidden" class="chkDeleteStatus" name="chkDeleteStatus">
 							<button id="dialog-submit-button" class="aui-button aui-button-primary dialogButton toEnableDialog" name="action" value="Attach">Attach</button>
 						</form>
 						<button id="dialog-close-button" class="aui-button aui-button-link">Close</button>
@@ -102,8 +134,7 @@
 					</a>
 				</header>
 				<!-- Main dialog content -->
-				<div class="aui-dialog2-content dialogDataView">
-				</div>
+				<div class="aui-dialog2-content dialogDataView"></div>
 				<!-- Dialog footer -->
 				<footer class="aui-dialog2-footer">
 					<!-- Actions to render on the right of the footer -->
@@ -120,13 +151,10 @@
 			<!-- 			IMPORT - ATTACH - DELETE BUTTONS  -->
 			<div class="aui-group">
 				<div style="float: left" class="aui-item buttonPane">
-					<form style="float: left" action="supersede-alerts" method="get">
-						<input type="hidden" class="selectionList" name="selectionList"> <input type="hidden" class="chkDeleteStatus" name="chkDeleteStatus">
-						<button style="margin-left: 20px" name="action" value="Import" class="aui-button aui-button-primary alertManagement toEnable simple-tooltip" title="Create new issue from selected alert(s)">
-							<span class="glyphicon glyphicon-plus"></span> <span class="submit-text">Create Issue</span>
-						</button>
-					</form>
-					<button style="margin-left: 20px" id="dialog-show-button" class="aui-button aui-button-secondary alertManagement toEnable simple-tooltip" title="Attach selected alert to existing issue(s)">
+					<button style="margin-left: 20px" id="import-dialog-show-button" name="action" value="Import" class="aui-button aui-button-primary alertManagement toEnable simple-tooltip" title="Create new issue from selected alert(s)">
+						<span class="glyphicon glyphicon-plus"></span> <span class="submit-text">Create Issue</span>
+					</button>
+					<button style="margin-left: 20px" id="attach-dialog-show-button" class="aui-button aui-button-secondary alertManagement toEnable simple-tooltip" title="Attach selected alert to existing issue(s)">
 						<span class="glyphicon glyphicon-paperclip"></span> Attach to issue...
 					</button>
 					<input style="margin-left: 20px" type="checkbox" id="chkDeleteOnClick" class="toEnable" name="chkDeleteOnClick" value="" />Delete on create or attach

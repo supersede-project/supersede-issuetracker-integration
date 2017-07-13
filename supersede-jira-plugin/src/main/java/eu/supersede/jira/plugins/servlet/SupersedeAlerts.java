@@ -238,7 +238,6 @@ public class SupersedeAlerts extends HttpServlet {
 		context.put("customFieldManager", customFieldManager);
 		context.put("customFieldId", supersedeCustomFieldLogic.getSupersedeFieldId());
 		// PROJECTS RETRIEVAL, NEEDED BY ANY APP
-
 		List<Project> projects = ComponentAccessor.getProjectManager().getProjectObjects();
 		context.put("projects", projects);
 
@@ -252,9 +251,10 @@ public class SupersedeAlerts extends HttpServlet {
 			String issueID = "";
 			IssueResult newIssue = null;
 			if (isImport) {
+				String project = req.getParameter("projectField");
 				Alert a = alertLogic.fetchAlerts(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic, list[0], "").get(0);
 				issueID = a.getId() + System.currentTimeMillis();
-				newIssue = issueLogic.newIssue(req, "Issue " + a.getId(), a.getDescription(), issueID, errors, supersedeCustomFieldLogic.getSupersedeCustomField());
+				newIssue = issueLogic.newIssue(req, "Issue " + a.getId(), a.getDescription(), issueID, errors, supersedeCustomFieldLogic.getSupersedeCustomField(), project);
 			}
 			Alert a = null;
 			for (int i = 0; i < list.length; i++) {
@@ -272,7 +272,6 @@ public class SupersedeAlerts extends HttpServlet {
 						issueLogic.attachToIssue(a, issue);
 					}
 				}
-
 				if (req.getParameter("chkDeleteStatus") != null && "true".equals(req.getParameter("chkDeleteStatus"))) {
 					if (alertLogic.discardAlert(req, a.getId())) {
 						errors.add("alertId " + a.getId() + " deleted");

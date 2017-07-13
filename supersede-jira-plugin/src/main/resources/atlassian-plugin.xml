@@ -18,7 +18,10 @@
 		<dependency>com.atlassian.auiplugin:aui-experimental-table-sortable
 		</dependency>
 		<dependency>com.atlassian.auiplugin:aui-inline-dialog2</dependency>
-		<dependency>com.atlassian.auiplugin:aui-experimental-tooltips</dependency>
+		<dependency>com.atlassian.auiplugin:aui-experimental-tooltips
+		</dependency>
+		<dependency>com.atlassian.auiplugin:aui-select2</dependency>
+		<dependency>com.atlassian.auiplugin:aui-label</dependency>
 		<resource type="download" name="images/" location="/images" />
 		<resource type="download" name="js/" location="/js" />
 		<context>supersede-jira-plugin</context>
@@ -60,11 +63,10 @@
 			location="/js/logic-supersede-alerts.js" />
 		<context>logic-supersede-alerts.context</context>
 	</web-resource>
-	
+
 	<!-- RESOURCES FOR XML ALERT PAGE -->
 	<web-resource name="xmlAlert" key="xmlAlert">
-		<resource type="download" name="css/"
-			location="/css" />
+		<resource type="download" name="css/" location="/css" />
 		<context>xml-alert.context</context>
 	</web-resource>
 
