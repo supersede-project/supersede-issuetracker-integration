@@ -1,28 +1,20 @@
-<div class="aui-dialog2-content" id="attach-dialog-data">
-	<form class="aui">
-		<aui-label for="project-select-attach">Project where alert(s) will be imported:</aui-label>
-		<select id="project-select-attach"> #foreach($project in $projects)
-			<option value=$project.getKey()>$project.getKey()</option> #end
-		</select>
-	</form>
-	<table class="aui table-truncate aui-table-sortable sortableDialogTable ">
-		<thead>
-			<tr>
-				<th class="td-tiny"></th>
-				<th>ID</th>
-				<th>SS ID</th>
-				<th>Description</th>
-			</tr>
-		</thead>
-		<tbody class="issues-list">
-			#foreach( $issue in $issues )
-			<tr>
-				<td class="td-truncate"><input class="dialogChkSelected checkbox" type="checkbox" id=$issue.getCustomFieldValue($customFieldManager.getCustomFieldObject($customFieldId))></td>
-				<td class="td-truncate">$issue.getKey()</td>
-				<td class="td-truncate">$issue.getCustomFieldValue($customFieldManager.getCustomFieldObject($customFieldId))</td>
-				<td class="td-truncate">$issue.getSummary()</td>
-			</tr>
-			#end
-		</tbody>
-	</table>
-</div>
+<table class="aui table-truncate aui-table-sortable sortableDialogTable ">
+	<thead>
+		<tr>
+			<th class="td-tiny"></th>
+			<th>ID</th>
+			<th>SS ID</th>
+			<th>Description</th>
+		</tr>
+	</thead>
+	<tbody class="issues-list">
+		#foreach( $issue in $issues )
+		<tr>
+			<td class="td-truncate"><input class="dialogChkSelected checkbox" type="checkbox" id=$issue.getCustomFieldValue($customFieldManager.getCustomFieldObject($customFieldId))></td>
+			<td class="td-truncate">$issue.getKey()</td>
+			<td class="td-truncate">$issue.getCustomFieldValue($customFieldManager.getCustomFieldObject($customFieldId))</td>
+			<td class="td-truncate">$issue.getSummary()</td>
+		</tr>
+		#end
+	</tbody>
+</table>

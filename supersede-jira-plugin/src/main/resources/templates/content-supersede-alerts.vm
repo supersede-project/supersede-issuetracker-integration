@@ -109,13 +109,22 @@
 					</a>
 				</header>
 				<!-- Main dialog content -->
-				#parse("/templates/attach-dialog-data.vm")
+				<div class="aui-dialog2-content">
+					<form class="aui">
+						<aui-label for="project-select-attach">Project where alert(s) will be imported:</aui-label>
+						<select id="project-select-attach"> #foreach($project in $projects)
+							<option value=$project.getKey()>$project.getKey()</option> #end
+						</select>
+					</form>
+					<div id='attach-dialog-data'>#parse("/templates/attach-dialog-data.vm")</div>
+				</div>
 				<!-- Dialog footer -->
 				<footer class="aui-dialog2-footer">
 					<!-- Actions to render on the right of the footer -->
 					<div class="aui-dialog2-footer-actions">
 						<form action="supersede-alerts" method="get">
-							<input type="hidden" class="selectionList" name="selectionList"> <input type="hidden" id="issuesSelectionList" name="issuesSelectionList"> <input type="hidden" class="chkDeleteStatus" name="chkDeleteStatus">
+							<input type="hidden" class="projectField" name="projectField"> <input type="hidden" class="selectionList" name="selectionList"> <input type="hidden" id="issuesSelectionList" name="issuesSelectionList"> <input type="hidden"
+								class="chkDeleteStatus" name="chkDeleteStatus">
 							<button id="dialog-submit-button" class="aui-button aui-button-primary dialogButton toEnableDialog" name="action" value="Attach">Attach</button>
 						</form>
 						<button id="dialog-close-button" class="aui-button aui-button-link">Close</button>

@@ -1,4 +1,3 @@
-var oldValue;
 
 AJS.$(document).ready(
 		function() {
@@ -9,13 +8,6 @@ AJS.$(document).ready(
 		});
 
 function onPageLoad() {
-	
-	alert(oldValue);
-	if (oldValue) {
-		alert("entrato, con valore " + oldValue);
-		$('#project-select-attach').val(oldValue);
-	}
-
 	AJS.$('#project-select-import').auiSelect2();
 	AJS.$('#project-select-attach').auiSelect2();
 	$(".toEnable").prop('disabled', true);
@@ -221,8 +213,7 @@ function onPageLoad() {
 
 	$('#project-select-attach').change(
 			function() {
-				oldValue = $(this).val();
-				alert(oldValue);
+				$('.projectField').val($(this).val());
 				var self = jQuery(this);
 				jQuery.ajax({
 					type : "get",
@@ -235,7 +226,6 @@ function onPageLoad() {
 						AJS.tablessortable.setTableSortable(AJS
 								.$(".sortableDialogTable"));
 						onPageLoad();
-
 					},
 					error : function() {
 						console.log('error', arguments);
