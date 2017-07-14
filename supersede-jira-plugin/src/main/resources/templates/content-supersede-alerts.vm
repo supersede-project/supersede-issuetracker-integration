@@ -71,8 +71,8 @@
 				<!-- Main dialog content -->
 				<div class="aui-dialog2-content">
 					<form class="aui">
-					<aui-label for="my-toggle">Project where alert(s) will be imported:</aui-label>
-						<select id="project-select"> #foreach($project in $projects)
+						<aui-label for="project-select-import">Project where alert(s) will be imported:</aui-label>
+						<select id="project-select-import"> #foreach($project in $projects)
 							<option value=$project.getKey()>$project.getKey()</option> #end
 						</select>
 					</form>
@@ -109,7 +109,7 @@
 					</a>
 				</header>
 				<!-- Main dialog content -->
-				<div id="attach-dialog-data" class="dialogDataView">#parse("/templates/attach-dialog-data.vm")</div>
+				#parse("/templates/attach-dialog-data.vm")
 				<!-- Dialog footer -->
 				<footer class="aui-dialog2-footer">
 					<!-- Actions to render on the right of the footer -->

@@ -1,4 +1,10 @@
-<div class="aui-dialog2-content" >
+<div class="aui-dialog2-content" id="attach-dialog-data">
+	<form class="aui">
+		<aui-label for="project-select-attach">Project where alert(s) will be imported:</aui-label>
+		<select id="project-select-attach"> #foreach($project in $projects)
+			<option value=$project.getKey()>$project.getKey()</option> #end
+		</select>
+	</form>
 	<table class="aui table-truncate aui-table-sortable sortableDialogTable ">
 		<thead>
 			<tr>

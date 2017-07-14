@@ -1,15 +1,28 @@
-AJS.$(document).ready(function() {
-	onPageLoad();
-	$(".projectElement").first().addClass('aui-nav-selected').removeClass('aui-nav');
-	AJS.$('#project-select').auiSelect2();
-});
+var oldValue;
+
+AJS.$(document).ready(
+		function() {
+			onPageLoad();
+			$(".projectElement").first().addClass('aui-nav-selected')
+					.removeClass('aui-nav');
+			
+		});
 
 function onPageLoad() {
+	
+	alert(oldValue);
+	if (oldValue) {
+		alert("entrato, con valore " + oldValue);
+		$('#project-select-attach').val(oldValue);
+	}
+
+	AJS.$('#project-select-import').auiSelect2();
+	AJS.$('#project-select-attach').auiSelect2();
 	$(".toEnable").prop('disabled', true);
 	$(".toEnableDialog").prop('disabled', true);
 	var selectionString = '';
 	var issuesSelectionString = '';
-	
+
 	jQuery('.check-alerts').click(function() {
 		var self = jQuery(this);
 		jQuery.ajax({
@@ -53,7 +66,7 @@ function onPageLoad() {
 					}
 				});
 			});
-	
+
 	jQuery('.searchBtnDialog').click(
 			function() {
 				$("#selectionList").val(selectionString);
@@ -69,7 +82,8 @@ function onPageLoad() {
 				jQuery.ajax({
 					type : "get",
 					url : "supersede-alerts?searchIssues=y&searchAlertsInput="
-							+ searchStr+"&searchIssuesInput="+searchIssueStr,
+							+ searchStr + "&searchIssuesInput="
+							+ searchIssueStr,
 					success : function(data) {
 						console.log('dom', self, data);
 						$("#attach-dialog-data").html(data);
@@ -77,7 +91,7 @@ function onPageLoad() {
 						AJS.tablessortable.setTableSortable(AJS
 								.$(".sortableDialogTable"));
 						onPageLoad();
-						//alert("load!");
+						// alert("load!");
 					},
 					error : function() {
 						console.log('error', arguments);
@@ -117,7 +131,7 @@ function onPageLoad() {
 				if ($(this).prop('checked')) {
 					// Write a string containing the IDs of selected
 					// alerts
-					//alert("entered");
+					// alert("entered");
 					issuesSelectionString += $(this).attr('id');
 					issuesSelectionString += ':::';
 					$(".toEnableDialog").prop('disabled', false);
@@ -135,13 +149,13 @@ function onPageLoad() {
 			});
 
 	jQuery('#chkDeleteOnClick').click(function() {
-		//alert("triggereabbd")
+		// alert("triggereabbd")
 		if ($(this).prop('checked')) {
 			$(".chkDeleteStatus").val("true");
 		} else {
 			$(".chkDeleteStatus").val("true");
 		}
-		//alert($(this).prop('checked'));
+		// alert($(this).prop('checked'));
 	});
 
 	var opt = {
@@ -165,7 +179,7 @@ function onPageLoad() {
 	AJS.$("#attach-dialog-show-button").click(function() {
 		AJS.dialog2("#attach-dialog").show();
 	});
-	
+
 	AJS.$("#import-dialog-show-button").click(function() {
 		AJS.dialog2("#import-dialog").show();
 	});
@@ -191,19 +205,44 @@ function onPageLoad() {
 		console.log('alert management')
 		$("#selectionList").val(selectionString);
 	});
-	
+
 	jQuery('.projectElement').click(function() {
 		$(".projectElement").removeClass('aui-nav-selected');
 		$(".projectElement").addClass('aui-nav');
 		$(this).removeClass('aui-nav').addClass('aui-nav-selected');
 	});
-	
+
 	AJS.$(".simple-tooltip").tooltip();
-	
-	$('#project-select').change(function() {
+
+	$('#project-select-import').change(function() {
 		alert($(this).val());
-	    $('.projectField').val($(this).val());
+		$('.projectField').val($(this).val());
 	});
+
+	$('#project-select-attach').change(
+			function() {
+				oldValue = $(this).val();
+				alert(oldValue);
+				var self = jQuery(this);
+				jQuery.ajax({
+					type : "get",
+					url : "supersede-alerts?searchIssues=y&projectField="
+							+ $(this).val(),
+					success : function(data) {
+						console.log('dom', self, data);
+						$("#attach-dialog-data").html(data);
+						// self.parent().parent().remove();
+						AJS.tablessortable.setTableSortable(AJS
+								.$(".sortableDialogTable"));
+						onPageLoad();
+
+					},
+					error : function() {
+						console.log('error', arguments);
+					}
+				});
+				// alert("load!");
+			});
 
 	// MOVED TO THE .searchBtn function above
 	// jQuery('.searchBtn').click(function() {

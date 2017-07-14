@@ -95,7 +95,7 @@ public class IssueLogic {
 
 		// Build the basic Jql query
 		jqlClauseBuilder.customField(supersedeFieldId).isNotEmpty().and().project(req.getParameter("projectField") != null ? req.getParameter("projectField") : loginLogic.getCurrentProject());
-		if (id != null) {
+		if (id != null && !"".equals(id)) {
 			// if an ID is provided, use in in filter
 			// ID MUST BE the beginnning of the string. You cannot put a
 			// wildcard at the beginning of the search
