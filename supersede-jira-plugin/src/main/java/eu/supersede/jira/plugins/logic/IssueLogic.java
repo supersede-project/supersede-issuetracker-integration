@@ -23,6 +23,7 @@ import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.issue.attachment.CreateAttachmentParamsBean;
 import com.atlassian.jira.issue.fields.CustomField;
 import com.atlassian.jira.issue.search.SearchException;
+import com.atlassian.jira.issue.search.SearchResults;
 import com.atlassian.jira.jql.builder.JqlClauseBuilder;
 import com.atlassian.jira.jql.builder.JqlQueryBuilder;
 import com.atlassian.jira.project.Project;
@@ -73,6 +74,21 @@ public class IssueLogic {
 
 	public IssueResult getIssue(ApplicationUser user, String issueKey) {
 		return issueService.getIssue(user, issueKey);
+	}
+	
+	public List<Issue> getIssuesFromFilter(HttpServletRequest req, Query query){
+		ApplicationUser user = loginLogic.getCurrentUser(req);
+		
+		PagerFilter pagerFilter = PagerFilter.getUnlimitedFilter();
+		SearchResults searchResults = null;
+		try {
+			// Perform search results
+			searchResults = searchService.search(user, query, pagerFilter);
+		} catch (SearchException e) {
+			e.printStackTrace();
+		}
+		// return the results
+		return searchResults.getIssues();
 	}
 
 	/**

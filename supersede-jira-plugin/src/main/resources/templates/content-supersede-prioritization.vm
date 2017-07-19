@@ -1,0 +1,26 @@
+<html>
+<head>
+$webResourceManager.requireResourcesForContext("content-supersede-alerts.context")
+$webResourceManager.requireResourcesForContext("content-supersede-prioritization.context")
+
+</head>
+
+</head>
+<body>
+
+
+<form class="aui">
+    <div class="field-group">
+        <label for="filter-select">$i18n.getText("supersede-prioritization-filters.label")</label>
+        <select class="select" id="filter-select" name="search-filters">
+            #foreach($filter in $filters)
+				<option value=$filter.getId()>$filter.getName()</option> #end
+        </select>
+    </div>
+</form>
+<div id='export-data'>#parse("/templates/prioritization-export-data.vm")</div>
+
+
+
+</body>
+</html>

@@ -2,6 +2,12 @@
 
 <atlassian-plugin key="${atlassian.plugin.key}" name="${project.name}"
 	plugins-version="2">
+	<!-- GD0996 TEST -->
+	<ao key="ao-module">
+  		<description>The module configuring the Active Objects service used by this plugin</description>
+  		<entity>eu.supersede.jira.plugins.servlet.SupersedeProcess</entity>
+	</ao>
+	<!-- GD0996 TEST END -->
 	<plugin-info>
 		<description>${project.description}</description>
 		<version>${project.version}</version>
@@ -62,6 +68,12 @@
 		<resource type="download" name="logic-supersede-alerts.js"
 			location="/js/logic-supersede-alerts.js" />
 		<context>logic-supersede-alerts.context</context>
+	</web-resource>
+	
+	<web-resource name="LogicPriority" key="LogicPriority">
+		<resource type="download" name="logic-supersede-prioritization.js"
+			location="/js/logic-supersede-prioritization.js" />
+		<context>logic-supersede-prioritization.context</context>
 	</web-resource>
 
 	<!-- RESOURCES FOR XML ALERT PAGE -->
@@ -158,6 +170,21 @@
 		key="supersede-alerts" class="eu.supersede.jira.plugins.servlet.SupersedeAlerts">
 		<description key="supersede-alerts.description">The Supersede Alerts Plugin</description>
 		<url-pattern>/supersede-alerts</url-pattern>
+	</servlet>
+	
+	<!-- SUPERSEDE PRIORITIZATION -->
+
+	<web-item name="supersede-prioritization" i18n-name-key="supersede-prioritization.name"
+		key="supersede-prioritization-item" section="supersede-dropdown-menu/supersede-section"
+		weight="1000">
+		<description key="supersede-prioritization.description">The supersede-prioritization Plugin</description>
+		<label key="supersede-prioritization.label" />
+		<link linkId="supersede-prioritization-link">/plugins/servlet/supersede-prioritization</link>
+	</web-item>
+	<servlet name="Supersede Prioritization" i18n-name-key="supersede-prioritization.name"
+		key="supersede-prioritization" class="eu.supersede.jira.plugins.servlet.SupersedePrioritization">
+		<description key="supersede-prioritization.description">The Supersede Prioritization Plugin</description>
+		<url-pattern>/supersede-prioritization</url-pattern>
 	</servlet>
 
 
