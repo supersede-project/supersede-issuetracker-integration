@@ -1,5 +1,7 @@
 package eu.supersede.jira.plugins.servlet;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -18,7 +20,6 @@ import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.bc.project.ProjectService;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.CustomFieldManager;
-import com.atlassian.jira.issue.search.SearchContext;
 import com.atlassian.jira.issue.search.SearchRequest;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.sharing.SharedEntityColumn;
@@ -33,6 +34,7 @@ import com.google.common.collect.Maps;
 
 import eu.supersede.jira.plugins.logic.IssueLogic;
 import eu.supersede.jira.plugins.logic.LoginLogic;
+import eu.supersede.jira.plugins.logic.ProcessService;
 
 public class SupersedePrioritization extends HttpServlet {
 
@@ -47,13 +49,19 @@ public class SupersedePrioritization extends HttpServlet {
 
 	private IssueLogic issueLogic;
 
+	private final ProcessService processService;
+
+	private static final String PARAM_ACTION = "action";
+
 	public SupersedePrioritization(IssueService issueService, ProjectService projectService,
 			SearchService searchService, UserManager userManager,
 			com.atlassian.jira.user.util.UserManager jiraUserManager, TemplateRenderer templateRenderer,
-			PluginSettingsFactory pluginSettingsFactory, CustomFieldManager customFieldManager) {
+			PluginSettingsFactory pluginSettingsFactory, CustomFieldManager customFieldManager,
+			ProcessService processService) {
 		this.templateRenderer = templateRenderer;
 		loginLogic = LoginLogic.getInstance();
 		issueLogic = IssueLogic.getInstance(issueService, projectService, searchService);
+		this.processService = checkNotNull(processService);
 	}
 
 	public void getResult(HttpServletRequest req) {
@@ -91,16 +99,48 @@ public class SupersedePrioritization extends HttpServlet {
 						.getFilter(new JiraServiceContextImpl(user), Long.valueOf(filter));
 				context.put("issues", issueLogic.getIssuesFromFilter(req, sr.getQuery()));
 				context.put("filter", sr);
+				List<SupersedeProcess> processes = processService.getAllProcesses();
+
+				context.put("processes", processes);
 				templateRenderer.render("/templates/prioritization-export-data.vm", context, resp.getWriter());
 				return;
 				// sr.
 				// nella issue logic caricare le issue collegate al filtro
 			}
+			// else if("y".equals(req.getParameter("createProcess"))){
+			// String filter = req.getParameter("filter");
+			// SearchRequest sr =
+			// ComponentAccessor.getComponentOfType(SearchRequestService.class)
+			// .getFilter(new JiraServiceContextImpl(user),
+			// Long.valueOf(filter));
+			// List<Issue> issues = issueLogic.getIssuesFromFilter(req,
+			// sr.getQuery());
+			//
+			//
+			// }
 		}
 		resp.setContentType("text/html;charset=utf-8");
 		// Pass in the list of issues as the context
 
 		templateRenderer.render("/templates/logic-supersede-prioritization.vm", context, resp.getWriter());
+	}
+
+	@Override
+	protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+		if ("CreateProc".equals(req.getParameter(PARAM_ACTION))) {
+			String id = req.getParameter("procId");
+			String description = req.getParameter("procDesc");
+			String filter = req.getParameter("procFilter");
+			if (filter != null && !filter.isEmpty()) {
+				ApplicationUser user = loginLogic.getCurrentUser(req);
+				SearchRequest sr = ComponentAccessor.getComponentOfType(SearchRequestService.class)
+						.getFilter(new JiraServiceContextImpl(user), Long.valueOf(filter));
+
+				processService.add(id, description, sr.getQuery().getQueryString(), "In progress");
+			}
+		}
+
+		 res.sendRedirect(req.getContextPath() + "/plugins/servlet/supersede-prioritization");
 	}
 
 }

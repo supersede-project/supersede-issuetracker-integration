@@ -1,4 +1,5 @@
-$filter.getQuery().getQueryString();
+<blockquote>$filter.getQuery().getQueryString();</blockquote>
+<strong class="title">Issues:</strong>
 <table class="aui table-truncate aui-table-sortable sortableDialogTable ">
 	<thead>
 		<tr>
@@ -15,3 +16,41 @@ $filter.getQuery().getQueryString();
 		#end
 	</tbody>
 </table>
+<p>
+<strong class="title">Processes:</strong>
+</p>
+<table class="aui table-truncate aui-table-sortable sortableDialogTable ">
+	<thead>
+		<tr>
+			<th>Status</th>
+			<th>$i18n.getText("supersede-prioritization-process-id.label")</th>
+			<th>$i18n.getText("supersede-prioritization-process-description.label")</th>
+			<th>$i18n.getText("supersede-prioritization-process-query.label")</th>
+		</tr>
+	</thead>
+	<tbody class="process-list">
+		#foreach( $process in $processes )
+		<tr>
+			<td class="td-truncate">
+			#if($process.getStatus() == 'In progress')
+			<span class="aui-icon aui-icon-small aui-iconfont-build">In progress</span>
+			#elseif($process.getStatus() == 'Done')
+			<span class="aui-icon aui-icon-small aui-iconfont-success">Done</span>
+			#else
+			<span class="aui-icon aui-icon-small aui-iconfont-remove-label">Removed</span>
+			#end
+			</td>
+			<td class="td-truncate">$process.getProcId()</td>
+			<td class="td-truncate">$process.getDescription()</td>
+			<td class="td-truncate">$process.getQuery()</td>
+		</tr>
+		#end
+	</tbody>
+</table>
+
+<!-- <div class="aui-message aui-message-success">
+    <p class="title">
+        <strong>$process.getProcId()</strong>
+    </p>
+    <p>$process.getQuery()</p>
+</div> -->

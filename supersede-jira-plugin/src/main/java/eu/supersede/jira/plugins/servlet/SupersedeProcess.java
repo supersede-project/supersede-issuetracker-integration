@@ -1,7 +1,25 @@
 package eu.supersede.jira.plugins.servlet;
 
-//import net.java.ao.Entity;
+import java.util.List;
 
-public class SupersedeProcess {// extends Entity {
+import net.java.ao.Entity;
+
+public interface SupersedeProcess extends Entity {
+	
+	String getProcId();
+	
+	void setProcId(String id);
+	
+	String getDescription();
+	
+	void setDescription(String desc);
+	
+	String getStatus();
+	
+	void setStatus(String status);
+	
+	String getQuery();
+	
+	void setQuery(String query);
 
 }

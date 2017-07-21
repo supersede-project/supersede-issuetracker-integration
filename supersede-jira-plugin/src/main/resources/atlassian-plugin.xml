@@ -74,6 +74,9 @@
 		<resource type="download" name="logic-supersede-prioritization.js"
 			location="/js/logic-supersede-prioritization.js" />
 		<context>logic-supersede-prioritization.context</context>
+		<transformation extension="js">
+            <transformer key="jsI18n"/>
+        </transformation>
 	</web-resource>
 
 	<!-- RESOURCES FOR XML ALERT PAGE -->
@@ -100,6 +103,10 @@
 		filter="" />
 	<component-import key="customFieldManager"
 		interface="com.atlassian.jira.issue.CustomFieldManager" filter="" />
+		<!-- GD0996 TEST -->
+	<component-import key="ao"
+		interface="com.atlassian.activeobjects.external.ActiveObjects" filter="" />
+		<!-- GD0996 TEST END-->
 
 
 	<!-- SUPERSEDE CUSTOM FIELD -->
