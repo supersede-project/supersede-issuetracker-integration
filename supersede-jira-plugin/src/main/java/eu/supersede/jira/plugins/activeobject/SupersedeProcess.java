@@ -1,5 +1,7 @@
 package eu.supersede.jira.plugins.activeobject;
 
+import java.util.Date;
+
 import net.java.ao.Entity;
 
 public interface SupersedeProcess extends Entity {
@@ -33,19 +35,19 @@ public interface SupersedeProcess extends Entity {
 	// SS)
 	String getSSProjectId();
 
-	void setSSProjectId(int id);
-
+	void setSSProjectId(String id);
+//
 //	// Mapping betweeen Issues and Requirements, because 2 Processes could be
-//	// going involving the same issue
-//	HashMap<String, String> getIssueRequirementsMap();
+	// // going involving the same issue
+	String getIssuesRequirementsMap();
 //
-//	void setIssuesRequirementsMap(HashMap<String, String> issuesRequirementsMap);
-//
-//	// Creation date (since more than a process could be started with the same
-//	// query)
-//
-//	Date getCreationDate();
-//
-//	void setCreationDate(Date creationDate);
+	void setIssuesRequirementsMap(String issuesRequirementsMap);
+
+	// Creation date (since more than a process could be started with the same
+	// query)
+
+	Date getCreationDate();
+
+	void setCreationDate(Date creationDate);
 
 }

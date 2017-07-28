@@ -3,6 +3,7 @@ package eu.supersede.jira.plugins.activeobject;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.collect.Lists.newArrayList;
 
+import java.util.HashMap;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -27,7 +28,7 @@ public class ProcessServiceImpl implements ProcessService {
 		final SupersedeProcess process = ao.create(SupersedeProcess.class);
 		process.setDescription(desc);
 		process.setQuery(query);
-		process.setSSProjectId(-1);
+		process.setSSProjectId("");
 		process.save();
 		return process;
 	}
@@ -35,10 +36,16 @@ public class ProcessServiceImpl implements ProcessService {
 	@Override
 	public SupersedeProcess add(String desc, String query, String status) {
 		SupersedeProcess process = add(desc, query);
-		// final SupersedeProcess process = ao.create(SupersedeProcess.class);
-		// process.setProcId(id);
-		// process.setDescription(desc);
-		// process.setQuery(query);
+		process.setStatus(status);
+		process.save();
+		return process;
+	}
+	
+	@Override
+	public SupersedeProcess add(String desc, String processID, String issueRequirementsMap, String query, String status) {
+		SupersedeProcess process = add(desc, query);
+		process.setSSProjectId(processID);
+		process.setIssuesRequirementsMap(issueRequirementsMap);
 		process.setStatus(status);
 		process.save();
 		return process;

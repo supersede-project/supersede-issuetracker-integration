@@ -29,10 +29,14 @@ import com.atlassian.jira.sharing.search.SharedEntitySearchContext;
 import com.atlassian.jira.sharing.search.SharedEntitySearchParameters;
 import com.atlassian.jira.sharing.search.SharedEntitySearchParametersBuilder;
 import com.atlassian.jira.user.ApplicationUser;
+import com.atlassian.jira.util.json.JSONArray;
+import com.atlassian.jira.util.json.JSONException;
+import com.atlassian.jira.util.json.JSONObject;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
 import com.google.common.collect.Maps;
+import com.google.gson.JsonObject;
 
 import eu.supersede.jira.plugins.activeobject.ProcessService;
 import eu.supersede.jira.plugins.activeobject.SupersedeProcess;
@@ -55,7 +59,7 @@ public class SupersedePrioritization extends HttpServlet {
 	private IssueLogic issueLogic;
 
 	private ProcessLogic processLogic;
-	
+
 	private RequirementLogic requirementLogic;
 
 	private final ProcessService processService;
@@ -70,7 +74,7 @@ public class SupersedePrioritization extends HttpServlet {
 		requirementLogic = RequirementLogic.getInstance(issueService, projectService, searchService);
 		issueLogic = IssueLogic.getInstance(issueService, projectService, searchService);
 		this.processService = checkNotNull(processService);
-		
+
 		loginLogic.loadConfiguration(pluginSettingsFactory.createGlobalSettings());
 	}
 
@@ -123,50 +127,62 @@ public class SupersedePrioritization extends HttpServlet {
 			//
 			//
 			// }
-		}
-		resp.setContentType("text/html;charset=utf-8");
-		// Pass in the list of issues as the context
+			resp.setContentType("text/html;charset=utf-8");
+			// Pass in the list of issues as the context
 
-		templateRenderer.render("/templates/logic-supersede-prioritization.vm", context, resp.getWriter());
+			templateRenderer.render("/templates/logic-supersede-prioritization.vm", context, resp.getWriter());
+		}
 	}
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-		// This must create a process on SS and "on JIRA" at the same time
-		if ("CreateProc".equals(req.getParameter(PARAM_ACTION))) {
-			String id = req.getParameter("procId");
-			String description = req.getParameter("procDesc");
-			String filter = req.getParameter("procFilter");
-			if (filter != null && !filter.isEmpty()) {
-				ApplicationUser user = loginLogic.getCurrentUser(req);
-				SearchRequest sr = ComponentAccessor.getComponentOfType(SearchRequestService.class).getFilter(new JiraServiceContextImpl(user), Long.valueOf(filter));
+		try {
+			// This must create a process on SS and "on JIRA" at the same time
+			if ("CreateProc".equals(req.getParameter(PARAM_ACTION))) {
+				String id = req.getParameter("procId");
+				String description = req.getParameter("procDesc");
+				String filter = req.getParameter("procFilter");
+				if (filter != null && !filter.isEmpty()) {
+					ApplicationUser user = loginLogic.getCurrentUser(req);
+					SearchRequest sr = ComponentAccessor.getComponentOfType(SearchRequestService.class).getFilter(new JiraServiceContextImpl(user), Long.valueOf(filter));
 
-				String processSSID = processLogic.createProcess(req, id);
+					String processSSID = processLogic.createProcess(req, id);
 
-				// Get a list of issues from this query
-				List<Issue> issueList = issueLogic.getIssuesFromFilter(req, sr.getQuery());
-				HashMap<String, String> issueRequirementsMap = new HashMap<>();
-				for(Issue i :issueList) {
-					issueRequirementsMap.put(i.getKey(), requirementLogic.createRequirement(processSSID, i));
+					// Get a list of issues from this query
+					List<Issue> issueList = issueLogic.getIssuesFromFilter(req, sr.getQuery());
+					StringBuilder issueRequirementsMap = new StringBuilder();
+
+					for (Issue i : issueList) {
+						// creating a String map "key###value,key2###value2.."
+						// and
+						// so on
+						String restResult = requirementLogic.createRequirement(processSSID, i);
+
+						JSONObject jo = new JSONObject(restResult);
+						String requirementId = jo.getString("requirementId");
+						issueRequirementsMap.append(i.getKey()).append("###").append(requirementId).append(",");
+
+					}
+
+					// Create a requirement from
+
+					// ProcessService added at last
+					processService.add(description, processSSID, issueRequirementsMap.toString(), sr.getQuery().getQueryString(), "In progress");
+
 				}
-				
-				
-				//Create a requirement from 
 
-				//ProcessService added at last
-				processService.add(description, sr.getQuery().getQueryString(), "In progress");
+				// Create a Process and save the id provided by Supersede
 
+				// Save a map of issues and Requirements (since an Issue can be
+				// inserted in a Process even though the same issue could be
+				// involved in another one)
+
+				res.sendRedirect(req.getContextPath() + "/plugins/servlet/supersede-prioritization");
 			}
 
-			// Create a Process and save the id provided by Supersede
-
-			// Save a map of issues and Requirements (since an Issue can be
-			// inserted in a Process even though the same issue could be
-			// involved in another one)
-
-			res.sendRedirect(req.getContextPath() + "/plugins/servlet/supersede-prioritization");
+		} catch (JSONException e) {
+			e.printStackTrace();
 		}
-
 	}
 
 }

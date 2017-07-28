@@ -17,6 +17,7 @@ import com.atlassian.jira.bc.issue.IssueService;
 import com.atlassian.jira.bc.issue.IssueService.IssueResult;
 import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.bc.project.ProjectService;
+import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.user.ApplicationUser;
@@ -183,8 +184,9 @@ public class RequirementLogic {
 		try {
 			String sessionId = loginLogic.login();
 			URL url = new URL(loginLogic.getUrl() + "supersede-dm-app/processes/requirements/new");
+			String jiraIssueUrl = " " + ComponentAccessor.getApplicationProperties().getString("jira.baseurl") + "/browse/";
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-			StringBuilder params = new StringBuilder("processId=").append(processId).append("&name=").append(i.getKey()).append("&description=").append(i.getDescription());
+			StringBuilder params = new StringBuilder("processId=").append(processId).append("&name=").append(i.getKey()).append("&description=").append(i.getDescription() + jiraIssueUrl + i.getKey());
 
 			conn.setConnectTimeout(LoginLogic.CONN_TIMEOUT);
 			conn.setReadTimeout(LoginLogic.CONN_TIMEOUT);

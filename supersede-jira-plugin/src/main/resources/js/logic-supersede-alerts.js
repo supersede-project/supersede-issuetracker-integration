@@ -4,6 +4,7 @@ AJS.$(document).ready(
 			onPageLoad();
 			$(".projectElement").first().addClass('aui-nav-selected')
 					.removeClass('aui-nav');
+			$('.projectField').val($('#project-select-import').val());
 			
 		});
 

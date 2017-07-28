@@ -44,7 +44,7 @@
 	<tbody class="process-list">
 		#if ($processes.isEmpty())
 		<tr>
-			<td colspan="100%">No processes created!</td>
+			<td colspan="4">No processes created!</td>
 		</tr>
 		#end #foreach( $process in $processes )
 		<tr>
@@ -65,7 +65,7 @@
 					<span class="aui-icon aui-icon-small aui-iconfont-approve">Ready for import</span> Save
 				</button>
 			</td>
-			<td class="td-truncate">$process.getIssues()</td>
+			<td class="td-truncate">$process.getIssuesRequirementsMap()</td>
 			<td class="td-truncate">$process.getSSProjectId()</td>
 		</tr>
 		#end
