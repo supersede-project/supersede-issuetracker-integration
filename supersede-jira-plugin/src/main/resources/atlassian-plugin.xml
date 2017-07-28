@@ -5,7 +5,7 @@
 	<!-- GD0996 TEST -->
 	<ao key="ao-module">
   		<description>The module configuring the Active Objects service used by this plugin</description>
-  		<entity>eu.supersede.jira.plugins.servlet.SupersedeProcess</entity>
+  		<entity>eu.supersede.jira.plugins.activeobject.SupersedeProcess</entity>
 	</ao>
 	<!-- GD0996 TEST END -->
 	<plugin-info>

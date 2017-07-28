@@ -64,6 +64,12 @@ $webResourceManager.requireResourcesForContext("content-supersede-prioritization
 			class="submit-text">$i18n.getText("supersede-prioritization-show-processes-btn.label")</span>
 	</button>
 	
+	<button style="margin-left: 20px" id="hide-processes-button"
+		name="action" value="Show" class="aui-button aui-button-secondary">
+		<span class="glyphicon glyphicon-plus"></span> <span
+			class="submit-text">$i18n.getText("supersede-prioritization-show-processes-btn.label")</span>
+	</button>
+	
 	<div id='export-data'>#parse("/templates/prioritization-export-data.vm")</div>
 
 

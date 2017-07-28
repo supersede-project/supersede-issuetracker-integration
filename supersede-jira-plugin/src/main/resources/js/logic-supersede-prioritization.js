@@ -43,59 +43,77 @@ function onPageLoad() {
 				});
 				// alert("load!");
 			});
-	
+
 	AJS.$("#create-process-button").click(function() {
 		AJS.dialog2("#create-process-dialog").show();
 		$('.procFilter').val($('#filter-select').val());
 	});
-	
-	$('#dialog-submit-button').click( function(){
+
+	$('#dialog-submit-button').click(function() {
 		$('.procId').val($('#processId').val());
 		$('.procDesc').val($('#description').val());
 		$('.procFilter').val($('#filter-select').val());
 	});
-	
-	$('#processId').ready(function() {
-		$('#processId').val(AJS.I18n.getText("supersede-prioritization-create-process-default-id.label")+ new Date().getTime());
-	});
-	
-	$("#show-processes-button").click(
-	function() {
-		var self = jQuery(this);
-		jQuery.ajax({
-			type : "get",
-			url : "supersede-prioritization?showProcesses=y",
-			success : function(data) {
-				console.log('dom', self, data);
-				$("#export-data").html(data);
-				// self.parent().parent().remove();
-				//onPageLoad();
-			},
-			error : function() {
-				console.log('error', arguments);
-			}
+
+	$('#processId')
+			.ready(
+					function() {
+						$('#processId')
+								.val(
+										AJS.I18n
+												.getText("supersede-prioritization-create-process-default-id.label")
+												+ new Date().getTime());
+					});
+
+	$("#process-start-button").click(function() {
+		alert($(this).closest("tr").find(".issueQuery").text());
+		$(this).closest("tr").find(".issueQuery").text();
+
+		var posting = $.post("http://localhost/#/supersede-dm-app/processes/new", {
+			name : 'SS test Process'
 		});
+		posting.done(function(data) {
+			alert(data);
+		})
+	});
+
+	$("#process-save-button").click(function() {
+		alert("save");
+		// var self = jQuery(this);
+		// jQuery.ajax({
+		// type : "get",
+		// url : "supersede-prioritization?showProcesses=y",
+		// success : function(data) {
+		// console.log('dom', self, data);
+		// $("#export-data").html(data);
+		// // self.parent().parent().remove();
+		// // onPageLoad();
+		// },
+		// error : function() {
+		// console.log('error', arguments);
+		// }
+		// });
 		// alert("load!");
 	});
 
-//	$("#create-process-button").click(
-//			function() {
-//				alert($('#filter-select').val());
-//				var self = jQuery(this);
-//				jQuery.ajax({
-//					type : "post",
-//					url : "supersede-prioritization?createProcess=y&filter="
-//							+ $('#filter-select').val(),
-//					success : function(data) {
-//						console.log('dom', self, data);
-//						$("#export-data").html(data);
-//						// self.parent().parent().remove();
-//						//onPageLoad();
-//					},
-//					error : function() {
-//						console.log('error', arguments);
-//					}
-//				});
-//				// alert("load!");
-//			});
+	// $("#create-process-button").click(
+	// function() {
+	// alert($('#filter-select').val());
+	// var self = jQuery(this);
+	// jQuery.ajax({
+	// type : "post",
+	// url : "supersede-prioritization?createProcess=y&filter="
+	// + $('#filter-select').val(),
+	// success : function(data) {
+	// console.log('dom', self, data);
+	// $("#export-data").html(data);
+	// // self.parent().parent().remove();
+	// //onPageLoad();
+	// },
+	// error : function() {
+	// console.log('error', arguments);
+	// }
+	// });
+	// // alert("load!");
+	// });
 }

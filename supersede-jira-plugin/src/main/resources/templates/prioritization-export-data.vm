@@ -8,7 +8,11 @@
 		</tr>
 	</thead>
 	<tbody class="issues-list">
-		#foreach( $issue in $issues )
+		#if ($issues.isEmpty())
+		<tr>
+			<td colspan="2"><b>There are no issues in this search!</b></td>
+		</tr>
+		#end #foreach( $issue in $issues )
 		<tr>
 			<td class="td-truncate">$issue.getKey()</td>
 			<td class="td-truncate">$issue.getSummary()</td>
@@ -16,8 +20,13 @@
 		#end
 	</tbody>
 </table>
+<br>
+<br>
+<hr>
+<br>
+<br>
 <p>
-<strong class="title">Processes:</strong>
+	<strong class="title">Processes:</strong>
 </p>
 <table class="aui table-truncate aui-table-sortable sortableDialogTable ">
 	<thead>
@@ -26,23 +35,38 @@
 			<th>$i18n.getText("supersede-prioritization-process-id.label")</th>
 			<th>$i18n.getText("supersede-prioritization-process-description.label")</th>
 			<th>$i18n.getText("supersede-prioritization-process-query.label")</th>
+			<th>$i18n.getText("supersede-prioritization-process-action.label")</th>
+			<th>Issues</th>
+			<th>SS project ID</th>
+
 		</tr>
 	</thead>
 	<tbody class="process-list">
-		#foreach( $process in $processes )
+		#if ($processes.isEmpty())
 		<tr>
-			<td class="td-truncate">
-			#if($process.getStatus() == 'In progress')
-			<span class="aui-icon aui-icon-small aui-iconfont-build">In progress</span>
-			#elseif($process.getStatus() == 'Done')
-			<span class="aui-icon aui-icon-small aui-iconfont-success">Done</span>
-			#else
-			<span class="aui-icon aui-icon-small aui-iconfont-remove-label">Removed</span>
-			#end
+			<td colspan="100%">No processes created!</td>
+		</tr>
+		#end #foreach( $process in $processes )
+		<tr>
+			<td class="td-truncate">#if($process.getStatus() == 'In progress') <span class="aui-icon aui-icon-small aui-iconfont-build">In progress</span> #elseif($process.getStatus() == 'Done') <span class="aui-icon aui-icon-small aui-iconfont-success">Done</span>
+				#else <span class="aui-icon aui-icon-small aui-iconfont-remove-label">Removed</span> #end
 			</td>
-			<td class="td-truncate">$process.getProcId()</td>
+			<td class="td-truncate">$process.getID()</td>
 			<td class="td-truncate">$process.getDescription()</td>
-			<td class="td-truncate">$process.getQuery()</td>
+			<td class="td-truncate issueQuery">$process.getQuery()</td>
+			<td class="td-truncate">
+				<button id="process-start-button" class="aui-button">
+					<span class="aui-icon aui-icon-small aui-iconfont-deploy">Start</span> Start
+				</button>
+				<button id="process-wait-button" class="aui-button disabled">
+					<span class="aui-icon aui-icon-wait">Loading...</span> Wait
+				</button>
+				<button id="process-save-button" class="aui-button">
+					<span class="aui-icon aui-icon-small aui-iconfont-approve">Ready for import</span> Save
+				</button>
+			</td>
+			<td class="td-truncate">$process.getIssues()</td>
+			<td class="td-truncate">$process.getSSProjectId()</td>
 		</tr>
 		#end
 	</tbody>
