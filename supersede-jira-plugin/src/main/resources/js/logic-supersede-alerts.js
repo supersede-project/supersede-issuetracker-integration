@@ -4,7 +4,9 @@ AJS.$(document).ready(
 			onPageLoad();
 			$(".projectElement").first().addClass('aui-nav-selected')
 					.removeClass('aui-nav');
+			//Set both fields with the same value
 			$('.projectField').val($('#project-select-import').val());
+			$('#project-select-attach').val($('#project-select-import').val());
 			
 		});
 
@@ -208,7 +210,6 @@ function onPageLoad() {
 	AJS.$(".simple-tooltip").tooltip();
 
 	$('#project-select-import').change(function() {
-		alert($(this).val());
 		$('.projectField').val($(this).val());
 	});
 

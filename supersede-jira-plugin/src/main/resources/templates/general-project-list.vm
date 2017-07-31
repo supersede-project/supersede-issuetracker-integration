@@ -1,16 +1,16 @@
-<div class="aui-page-panel-nav">
-	<nav class="aui-navgroup aui-navgroup-vertical">
-		<div class="aui-navgroup-inner">
-			<div class="aui-nav-heading">
-				<h2>
-					<strong>Projects</strong>
-				</h2>
-			</div>
-			<ul class="aui-nav">
-				#foreach( $project in $projects )
-					<li class="aui-nav projectElement"><a href="#">$project.getKey()</a></li>
-				#end
-			</ul>
-		</div>
-	</nav>
+<div class="aui-page-panel-nav" style="width:15px">
+<!-- 	<nav class="aui-navgroup aui-navgroup-vertical"> -->
+<!-- 		<div class="aui-navgroup-inner"> -->
+<!-- 			<div class="aui-nav-heading"> -->
+<!-- 				<h2> -->
+<!-- 					<strong>Projects</strong> -->
+<!-- 				</h2> -->
+<!-- 			</div> -->
+<!-- 			<ul class="aui-nav"> -->
+<!-- 				#foreach( $project in $projects ) -->
+<!-- 					<li class="aui-nav projectElement"><a href="#">$project.getKey()</a></li> -->
+<!-- 				#end -->
+<!-- 			</ul> -->
+<!-- 		</div> -->
+<!-- 	</nav> -->
 </div>

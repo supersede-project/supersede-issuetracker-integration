@@ -7,11 +7,14 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.atlassian.jira.project.Project;
 
 public class ProcessLogic {
 
@@ -78,4 +81,5 @@ public class ProcessLogic {
 		return "";
 
 	}
+
 }

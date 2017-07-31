@@ -71,6 +71,8 @@
 	</web-resource>
 	
 	<web-resource name="LogicPriority" key="LogicPriority">
+			<resource type="download" name="content-supersede-general.css"
+			location="/css/content-supersede-general.css" />
 		<resource type="download" name="logic-supersede-prioritization.js"
 			location="/js/logic-supersede-prioritization.js" />
 		<context>logic-supersede-prioritization.context</context>
@@ -87,13 +89,13 @@
 
 
 	<web-resource name="ContentAlerts" key="ContentAlerts">
-		<resource type="download" name="content-supersede-alerts.css"
-			location="/css/content-supersede-alerts.css" />
+		<resource type="download" name="content-supersede-general.css"
+			location="/css/content-supersede-general.css" />
 		<resource type="download" name="content-supersede-alerts.js"
 			location="/js/content-supersede-alerts.js" />
 		<context>content-supersede-alerts.context</context>
 	</web-resource>
-
+	
 	<component-import key="templateRenderer"
 		interface="com.atlassian.templaterenderer.TemplateRenderer" filter="" />
 	<component-import key="userManager"

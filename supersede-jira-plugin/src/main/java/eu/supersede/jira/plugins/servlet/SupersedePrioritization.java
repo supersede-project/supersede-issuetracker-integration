@@ -109,7 +109,7 @@ public class SupersedePrioritization extends HttpServlet {
 				context.put("issues", issueLogic.getIssuesFromFilter(req, sr.getQuery()));
 				context.put("filter", sr);
 				List<SupersedeProcess> processes = processService.getAllProcesses();
-
+				processService.updateAllProcessesStatus(processes);
 				context.put("processes", processes);
 				templateRenderer.render("/templates/prioritization-export-data.vm", context, resp.getWriter());
 				return;

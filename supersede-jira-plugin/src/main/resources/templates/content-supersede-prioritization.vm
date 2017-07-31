@@ -43,7 +43,8 @@ $webResourceManager.requireResourcesForContext("content-supersede-prioritization
 					<!-- Actions to render on the right of the footer -->
 					<div class="aui-dialog2-footer-actions">
 						<form action="supersede-prioritization" method="post">
-							<input type="hidden" class="procId" name="procId"> <input type="hidden" class="procDesc" name="procDesc"><input type="hidden" class="procFilter" name="procFilter">
+							<input type="hidden" class="procId" name="procId"> <input type="hidden" class="procDesc" name="procDesc">
+							<input type="hidden" class="procFilter" name="procFilter">
 							<button id="dialog-submit-button" class="aui-button aui-button-primary dialogButton" name="action" value="CreateProc">$i18n.getText("supersede-prioritization-create-btn.label")</button>
 						</form>
 					</div>
@@ -58,17 +59,17 @@ $webResourceManager.requireResourcesForContext("content-supersede-prioritization
 			class="submit-text">$i18n.getText("supersede-prioritization-create-process-btn.label")</span>
 	</button>
 	
-	<button style="margin-left: 20px" id="show-processes-button"
-		name="action" value="Show" class="aui-button aui-button-secondary">
-		<span class="glyphicon glyphicon-plus"></span> <span
-			class="submit-text">$i18n.getText("supersede-prioritization-show-processes-btn.label")</span>
-	</button>
+<!-- 	<button style="margin-left: 20px" id="show-processes-button" -->
+<!-- 		name="action" value="Show" class="aui-button aui-button-secondary"> -->
+<!-- 		<span class="glyphicon glyphicon-plus"></span> <span -->
+<!-- 			class="submit-text">$i18n.getText("supersede-prioritization-show-processes-btn.label")</span> -->
+<!-- 	</button> -->
 	
-	<button style="margin-left: 20px" id="hide-processes-button"
-		name="action" value="Show" class="aui-button aui-button-secondary">
-		<span class="glyphicon glyphicon-plus"></span> <span
-			class="submit-text">$i18n.getText("supersede-prioritization-show-processes-btn.label")</span>
-	</button>
+<!-- 	<button style="margin-left: 20px" id="hide-processes-button" -->
+<!-- 		name="action" value="Show" class="aui-button aui-button-secondary"> -->
+<!-- 		<span class="glyphicon glyphicon-plus"></span> <span -->
+<!-- 			class="submit-text">$i18n.getText("supersede-prioritization-show-processes-btn.label")</span> -->
+<!-- 	</button> -->
 	
 	<div id='export-data'>#parse("/templates/prioritization-export-data.vm")</div>
 

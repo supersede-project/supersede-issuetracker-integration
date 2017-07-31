@@ -31,14 +31,11 @@
 <table class="aui table-truncate aui-table-sortable sortableDialogTable ">
 	<thead>
 		<tr>
-			<th>Status</th>
-			<th>$i18n.getText("supersede-prioritization-process-id.label")</th>
-			<th>$i18n.getText("supersede-prioritization-process-description.label")</th>
-			<th>$i18n.getText("supersede-prioritization-process-query.label")</th>
-			<th>$i18n.getText("supersede-prioritization-process-action.label")</th>
-			<th>Issues</th>
-			<th>SS project ID</th>
-
+			<th class="td-small">Status</th>
+			<th class="td-small">$i18n.getText("supersede-prioritization-process-id.label")</th>
+			<th class="td-med">$i18n.getText("supersede-prioritization-process-description.label")</th>
+			<th class="td-max">$i18n.getText("supersede-prioritization-process-query.label")</th>
+			<th class="td-med">$i18n.getText("supersede-prioritization-process-ss-id.label")</th>
 		</tr>
 	</thead>
 	<tbody class="process-list">
@@ -48,13 +45,16 @@
 		</tr>
 		#end #foreach( $process in $processes )
 		<tr>
-			<td class="td-truncate">#if($process.getStatus() == 'In progress') <span class="aui-icon aui-icon-small aui-iconfont-build">In progress</span> #elseif($process.getStatus() == 'Done') <span class="aui-icon aui-icon-small aui-iconfont-success">Done</span>
-				#else <span class="aui-icon aui-icon-small aui-iconfont-remove-label">Removed</span> #end
+			<td class="td-truncate">
+			#if($process.getStatus() == 'InProgress') <span class="aui-icon aui-icon-small aui-iconfont-build">In progress</span> 
+			#elseif($process.getStatus() == 'Done') <span class="aui-icon aui-icon-small aui-iconfont-success">Done</span>
+			#elseif($process.getStatus() == 'Closed') <span class="aui-icon aui-icon-small aui-iconfont-locked">Closed</span>
+			#else <span class="aui-icon aui-icon-small aui-iconfont-remove-label">Removed</span> #end
 			</td>
 			<td class="td-truncate">$process.getID()</td>
 			<td class="td-truncate">$process.getDescription()</td>
 			<td class="td-truncate issueQuery">$process.getQuery()</td>
-			<td class="td-truncate">
+			<td class="td-truncate" style="display:none">
 				<button id="process-start-button" class="aui-button">
 					<span class="aui-icon aui-icon-small aui-iconfont-deploy">Start</span> Start
 				</button>
@@ -65,7 +65,6 @@
 					<span class="aui-icon aui-icon-small aui-iconfont-approve">Ready for import</span> Save
 				</button>
 			</td>
-			<td class="td-truncate">$process.getIssuesRequirementsMap()</td>
 			<td class="td-truncate">$process.getSSProjectId()</td>
 		</tr>
 		#end
