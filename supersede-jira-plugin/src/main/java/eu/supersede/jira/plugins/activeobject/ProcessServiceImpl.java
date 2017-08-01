@@ -19,13 +19,17 @@ import com.atlassian.jira.util.json.JSONObject;
 import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
 
 import eu.supersede.jira.plugins.logic.LoginLogic;
+import eu.supersede.jira.plugins.logic.ProcessLogic;
 import eu.supersede.jira.plugins.servlet.Alert;
+import net.java.ao.Query;
 
 @Scanned
 @Named
 public class ProcessServiceImpl implements ProcessService {
 
 	private final ActiveObjects ao;
+
+	ProcessLogic processLogic = ProcessLogic.getInstance();
 
 	@Inject
 	public ProcessServiceImpl(ActiveObjects ao) {
@@ -66,6 +70,15 @@ public class ProcessServiceImpl implements ProcessService {
 	}
 
 	@Override
+	public SupersedeProcess getProcess(String processId) {
+		SupersedeProcess[] result = ao.find(SupersedeProcess.class, Query.select().where("SSProjectId LIKE ?", processId);
+		if(result != null && result.length > 0) {
+			return result[0];
+		}
+		return null;
+	}
+
+	@Override
 	public void addSingleIssue(int id, String issue) {
 		SupersedeProcess process = ao.get(SupersedeProcess.class, id);
 		process.setIssues(process.getIssues() + issue);
@@ -74,40 +87,21 @@ public class ProcessServiceImpl implements ProcessService {
 
 	@Override
 	public void updateAllProcessesStatus(List<SupersedeProcess> processList) {
+
 		for (SupersedeProcess process : processList) {
-			try {
-				if (process.getSSProjectId() == null || "".equals(process.getSSProjectId())) {
-					process.setStatus("Deleted");
-					process.save();
-					continue;
-				}
-				LoginLogic loginLogic = LoginLogic.getInstance();
-				String sessionId = loginLogic.login();
-				URL url = new URL(loginLogic.getUrl() + "/supersede-dm-app/processes/status?processId=" + process.getSSProjectId());
-				HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-				conn.setConnectTimeout(LoginLogic.CONN_TIMEOUT);
-				conn.setReadTimeout(LoginLogic.CONN_TIMEOUT);
-				conn.setRequestMethod("GET");
-				conn.setRequestProperty("Accept", "application/json");
-				conn.setRequestProperty("Authorization", loginLogic.getBasicAuth());
-				conn.setRequestProperty("TenantId", loginLogic.getCurrentProject());
-				conn.setRequestProperty("Cookie", "SESSION=" + sessionId + ";");
-
-				BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
-
-				String output;
-				StringBuffer sb = new StringBuffer();
-				while ((output = br.readLine()) != null) {
-					sb.append(output);
-				}
-
-				process.setStatus(sb.toString());
+			if (process.getSSProjectId() == null || "".equals(process.getSSProjectId())) {
+				process.setStatus(ProcessLogic.STATUS_DELETED);
 				process.save();
-
-				conn.disconnect();
-			} catch (Exception e) {
-				e.printStackTrace();
+				continue;
 			}
+			process.setStatus(processLogic.checkProcessStatus(process.getSSProjectId()));
+
+			if (ProcessLogic.STATUS_IN_PROGRESS.equals(process.getStatus())) {
+				process.setRankings(processLogic.getRankingNumber(process.getSSProjectId()));
+			}
+
+			process.save();
+
 		}
 	}
 

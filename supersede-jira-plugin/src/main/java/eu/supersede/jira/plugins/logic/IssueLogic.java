@@ -132,6 +132,23 @@ public class IssueLogic {
 		// return the results
 		return searchResults.getIssues();
 	}
+	
+	public List<Issue> getAllIssues(HttpServletRequest req, Long supersedeFieldId) {
+		ApplicationUser user = loginLogic.getCurrentUser(req);
+		JqlClauseBuilder jqlClauseBuilder = JqlQueryBuilder.newClauseBuilder();
+		jqlClauseBuilder.customField(supersedeFieldId).isNotEmpty();
+		Query query = jqlClauseBuilder.buildQuery();
+		PagerFilter pagerFilter = PagerFilter.getUnlimitedFilter();
+		com.atlassian.jira.issue.search.SearchResults searchResults = null;
+		try {
+			// Perform search results
+			searchResults = searchService.search(user, query, pagerFilter);
+		} catch (SearchException e) {
+			e.printStackTrace();
+		}
+		// return the results
+		return searchResults.getIssues();
+	}
 
 	public Issue getIssueByRequirement(ApplicationUser user, Long supersedeFieldId, String requirementId) {
 		// search issues

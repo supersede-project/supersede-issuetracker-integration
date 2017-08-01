@@ -104,13 +104,13 @@ public class AlertLogic {
 	public Set<String> getRelatedIssues(HttpServletRequest req, Long supersedeFieldId, IssueLogic il, String alertId) {
 		// IssueLogic il = null;//IssueLogic.getInstance(issueService,
 		// projectService, searchService)
-		List<Issue> issuesList = il.getIssues(req, supersedeFieldId);
+		List<Issue> issuesList = il.getAllIssues(req, supersedeFieldId);
 		int c = 0;
 		Set<String> issues = new HashSet<String>();
 		for (Issue i : issuesList) {
 			Collection<Attachment> attachments = i.getAttachments();
-			attachements : for (Attachment a : attachments) {
-				if(a.getFilename().substring(0, a.getFilename().length() -4).equals(alertId)){
+			attachements: for (Attachment a : attachments) {
+				if (a.getFilename().substring(0, a.getFilename().length() - 4).equals(alertId)) {
 					issues.add(i.getKey());
 					break attachements;
 				}
@@ -130,7 +130,7 @@ public class AlertLogic {
 			} else {
 				return false;
 			}
-			URL url = new URL(loginLogic.getUrl() + "/supersede-dm-app/alerts/discard/"+alertId);
+			URL url = new URL(loginLogic.getUrl() + "/supersede-dm-app/alerts/discard/" + alertId);
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 			conn.setConnectTimeout(LoginLogic.CONN_TIMEOUT);
 			conn.setReadTimeout(LoginLogic.CONN_TIMEOUT);
@@ -138,7 +138,8 @@ public class AlertLogic {
 			conn.setRequestMethod("DELETE");
 			conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 			// conn.setRequestProperty("Content-Type", "application/json");
-//			 conn.setRequestProperty("Authorization", loginLogic.getBasicAuth());
+			// conn.setRequestProperty("Authorization",
+			// loginLogic.getBasicAuth());
 			conn.setRequestProperty("TenantId", loginLogic.getCurrentProject());
 			conn.setRequestProperty("Cookie", "SESSION=" + sessionId + ";");
 			conn.setRequestProperty("X-XSRF-TOKEN", loginLogic.authenticate(sessionId));
@@ -202,13 +203,16 @@ public class AlertLogic {
 				Alert a = new Alert();
 				a.setApplicationId(o.getString("applicationId"));
 				a.setId(o.getString("id"));
-				a.setFilteredId("alert"+o.getString("id").replace('-', '_'));
+				a.setFilteredId("alert" + o.getString("id").replace('-', '_'));
 				a.setTenant(o.getString("tenant"));
 				Date d = new Date(/* o.getLong("timestamp") */);
 				a.setTimestamp(d.toString());
 				a.setDescription(r.getString("description"));
-				//TODO
-				Set<String> issues = getRelatedIssues(req, supersedeFieldId, il, o.getString("id")); 
+				a.setSentiment(r.getInt("overallSentiment"));
+				a.setPositive(r.getInt("positiveSentiment"));
+				a.setNegative(r.getInt("negativeSentiment"));
+				// TODO
+				Set<String> issues = getRelatedIssues(req, supersedeFieldId, il, o.getString("id"));
 				a.setCount(issues.size());
 				String[] issuesArray = issues.toArray(new String[issues.size()]);
 				Arrays.sort(issuesArray, new Comparator<String>() {
@@ -219,13 +223,13 @@ public class AlertLogic {
 					}
 				});
 				a.setIssues(issuesArray);
-				if(searchAlerts != null && !searchAlerts.isEmpty()){
+				if (searchAlerts != null && !searchAlerts.isEmpty()) {
 					searchAlerts = searchAlerts.toLowerCase();
-					if(a.getId().toLowerCase().contains(searchAlerts) || a.getDescription().toLowerCase().contains(searchAlerts)){
+					if (a.getId().toLowerCase().contains(searchAlerts) || a.getDescription().toLowerCase().contains(searchAlerts)) {
 						al.add(a);
 					}
 				} else
-				al.add(a);
+					al.add(a);
 			}
 
 		} catch (Exception e) {

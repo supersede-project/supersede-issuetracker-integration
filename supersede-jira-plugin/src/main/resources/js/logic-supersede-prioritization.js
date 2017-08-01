@@ -23,6 +23,8 @@ AJS.$(document).ready(
 
 function onPageLoad() {
 
+	AJS.$(".icon-tooltip").tooltip();
+
 	$('#filter-select').change(
 			function() {
 				$('#filter-select').val($(this).val());
@@ -65,17 +67,19 @@ function onPageLoad() {
 												+ new Date().getTime());
 					});
 
-	$("#process-start-button").click(function() {
-		alert($(this).closest("tr").find(".issueQuery").text());
-		$(this).closest("tr").find(".issueQuery").text();
+	$("#process-start-button").click(
+			function() {
+				alert($(this).closest("tr").find(".issueQuery").text());
+				$(this).closest("tr").find(".issueQuery").text();
 
-		var posting = $.post("http://localhost/#/supersede-dm-app/processes/new", {
-			name : 'SS test Process'
-		});
-		posting.done(function(data) {
-			alert(data);
-		})
-	});
+				var posting = $.post(
+						"http://localhost/#/supersede-dm-app/processes/new", {
+							name : 'SS test Process'
+						});
+				posting.done(function(data) {
+					alert(data);
+				})
+			});
 
 	$("#process-save-button").click(function() {
 		alert("save");
@@ -96,24 +100,8 @@ function onPageLoad() {
 		// alert("load!");
 	});
 
-	// $("#create-process-button").click(
-	// function() {
-	// alert($('#filter-select').val());
-	// var self = jQuery(this);
-	// jQuery.ajax({
-	// type : "post",
-	// url : "supersede-prioritization?createProcess=y&filter="
-	// + $('#filter-select').val(),
-	// success : function(data) {
-	// console.log('dom', self, data);
-	// $("#export-data").html(data);
-	// // self.parent().parent().remove();
-	// //onPageLoad();
-	// },
-	// error : function() {
-	// console.log('error', arguments);
-	// }
-	// });
-	// // alert("load!");
-	// });
+	$('.rankingButton').click(function() {
+		$('#ranking-process-id').val($(this).attr('id'));
+	});
+
 }

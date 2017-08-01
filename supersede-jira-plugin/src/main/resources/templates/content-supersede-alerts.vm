@@ -31,6 +31,9 @@
 						<th class="td-small">$i18n.getText("supersede-alerts-table-app-id.label")</th>
 						<th class="td-med">$i18n.getText("supersede-alerts-table-timestamp.label")</th>
 						<th class="td-max">$i18n.getText("supersede-alerts-table-description.label")</th>
+						<th class="td-tiny">$i18n.getText("supersede-alerts-table-positive.label")</th>
+						<th class="td-tiny">$i18n.getText("supersede-alerts-table-negative.label")</th>
+						<th class="td-tiny">$i18n.getText("supersede-alerts-table-sentiment.label")</th>
 						<th class="td-med">$i18n.getText("supersede-alerts-table-attachment.label")</th>
 					</tr>
 				</thead>
@@ -42,6 +45,9 @@
 						<td class="td-truncate">$alert.getApplicationId()</td>
 						<td class="td-truncate">$alert.getTimestamp()</td>
 						<td class="td-truncate">$alert.getDescription()</td>
+						<td class="td-truncate">$alert.getPositive()</td>
+						<td class="td-truncate">$alert.getNegative()</td>
+						<td class="td-truncate">$alert.getSentiment()</td>
 						<td class="td-truncate"><a data-aui-trigger aria-controls=$alert.getFilteredId() href="#">$alert.getCount()</a> <!-- 						INLINE DIALOG (RELATED TO ROW)  --> <aui-inline-dialog id=$alert.getFilteredId()> #foreach( $issue in
 							$alert.getIssues())
 							<table>
@@ -83,7 +89,7 @@
 					<div class="aui-dialog2-footer-actions">
 						<form action="supersede-alerts" method="get">
 							<input type="hidden" class="selectionList" name="selectionList"> <input type="hidden" class="chkDeleteStatus" name="chkDeleteStatus"> 
-							<input type="hidden" class="projectField" name="projectField">
+							<input type="hidden" class="projectField" value=$projectField name="projectField">
 							<button id="dialog-submit-button" class="aui-button aui-button-primary dialogButton" name="action" value="Import">$i18n.getText("supersede-alerts-create-btn.label")</button>
 						</form>
 					</div>
@@ -124,7 +130,7 @@
 					<!-- Actions to render on the right of the footer -->
 					<div class="aui-dialog2-footer-actions">
 						<form action="supersede-alerts" method="get">
-							<input type="hidden" class="projectField" name="projectField"> <input type="hidden" class="selectionList" name="selectionList"> <input type="hidden" id="issuesSelectionList" name="issuesSelectionList"> <input type="hidden"
+							<input type="hidden" class="projectField" value=$projectField name="projectField"> <input type="hidden" class="selectionList" name="selectionList"> <input type="hidden" id="issuesSelectionList" name="issuesSelectionList"> <input type="hidden"
 								class="chkDeleteStatus" name="chkDeleteStatus">
 							<button id="dialog-submit-button" class="aui-button aui-button-primary dialogButton toEnableDialog" name="action" value="Attach">$i18n.getText("supersede-alerts-attach-dialog-btn.label")</button>
 						</form>

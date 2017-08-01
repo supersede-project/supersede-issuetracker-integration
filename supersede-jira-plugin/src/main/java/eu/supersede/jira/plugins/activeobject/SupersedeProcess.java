@@ -3,6 +3,7 @@ package eu.supersede.jira.plugins.activeobject;
 import java.util.Date;
 
 import net.java.ao.Entity;
+import net.java.ao.schema.StringLength;
 
 public interface SupersedeProcess extends Entity {
 
@@ -36,11 +37,15 @@ public interface SupersedeProcess extends Entity {
 	String getSSProjectId();
 
 	void setSSProjectId(String id);
-//
-//	// Mapping betweeen Issues and Requirements, because 2 Processes could be
+
+	//
+	// // Mapping betweeen Issues and Requirements, because 2 Processes could be
 	// // going involving the same issue
+	@StringLength(value=StringLength.UNLIMITED)
 	String getIssuesRequirementsMap();
-//
+
+	//
+	@StringLength(value=StringLength.UNLIMITED)
 	void setIssuesRequirementsMap(String issuesRequirementsMap);
 
 	// Creation date (since more than a process could be started with the same
@@ -49,5 +54,11 @@ public interface SupersedeProcess extends Entity {
 	Date getCreationDate();
 
 	void setCreationDate(Date creationDate);
+
+	
+	
+	int getRankings();
+
+	void setRankings(int rankings);
 
 }

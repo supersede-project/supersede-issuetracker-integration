@@ -36,6 +36,7 @@
 			<th class="td-med">$i18n.getText("supersede-prioritization-process-description.label")</th>
 			<th class="td-max">$i18n.getText("supersede-prioritization-process-query.label")</th>
 			<th class="td-med">$i18n.getText("supersede-prioritization-process-ss-id.label")</th>
+			<th class="td-med">Rankings</th>
 		</tr>
 	</thead>
 	<tbody class="process-list">
@@ -45,16 +46,15 @@
 		</tr>
 		#end #foreach( $process in $processes )
 		<tr>
-			<td class="td-truncate">
-			#if($process.getStatus() == 'InProgress') <span class="aui-icon aui-icon-small aui-iconfont-build">In progress</span> 
-			#elseif($process.getStatus() == 'Done') <span class="aui-icon aui-icon-small aui-iconfont-success">Done</span>
-			#elseif($process.getStatus() == 'Closed') <span class="aui-icon aui-icon-small aui-iconfont-locked">Closed</span>
-			#else <span class="aui-icon aui-icon-small aui-iconfont-remove-label">Removed</span> #end
+			<td class="td-truncate">#if($process.getStatus() == 'InProgress') <span class=".icon-tooltip aui-icon aui-icon-small aui-iconfont-build" title="Process in progress">In progress</span> #elseif($process.getStatus() == 'Done') <span
+				class=".icon-tooltip aui-icon aui-icon-small aui-iconfont-success" title="Process completed successfullt">Done</span> #elseif($process.getStatus() == 'Closed') <span class=".icon-tooltip aui-icon aui-icon-small aui-iconfont-locked"
+				title="This process is closed">Closed</span> #elseif($process.getStatus() == 'Retry') <span class=".icon-tooltip aui-icon aui-icon-small aui-iconfont-warning" title="There was a problem during evaluation of this process">Retry</span> #else <span
+				class=".icon-tooltip aui-icon aui-icon-small aui-iconfont-remove-label">Removed</span> #end
 			</td>
 			<td class="td-truncate">$process.getID()</td>
 			<td class="td-truncate">$process.getDescription()</td>
 			<td class="td-truncate issueQuery">$process.getQuery()</td>
-			<td class="td-truncate" style="display:none">
+			<td class="td-truncate" style="display: none">
 				<button id="process-start-button" class="aui-button">
 					<span class="aui-icon aui-icon-small aui-iconfont-deploy">Start</span> Start
 				</button>
@@ -66,6 +66,14 @@
 				</button>
 			</td>
 			<td class="td-truncate">$process.getSSProjectId()</td>
+
+			<td class="td-truncate">#if($process.getStatus() == 'InProgress') $process.getRankings() #else - #end #if($process.getRankings() == 1)
+				<form action="supersede-prioritization" method="POST">
+					<input type="hidden" name="processId" id="ranking-process-id">
+					<button class="aui-button aui-button-secondary rankingButton" id=$process.getSSProjectId() name="action" value="rankingImport">Importa risultati</button>
+				</form> #end
+			</td>
+
 		</tr>
 		#end
 	</tbody>

@@ -179,6 +179,21 @@ public class SupersedePrioritization extends HttpServlet {
 
 				res.sendRedirect(req.getContextPath() + "/plugins/servlet/supersede-prioritization");
 			}
+			else if("rankingImport".equals(req.getParameter(PARAM_ACTION))) {
+//				String processId = req.getParameter("processId");
+//				SupersedeProcess sp = processService.getProcess(processId);
+//				JSONArray jarr = processLogic.getRankingJSONArray(processId);
+//				
+//				//Create an array with ranking
+//				
+//				//key###value;
+//				String[] issueRequirementsMap = sp.getIssuesRequirementsMap().split(",");
+//				for(int i = 0; i < issueRequirementsMap.length; i++) {
+//					
+//				}
+//				
+//				//
+			}
 
 		} catch (JSONException e) {
 			e.printStackTrace();

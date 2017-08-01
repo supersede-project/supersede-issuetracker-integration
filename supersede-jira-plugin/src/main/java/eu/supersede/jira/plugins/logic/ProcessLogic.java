@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.project.Project;
+import com.atlassian.jira.util.json.JSONArray;
 
 public class ProcessLogic {
 
@@ -23,6 +24,11 @@ public class ProcessLogic {
 	private LoginLogic loginLogic;
 
 	private static final Logger log = LoggerFactory.getLogger(AlertLogic.class);
+
+	public final static String STATUS_DELETED = "Deleted";
+	public final static String STATUS_IN_PROGRESS = "InProgress";
+	public final static String STATUS_CLOSED = "Closed";
+	public final static String STATUS_RETRY = "Retry";
 
 	private ProcessLogic() {
 		loginLogic = LoginLogic.getInstance();
@@ -44,7 +50,6 @@ public class ProcessLogic {
 			URL url = new URL(loginLogic.getUrl() + "supersede-dm-app/processes/new");
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 			StringBuilder params = new StringBuilder("name=").append(processName);
-			
 
 			conn.setConnectTimeout(LoginLogic.CONN_TIMEOUT);
 			conn.setReadTimeout(LoginLogic.CONN_TIMEOUT);
@@ -80,6 +85,72 @@ public class ProcessLogic {
 
 		return "";
 
+	}
+
+	public String checkProcessStatus(String processId) {
+		try {
+			LoginLogic loginLogic = LoginLogic.getInstance();
+			String sessionId = loginLogic.login();
+			URL url = new URL(loginLogic.getUrl() + "/supersede-dm-app/processes/status?processId=" + processId);
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			conn.setConnectTimeout(LoginLogic.CONN_TIMEOUT);
+			conn.setReadTimeout(LoginLogic.CONN_TIMEOUT);
+			conn.setRequestMethod("GET");
+			conn.setRequestProperty("Accept", "application/json");
+			conn.setRequestProperty("Authorization", loginLogic.getBasicAuth());
+			conn.setRequestProperty("TenantId", loginLogic.getCurrentProject());
+			conn.setRequestProperty("Cookie", "SESSION=" + sessionId + ";");
+
+			BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
+
+			String output;
+			StringBuffer sb = new StringBuffer();
+			while ((output = br.readLine()) != null) {
+				sb.append(output);
+			}
+			conn.disconnect();
+			return sb.toString();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return STATUS_RETRY;
+	}
+
+	public int getRankingNumber(String processId) {
+		return getRankingJSONArray(processId).length();
+	}
+
+	public JSONArray getRankingJSONArray(String processId) {
+		try {
+			LoginLogic loginLogic = LoginLogic.getInstance();
+			String sessionId = loginLogic.login();
+			URL url = new URL(loginLogic.getUrl() + "/supersede-dm-app/processes/rankings/list?processId=" + processId);
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			conn.setConnectTimeout(LoginLogic.CONN_TIMEOUT);
+			conn.setReadTimeout(LoginLogic.CONN_TIMEOUT);
+			conn.setRequestMethod("GET");
+			conn.setRequestProperty("Accept", "application/json");
+			conn.setRequestProperty("Authorization", loginLogic.getBasicAuth());
+			conn.setRequestProperty("TenantId", loginLogic.getCurrentProject());
+			conn.setRequestProperty("Cookie", "SESSION=" + sessionId + ";");
+
+			BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
+
+			String output;
+			StringBuffer sb = new StringBuffer();
+			while ((output = br.readLine()) != null) {
+				sb.append(output);
+			}
+			JSONArray jarr = new JSONArray(sb.toString());
+			conn.disconnect();
+			return jarr;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		// If something happened, return 0. If it was e.g. a connection error,
+		// it will restore that value on the first successful refresh
+		return new JSONArray();
 	}
 
 }

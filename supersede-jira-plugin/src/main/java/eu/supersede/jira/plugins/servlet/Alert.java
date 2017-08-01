@@ -8,6 +8,9 @@ public class Alert {
 	private String timestamp;
 	private String description;
 	private String[] issues;
+	private int sentiment;
+	private int positive;
+	private int negative;
 	private int count;
 
 
@@ -67,6 +70,30 @@ public class Alert {
 		this.issues = issues;
 	}
 	
+	public int getSentiment() {
+		return sentiment;
+	}
+
+	public void setSentiment(int sentiment) {
+		this.sentiment = sentiment;
+	}
+
+	public int getPositive() {
+		return positive;
+	}
+
+	public void setPositive(int positive) {
+		this.positive = positive;
+	}
+
+	public int getNegative() {
+		return negative;
+	}
+
+	public void setNegative(int negative) {
+		this.negative = negative;
+	}
+
 	public int getCount() {
 		return count;
 	}

@@ -241,7 +241,17 @@ public class SupersedeAlerts extends HttpServlet {
 		List<Project> projects = ComponentAccessor.getProjectManager().getProjectObjects();
 		context.put("projects", projects);
 
+		// Project Field
+		// If no project is specified (e.g. at first start), insert first
+		// project in list
+		context.put("projectField", req.getParameter("projectField") != null && !"".equals(req.getParameter("projectField")) ? req.getParameter("projectField") : projects.get(0).getKey());
+		
 		// process request
+		List<Issue> issues = issueLogic.getIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId());
+		List<Alert> alerts = alertLogic.fetchAlerts(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic);
+		context.put("alerts", alerts);
+		context.put("issues", issues);
+		
 		List<String> errors = new LinkedList<String>();
 		if (!"".equals(req.getParameter(PARAM_ACTION)) && req.getParameter(PARAM_ACTION) != null) {
 			// true = import clicked - false = attach clicked
@@ -280,18 +290,12 @@ public class SupersedeAlerts extends HttpServlet {
 			}
 
 		} else if ("y".equals(req.getParameter("refreshAlerts"))) {
-			List<Alert> alerts = alertLogic.fetchAlerts(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic);
-			List<Issue> issues = issueLogic.getIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId());
-			context.put("issues", issues);
-			context.put("alerts", alerts);
 			context.put("date", new Date().toString());
 			templateRenderer.render("/templates/content-supersede-alerts.vm", context, resp.getWriter());
 			return;
 		} else if ("y".equals(req.getParameter("searchAlerts"))) {
 			String searchAlerts = req.getParameter(PARAM_SEARCH_ALERTS);
-			List<Alert> alerts = alertLogic.fetchAlerts(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic, "", searchAlerts);
-			List<Issue> issues = issueLogic.getIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId());
-			context.put("issues", issues);
+			alerts = alertLogic.fetchAlerts(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic, "", searchAlerts);
 			context.put("alerts", alerts);
 			context.put("date", new Date().toString());
 			templateRenderer.render("/templates/content-supersede-alerts.vm", context, resp.getWriter());
@@ -304,24 +308,20 @@ public class SupersedeAlerts extends HttpServlet {
 			templateRenderer.render("/templates/content-supersede-man-compare-table.vm", context, resp.getWriter());
 			return;
 		} else if ("y".equals(req.getParameter("searchIssues"))) {
-			List<Issue> issues = issueLogic.getIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId(), req.getParameter(PARAM_SEARCH_ISSUES));
+			issues = issueLogic.getIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId(), req.getParameter(PARAM_SEARCH_ISSUES));
 			context.put("issues", issues);
 			context.put("date", new Date().toString());
 			templateRenderer.render("/templates/attach-dialog-data.vm", context, resp.getWriter());
 			return;
 		} else if ("y".equals(req.getParameter("xmlAlert"))) {
 			String xmlAlert = req.getParameter(PARAM_XML_ALERT);
-			List<Alert> alerts = alertLogic.fetchAlerts(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic, xmlAlert, "");
+			alerts = alertLogic.fetchAlerts(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic, xmlAlert, "");
 			resp.setContentType("text/xml;charset=utf-8");
 			context.put("alert", alerts.get(0));
 			templateRenderer.render("/templates/xml-alert.vm", context, resp.getWriter());
 			return;
 		}
-		List<Issue> issues = issueLogic.getIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId());
-		List<Alert> alerts = alertLogic.fetchAlerts(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic);
 
-		context.put("alerts", alerts);
-		context.put("issues", issues);
 		context.put("errors", errors);
 		context.put("separator", SEPARATOR);
 		context.put("baseurl", ComponentAccessor.getApplicationProperties().getString("jira.baseurl"));
