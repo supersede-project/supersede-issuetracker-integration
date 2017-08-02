@@ -1,13 +1,6 @@
 package eu.supersede.jira.plugins.servlet;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.StringWriter;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -17,31 +10,18 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
 
 import com.atlassian.jira.bc.issue.IssueService;
 import com.atlassian.jira.bc.issue.IssueService.IssueResult;
 import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.bc.project.ProjectService;
 import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.event.ComponentManagerShutdownEvent;
 import com.atlassian.jira.issue.CustomFieldManager;
 import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.issue.IssueManager;
-import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.project.Project;
-import com.atlassian.jira.user.ApplicationUser;
-import com.atlassian.jira.util.json.JSONObject;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
@@ -51,7 +31,6 @@ import eu.supersede.jira.plugins.logic.AlertLogic;
 import eu.supersede.jira.plugins.logic.IssueLogic;
 import eu.supersede.jira.plugins.logic.LoginLogic;
 import eu.supersede.jira.plugins.logic.SupersedeCustomFieldLogic;
-import webwork.action.ActionContext;
 
 public class SupersedeAlerts extends HttpServlet {
 
@@ -95,84 +74,6 @@ public class SupersedeAlerts extends HttpServlet {
 		supersedeCustomFieldLogic = SupersedeCustomFieldLogic.getInstance(customFieldManager);
 
 		loginLogic.loadConfiguration(pluginSettingsFactory.createGlobalSettings());
-	}
-
-	/**
-	 * Perform a REST call (POST) asking SUPERSEDE to create a new requirement
-	 * with the given name and description.
-	 * 
-	 * @param sessionId
-	 *            current user session identifier
-	 * @param xsrf
-	 *            the authentication token to be used for secured methods
-	 * @param name
-	 *            the requirement name
-	 * @param description
-	 *            the requirement description
-	 * @return the id of the created requirement in SUPERSEDE
-	 */
-	private String sendPostRequest(String sessionId, String xsrf, String name, String description) {
-		String requirementId = null;
-		try {
-
-			URL url = new URL(loginLogic.getUrl() + "/supersede-dm-app/requirement");
-			// URL url = new URL("http://supersede.es.atos.net:8080/login");
-			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-			conn.setConnectTimeout(LoginLogic.CONN_TIMEOUT);
-			conn.setReadTimeout(LoginLogic.CONN_TIMEOUT);
-			conn.setDoOutput(true);
-			conn.setRequestMethod("POST");
-			conn.setRequestProperty("Content-Type", "application/json");
-			// conn.setRequestProperty("Authorization", getBasicAuth());
-			conn.setRequestProperty("TenantId", loginLogic.getCurrentProject());
-			conn.setRequestProperty("Cookie", "SESSION=" + sessionId + ";");
-			// conn.setRequestProperty("SESSION", sessionId);
-			conn.setRequestProperty("X-XSRF-TOKEN", xsrf);
-
-			JSONObject req = new JSONObject();
-			req.put("name", name);
-			req.put("description", description);
-
-			OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
-			wr.write(req.toString());
-			wr.flush();
-
-			log.debug("connection code " + conn.getResponseCode());
-			String locationHeader = conn.getHeaderField("Location");
-			log.debug("location header " + locationHeader);
-			requirementId = locationHeader.substring(locationHeader.lastIndexOf("/") + 1);
-			log.debug("requirement id " + requirementId);
-
-			BufferedReader ebr = new BufferedReader(new InputStreamReader((conn.getErrorStream())));
-			log.debug("printing output:");
-			String error;
-			try {
-				while ((error = ebr.readLine()) != null) {
-					System.err.println(error);
-				}
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
-			BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
-
-			log.debug("printing output:");
-			String output;
-			StringBuffer sb = new StringBuffer();
-			try {
-				while ((output = br.readLine()) != null) {
-					System.out.println(output);
-					sb.append(output);
-				}
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
-
-			conn.disconnect();
-
-		} catch (Exception e) {
-			log.error(e.getMessage());
-		}
-		return requirementId;
 	}
 
 	@Override

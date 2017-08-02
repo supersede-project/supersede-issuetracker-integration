@@ -1,10 +1,10 @@
 AJS.$(document).ready(
 		function() {
+			$('#project-select-import').val($('.projectField').val()).trigger(
+					'change');
+			$('#project-select-attach').val($('.projectField').val()).trigger(
+					'change');
 			onPageLoad();
-			$(".projectElement").first().addClass('aui-nav-selected')
-					.removeClass('aui-nav');
-			$('#project-select-import').val($('.projectField').val()).trigger('change');
-			$('#project-select-attach').val($('.projectField').val()).trigger('change');
 		});
 
 function onPageLoad() {
@@ -120,6 +120,7 @@ function onPageLoad() {
 			});
 	jQuery('.dialogChkSelected').click(
 			function() {
+				alert("hi mom");
 				if ($(this).prop('checked')) {
 					// Write a string containing the IDs of selected
 					// alerts
