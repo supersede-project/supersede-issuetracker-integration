@@ -172,10 +172,11 @@ public class SupersedePrioritization extends HttpServlet {
 					// define priority
 					// if l<5 , so priority = i (there are 5 priority levels)
 					// if l > 5, priority = i%5;
-					//Start to 1, setting priority to 0 leads to nothing
-					int priorityValue = i+1;
+					// Start to 1, setting priority to 0 leads to nothing
+					int priorityValue = i + 1;
 					if (l > 5) {
-						priorityValue = i / 5;
+						double ratio = (double) l / 5;
+						priorityValue = Math.min(5, (int) (i / ratio + 1));
 					}
 					mIssue.setPriorityId(String.valueOf(priorityValue));
 					Date d = new Date();
