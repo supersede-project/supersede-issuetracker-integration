@@ -19,6 +19,7 @@ import com.atlassian.jira.bc.project.ProjectService;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.IssueInputParameters;
+import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.issue.attachment.CreateAttachmentParamsBean;
 import com.atlassian.jira.issue.fields.CustomField;
@@ -75,10 +76,10 @@ public class IssueLogic {
 	public IssueResult getIssue(ApplicationUser user, String issueKey) {
 		return issueService.getIssue(user, issueKey);
 	}
-	
-	public List<Issue> getIssuesFromFilter(HttpServletRequest req, Query query){
-		ApplicationUser user = loginLogic.getCurrentUser(req);
-		
+
+	public List<Issue> getIssuesFromFilter(HttpServletRequest req, Query query) {
+		ApplicationUser user = loginLogic.getCurrentUser();
+
 		PagerFilter pagerFilter = PagerFilter.getUnlimitedFilter();
 		SearchResults searchResults = null;
 		try {
@@ -92,6 +93,30 @@ public class IssueLogic {
 	}
 
 	/**
+	 * Retrieve an issue given its key NOT PROJECT-WISE
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public Issue getIssueByKey(String issueKey) {
+		ApplicationUser user = loginLogic.getCurrentUser();
+		JqlClauseBuilder jqlClauseBuilder = JqlQueryBuilder.newClauseBuilder();
+		jqlClauseBuilder.field("key").eq(issueKey);
+		Query query = jqlClauseBuilder.buildQuery();
+		PagerFilter pagerFilter = PagerFilter.getUnlimitedFilter();
+		com.atlassian.jira.issue.search.SearchResults searchResults = null;
+		try {
+			searchResults = searchService.search(user, query, pagerFilter);
+		} catch (SearchException e) {
+			e.printStackTrace();
+		}
+		//It must be 0 or 1
+		List<Issue> list = searchResults.getIssues();
+		
+		return list.size() == 1 ? list.get(0) : null;
+	}
+
+	/**
 	 * Retrieve the issues with a valid supersede field set
 	 * 
 	 * @param req
@@ -99,7 +124,7 @@ public class IssueLogic {
 	 */
 	public List<Issue> getIssues(HttpServletRequest req, Long supersedeFieldId, String id) {
 		// User is required to carry out a search
-		ApplicationUser user = loginLogic.getCurrentUser(req);
+		ApplicationUser user = loginLogic.getCurrentUser();
 
 		// search issues
 
@@ -132,9 +157,9 @@ public class IssueLogic {
 		// return the results
 		return searchResults.getIssues();
 	}
-	
+
 	public List<Issue> getAllIssues(HttpServletRequest req, Long supersedeFieldId) {
-		ApplicationUser user = loginLogic.getCurrentUser(req);
+		ApplicationUser user = loginLogic.getCurrentUser();
 		JqlClauseBuilder jqlClauseBuilder = JqlQueryBuilder.newClauseBuilder();
 		jqlClauseBuilder.customField(supersedeFieldId).isNotEmpty();
 		Query query = jqlClauseBuilder.buildQuery();
@@ -189,7 +214,7 @@ public class IssueLogic {
 
 	public IssueResult newIssue(HttpServletRequest req, String name, String description, String id, Collection<String> errors, CustomField supersedeField, String projectId) {
 		IssueResult issue = null;
-		ApplicationUser user = loginLogic.getCurrentUser(req);
+		ApplicationUser user = loginLogic.getCurrentUser();
 		// Perform creation if the "new" param is passed in
 		// First we need to validate the new issue being created
 		IssueInputParameters issueInputParameters = issueService.newIssueInputParameters();

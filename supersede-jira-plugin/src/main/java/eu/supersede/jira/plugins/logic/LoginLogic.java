@@ -59,7 +59,7 @@ public class LoginLogic {
 		return basicAuth;
 	}
 
-	public ApplicationUser getCurrentUser(HttpServletRequest req) {
+	public ApplicationUser getCurrentUser() {
 		return ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser();
 	}
 

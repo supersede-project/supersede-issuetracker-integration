@@ -212,7 +212,7 @@ public class SupersedeMan extends HttpServlet {
 	private void newRequirement(HttpServletRequest req, Collection<String> errors) {
 		String issueKey = req.getParameter("issuekey");
 		log.info("creating new requirement for " + issueKey);
-		ApplicationUser user = loginLogic.getCurrentUser(req);
+		ApplicationUser user = loginLogic.getCurrentUser();
 		IssueResult issueRes = issueLogic.getIssue(user, issueKey);
 		if (issueRes.isValid()) {
 			try {

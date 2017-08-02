@@ -175,42 +175,10 @@ public class SupersedeAlerts extends HttpServlet {
 		return requirementId;
 	}
 
-	private void testCreateRequirement(String sessionid, String xsrf, MutableIssue issue, ApplicationUser user, Collection<String> errors) {
-		log.debug("creating requirement for issue " + issue.getId());
-		// 1. send the request to supersede
-		String requirementId = sendPostRequest(sessionid, xsrf, issue.getSummary(), issue.getDescription());
-		// 2. get the response with the requirement id
-		// 3. update the issue with the custom field "Supersede" set as the
-		// requirement id
-		if (null != requirementId) {
-			issueLogic.updateIssue(issue, user, requirementId, errors, supersedeCustomFieldLogic.getSupersedeCustomField());
-		}
-	}
-
-	private void newRequirement(HttpServletRequest req, Collection<String> errors) {
-		String issueKey = req.getParameter("issuekey");
-		log.info("creating new requirement for " + issueKey);
-		ApplicationUser user = loginLogic.getCurrentUser(req);
-		IssueResult issueRes = issueLogic.getIssue(user, issueKey);
-		if (issueRes.isValid()) {
-			try {
-				String sessionId = loginLogic.login();
-				String xsrf = loginLogic.authenticate(sessionId);
-				testCreateRequirement(sessionId, xsrf, issueRes.getIssue(), user, errors);
-			} catch (Exception e) {
-				log.error("login error: " + e);
-			}
-		} else {
-			errors.add("invalid issue key " + issueKey);
-		}
-	}
-
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		List<String> errors = new LinkedList<String>();
 		if (!"".equals(req.getParameter("deleteAction")) && req.getParameter("deleteAction") != null) {
-			// true = import clicked - false = attach clicked
-			boolean isDelete = "Delete".equals(req.getParameter(PARAM_ACTION));
 			String[] list = req.getParameter(PARAM_SELECTION_LIST).split(SEPARATOR);
 			for (int i = 0; i < list.length; i++) {
 				String alertId = list[i];

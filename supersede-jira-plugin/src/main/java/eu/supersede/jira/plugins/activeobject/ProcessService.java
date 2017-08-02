@@ -17,6 +17,8 @@ public interface ProcessService {
 	
 	List<SupersedeProcess> getAllProcesses();
 	
+	SupersedeProcess getProcess(String processId);
+	
 	void updateAllProcessesStatus(List<SupersedeProcess> processList);
 	
 	void addSingleIssue(int id, String issue);

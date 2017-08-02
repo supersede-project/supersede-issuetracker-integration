@@ -71,7 +71,7 @@ public class ProcessServiceImpl implements ProcessService {
 
 	@Override
 	public SupersedeProcess getProcess(String processId) {
-		SupersedeProcess[] result = ao.find(SupersedeProcess.class, Query.select().where("SSProjectId LIKE ?", processId);
+		SupersedeProcess[] result = ao.find(SupersedeProcess.class, Query.select().where("SSPROJECT_ID LIKE ?", processId));
 		if(result != null && result.length > 0) {
 			return result[0];
 		}

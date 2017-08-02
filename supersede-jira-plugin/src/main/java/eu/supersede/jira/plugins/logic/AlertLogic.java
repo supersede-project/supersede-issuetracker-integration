@@ -158,29 +158,6 @@ public class AlertLogic {
 
 			log.debug("alert " + alertId + "deleted");
 
-			// BufferedReader br = new BufferedReader(new
-			// InputStreamReader((conn.getInputStream())));
-			//
-			// String output;
-			// StringBuffer sb = new StringBuffer();
-			// while ((output = br.readLine()) != null) {
-			// sb.append(output);
-			// }
-			// JSONArray jarr = new JSONArray(sb.toString());
-			// int l = jarr.length();
-			// for (int i = 0; i < l; ++i) {
-			// JSONObject o = jarr.getJSONObject(i);
-			// try {
-			// // We retrieve a list of alerts because there could be more
-			// // than one request per alert.
-			// // Every request could have different descriptions.
-			// List<Alert> a = parseJSONAsAlert(o);
-			// alerts.addAll(a);
-			// } catch (Exception e) {
-			// log.error("parsing ", o);
-			// }
-			// }
-			//
 			conn.disconnect();
 		} catch (Exception e) {
 			log.error(e.getMessage());

@@ -119,7 +119,7 @@ public class RequirementLogic {
 
 	public void getRequirements(HttpServletRequest req, Collection<Requirement> requirements, boolean filter, Long supersedeFieldId) {
 		try {
-			ApplicationUser user = loginLogic.getCurrentUser(req);
+			ApplicationUser user = loginLogic.getCurrentUser();
 			String sessionId = loginLogic.login();
 			fetchRequirements(sessionId, requirements);
 			if (filter) {

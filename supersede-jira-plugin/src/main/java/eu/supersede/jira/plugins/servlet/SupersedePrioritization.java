@@ -4,6 +4,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -20,8 +21,11 @@ import com.atlassian.jira.bc.issue.IssueService;
 import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.bc.project.ProjectService;
 import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.event.type.EventDispatchOption;
 import com.atlassian.jira.issue.CustomFieldManager;
 import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.IssueManager;
+import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.issue.search.SearchRequest;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.sharing.SharedEntityColumn;
@@ -81,13 +85,10 @@ public class SupersedePrioritization extends HttpServlet {
 	public void getResult(HttpServletRequest req) {
 		SharedEntitySearchParameters searchParams = new SharedEntitySearchParametersBuilder().setEntitySearchContext(SharedEntitySearchContext.USE).setName(null).setDescription(null).setFavourite(null).setSortColumn(SharedEntityColumn.NAME, true)
 				.setUserName(null).setShareTypeParameter(null).setTextSearchMode(null).toSearchParameters();
-		Collection<SearchRequest> sList = ComponentAccessor.getComponentOfType(SearchRequestService.class).getOwnedFilters(loginLogic.getCurrentUser(req));
+		Collection<SearchRequest> sList = ComponentAccessor.getComponentOfType(SearchRequestService.class).getOwnedFilters(loginLogic.getCurrentUser());
 		for (SearchRequest s : sList) {
 			// s.getName()
 		}
-		// SharedEntitySearchResult<SearchRequest> filtersResult =
-		// cm.getSearchRequestService().
-		// search(jsc, searchParams, 0, 50);
 	}
 
 	@Override
@@ -99,7 +100,7 @@ public class SupersedePrioritization extends HttpServlet {
 		context.put("baseurl", ComponentAccessor.getApplicationProperties().getString("jira.baseurl"));
 		List<Project> projects = ComponentAccessor.getProjectManager().getProjectObjects();
 		context.put("projects", projects);
-		ApplicationUser user = loginLogic.getCurrentUser(req);
+		ApplicationUser user = loginLogic.getCurrentUser();
 		if (user != null) {
 			Collection<SearchRequest> sList = ComponentAccessor.getComponentOfType(SearchRequestService.class).getOwnedFilters(user);
 			context.put("filters", sList);
@@ -113,23 +114,8 @@ public class SupersedePrioritization extends HttpServlet {
 				context.put("processes", processes);
 				templateRenderer.render("/templates/prioritization-export-data.vm", context, resp.getWriter());
 				return;
-				// sr.
-				// nella issue logic caricare le issue collegate al filtro
 			}
-			// else if("y".equals(req.getParameter("createProcess"))){
-			// String filter = req.getParameter("filter");
-			// SearchRequest sr =
-			// ComponentAccessor.getComponentOfType(SearchRequestService.class)
-			// .getFilter(new JiraServiceContextImpl(user),
-			// Long.valueOf(filter));
-			// List<Issue> issues = issueLogic.getIssuesFromFilter(req,
-			// sr.getQuery());
-			//
-			//
-			// }
 			resp.setContentType("text/html;charset=utf-8");
-			// Pass in the list of issues as the context
-
 			templateRenderer.render("/templates/logic-supersede-prioritization.vm", context, resp.getWriter());
 		}
 	}
@@ -143,7 +129,7 @@ public class SupersedePrioritization extends HttpServlet {
 				String description = req.getParameter("procDesc");
 				String filter = req.getParameter("procFilter");
 				if (filter != null && !filter.isEmpty()) {
-					ApplicationUser user = loginLogic.getCurrentUser(req);
+					ApplicationUser user = loginLogic.getCurrentUser();
 					SearchRequest sr = ComponentAccessor.getComponentOfType(SearchRequestService.class).getFilter(new JiraServiceContextImpl(user), Long.valueOf(filter));
 
 					String processSSID = processLogic.createProcess(req, id);
@@ -154,46 +140,52 @@ public class SupersedePrioritization extends HttpServlet {
 
 					for (Issue i : issueList) {
 						// creating a String map "key###value,key2###value2.."
-						// and
-						// so on
 						String restResult = requirementLogic.createRequirement(processSSID, i);
-
 						JSONObject jo = new JSONObject(restResult);
 						String requirementId = jo.getString("requirementId");
-						issueRequirementsMap.append(i.getKey()).append("###").append(requirementId).append(",");
+						issueRequirementsMap.append(i.getKey()).append(ProcessLogic.MAP_SEPARATOR).append(requirementId).append(",");
 
 					}
-
-					// Create a requirement from
-
 					// ProcessService added at last
 					processService.add(description, processSSID, issueRequirementsMap.toString(), sr.getQuery().getQueryString(), "In progress");
 
 				}
-
-				// Create a Process and save the id provided by Supersede
-
-				// Save a map of issues and Requirements (since an Issue can be
-				// inserted in a Process even though the same issue could be
-				// involved in another one)
-
 				res.sendRedirect(req.getContextPath() + "/plugins/servlet/supersede-prioritization");
+			} else if ("rankingImport".equals(req.getParameter(PARAM_ACTION))) {
+				String processId = req.getParameter("processId");
+				SupersedeProcess sp = processService.getProcess(processId);
+				JSONArray jarr = processLogic.getRankingJSONArray(processId);
+				HashMap<String, String> irHashMap = processLogic.getIssueRequirementsHashMap(sp);
+
+				JSONObject o = jarr.getJSONObject(0);
+				JSONArray scores = o.getJSONArray("scores");
+				int l = scores.length();
+				scoresLoop: for (int i = 0; i < l; ++i) {
+					String issueKey = irHashMap.get(scores.getJSONObject(i).getString("requirementId"));
+					IssueManager issueManager = ComponentAccessor.getIssueManager();
+					MutableIssue mIssue = issueManager.getIssueByKeyIgnoreCase(issueKey);
+					if (mIssue == null) {
+						// If no issue is found, skip this one but continue with
+						// others
+						continue scoresLoop;
+					}
+					// define priority
+					// if l<5 , so priority = i (there are 5 priority levels)
+					// if l > 5, priority = i%5;
+					//Start to 1, setting priority to 0 leads to nothing
+					int priorityValue = i+1;
+					if (l > 5) {
+						priorityValue = i / 5;
+					}
+					mIssue.setPriorityId(String.valueOf(priorityValue));
+					Date d = new Date();
+					mIssue.setDescription(mIssue.getDescription() + " Priority set to " + priorityValue + " on " + d.toString());
+
+					issueManager.updateIssue(loginLogic.getCurrentUser(), mIssue, EventDispatchOption.ISSUE_UPDATED, true);
+				}
+
 			}
-			else if("rankingImport".equals(req.getParameter(PARAM_ACTION))) {
-//				String processId = req.getParameter("processId");
-//				SupersedeProcess sp = processService.getProcess(processId);
-//				JSONArray jarr = processLogic.getRankingJSONArray(processId);
-//				
-//				//Create an array with ranking
-//				
-//				//key###value;
-//				String[] issueRequirementsMap = sp.getIssuesRequirementsMap().split(",");
-//				for(int i = 0; i < issueRequirementsMap.length; i++) {
-//					
-//				}
-//				
-//				//
-			}
+			doGet(req, res);
 
 		} catch (JSONException e) {
 			e.printStackTrace();

@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,8 +15,13 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.util.json.JSONArray;
+import com.atlassian.jira.util.json.JSONException;
+import com.atlassian.jira.util.json.JSONObject;
+
+import eu.supersede.jira.plugins.activeobject.SupersedeProcess;
 
 public class ProcessLogic {
 
@@ -29,6 +35,7 @@ public class ProcessLogic {
 	public final static String STATUS_IN_PROGRESS = "InProgress";
 	public final static String STATUS_CLOSED = "Closed";
 	public final static String STATUS_RETRY = "Retry";
+	public final static String MAP_SEPARATOR = "###";
 
 	private ProcessLogic() {
 		loginLogic = LoginLogic.getInstance();
@@ -151,6 +158,21 @@ public class ProcessLogic {
 		// If something happened, return 0. If it was e.g. a connection error,
 		// it will restore that value on the first successful refresh
 		return new JSONArray();
+	}
+
+	public HashMap<String, String> getIssueRequirementsHashMap(SupersedeProcess sp) {
+		String[] issueRequirementsMap = sp.getIssuesRequirementsMap().split(",");
+		HashMap<String, String> irHashMap = new HashMap<String, String>();
+		// Create an hashmap of key-value
+		// putting requirement as key
+		for (int i = 0; i < issueRequirementsMap.length; i++) {
+			String[] ir = issueRequirementsMap[i].split(MAP_SEPARATOR);
+			irHashMap.put(ir[1], ir[0]);
+		}
+		return irHashMap;
+		// Now I process just one ranking, but in the future there could be
+		// more than one returned.
+
 	}
 
 }

@@ -67,9 +67,9 @@
 			</td>
 			<td class="td-truncate">$process.getSSProjectId()</td>
 
-			<td class="td-truncate">#if($process.getStatus() == 'InProgress') $process.getRankings() #else - #end #if($process.getRankings() == 1)
+			<td class="td-truncate">#if($process.getRankings() >= 1) $process.getRankings() #else - #end #if($process.getRankings() == 1)
 				<form action="supersede-prioritization" method="POST">
-					<input type="hidden" name="processId" id="ranking-process-id">
+					<input type="hidden" name="processId" id="ranking-process-id" value=$process.getSSProjectId()>
 					<button class="aui-button aui-button-secondary rankingButton" id=$process.getSSProjectId() name="action" value="rankingImport">Importa risultati</button>
 				</form> #end
 			</td>
