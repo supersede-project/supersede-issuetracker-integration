@@ -7,9 +7,11 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,6 +26,7 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.util.json.JSONArray;
 import com.atlassian.jira.util.json.JSONException;
 import com.atlassian.jira.util.json.JSONObject;
+import com.google.gson.Gson;
 
 import eu.supersede.jira.plugins.servlet.Requirement;
 
@@ -187,7 +190,50 @@ public class RequirementLogic {
 			String jiraIssueUrl = " " + ComponentAccessor.getApplicationProperties().getString("jira.baseurl") + "/browse/";
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 			StringBuilder params = new StringBuilder("processId=").append(processId).append("&name=").append(i.getKey()).append("&description=").append(i.getDescription() + jiraIssueUrl + i.getKey());
+			conn.setConnectTimeout(LoginLogic.CONN_TIMEOUT);
+			conn.setReadTimeout(LoginLogic.CONN_TIMEOUT);
+			conn.setDoOutput(true);
+			conn.setRequestMethod("POST");
+			conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+			conn.setRequestProperty("Content-Length", String.valueOf(params.length()));
+			conn.setRequestProperty("TenantId", loginLogic.getCurrentProject());
+			conn.setRequestProperty("Cookie", "SESSION=" + sessionId + ";");
+			conn.setRequestProperty("X-XSRF-TOKEN", loginLogic.authenticate(sessionId));
+			conn.setDoOutput(true);
+			OutputStreamWriter outputStreamWriter = new OutputStreamWriter(conn.getOutputStream());
+			outputStreamWriter.write(params.toString());
+			outputStreamWriter.flush();
 
+			response = conn.getResponseCode();
+			responseData = conn.getResponseMessage();
+
+			BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
+			StringBuilder sb = new StringBuilder();
+			String output;
+			while ((output = br.readLine()) != null) {
+				sb.append(output);
+			}
+			return sb.toString();
+
+		} catch (
+
+		Exception e) {
+			e.printStackTrace();
+		}
+
+		return "";
+
+	}
+	
+	public String setRequirementLinks(String processId, String requirementId, List<String> requirementsToLink) {
+		int response = -1;
+		String responseData = "";
+		try {
+			String sessionId = loginLogic.login();
+			URL url = new URL(loginLogic.getUrl() + "supersede-dm-app/processes/requirements//dependencies/submit");
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			String listJson = new Gson().toJson(requirementsToLink);
+			StringBuilder params = new StringBuilder("processId=").append(processId).append("&requirementId=").append(requirementId).append("&requirements=").append(listJson);
 			conn.setConnectTimeout(LoginLogic.CONN_TIMEOUT);
 			conn.setReadTimeout(LoginLogic.CONN_TIMEOUT);
 			conn.setDoOutput(true);

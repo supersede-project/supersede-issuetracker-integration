@@ -26,6 +26,8 @@ import com.atlassian.jira.issue.CustomFieldManager;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.issue.MutableIssue;
+import com.atlassian.jira.issue.link.IssueLink;
+import com.atlassian.jira.issue.link.IssueLinkManager;
 import com.atlassian.jira.issue.search.SearchRequest;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.sharing.SharedEntityColumn;
@@ -138,14 +140,31 @@ public class SupersedePrioritization extends HttpServlet {
 					List<Issue> issueList = issueLogic.getIssuesFromFilter(req, sr.getQuery());
 					StringBuilder issueRequirementsMap = new StringBuilder();
 
+					HashMap<String, String> issueMap = new HashMap<String, String>();
 					for (Issue i : issueList) {
-						// creating a String map "key###value,key2###value2.."
-						String restResult = requirementLogic.createRequirement(processSSID, i);
-						JSONObject jo = new JSONObject(restResult);
+						String restRequirementCreationResult = requirementLogic.createRequirement(processSSID, i);
+						JSONObject jo = new JSONObject(restRequirementCreationResult);
 						String requirementId = jo.getString("requirementId");
+						// add issue to HashMap
+						issueMap.put(i.getKey(), requirementId);
+						// creating a String map "key###value,key2###value2.."
 						issueRequirementsMap.append(i.getKey()).append(ProcessLogic.MAP_SEPARATOR).append(requirementId).append(",");
 
+						//find issue links and send them to SS only if both parts of issues are included in this process
+						IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
+						List<IssueLink> linkList = issueLinkManager.getOutwardLinks(i.getNumber());
+						List<String> requirementsToLink = new LinkedList<>();
+						//For every link related to this issue, if target is in process issues, add it as link
+						for(IssueLink il: linkList) {
+							Issue targetIssue = il.getDestinationObject();
+							if(issueMap.containsKey(targetIssue.getKey())) {
+								requirementsToLink.add(issueMap.get(targetIssue.getKey()));
+							}
+						}
+						requirementLogic.setRequirementLinks(processSSID, requirementId, requirementsToLink);
+						
 					}
+					
 					// ProcessService added at last
 					processService.add(description, processSSID, issueRequirementsMap.toString(), sr.getQuery().getQueryString(), "In progress");
 
