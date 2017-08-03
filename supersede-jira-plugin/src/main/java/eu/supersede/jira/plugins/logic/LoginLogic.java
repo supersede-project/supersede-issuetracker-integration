@@ -4,6 +4,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -11,8 +12,10 @@ import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.atlassian.crowd.embedded.api.Group;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.user.ApplicationUser;
+import com.atlassian.jira.user.util.UserUtil;
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 
 import eu.supersede.jira.plugins.servlet.SupersedeCfg;
@@ -25,11 +28,13 @@ public class LoginLogic {
 
 	private String serverUrl, username, password, tenantOverride;
 
-	private String currentProject; // TODO!!!
+	private String currentProject; //TODO: 20170803 No longer required, if "get tenant from user group" is confirmed
 
 	public static final int CONN_TIMEOUT = 10000;
 
 	private static final Logger log = LoggerFactory.getLogger(LoginLogic.class);
+
+	private static final String GROUP_TENANT_PREFIX = "supersede-tenant-";
 
 	private LoginLogic() {
 	}
@@ -43,14 +48,10 @@ public class LoginLogic {
 
 	public void loadConfiguration(PluginSettings settings) {
 		PluginSettings pluginSettings = settings;
-		serverUrl = SupersedeCfg.getConfigurationValue(pluginSettings, SupersedeCfg.KEY_HOSTNAME,
-				SupersedeCfg.DEF_HOSTNAME);
-		username = SupersedeCfg.getConfigurationValue(pluginSettings, SupersedeCfg.KEY_USERNAME,
-				SupersedeCfg.DEF_USERNAME);
-		password = SupersedeCfg.getConfigurationValue(pluginSettings, SupersedeCfg.KEY_PASSWORD,
-				SupersedeCfg.DEF_PASSWORD);
-		tenantOverride = SupersedeCfg.getConfigurationValue(pluginSettings, SupersedeCfg.KEY_TENANT,
-				SupersedeCfg.DEF_TENANT);
+		serverUrl = SupersedeCfg.getConfigurationValue(pluginSettings, SupersedeCfg.KEY_HOSTNAME, SupersedeCfg.DEF_HOSTNAME);
+		username = SupersedeCfg.getConfigurationValue(pluginSettings, SupersedeCfg.KEY_USERNAME, SupersedeCfg.DEF_USERNAME);
+		password = SupersedeCfg.getConfigurationValue(pluginSettings, SupersedeCfg.KEY_PASSWORD, SupersedeCfg.DEF_PASSWORD);
+		tenantOverride = SupersedeCfg.getConfigurationValue(pluginSettings, SupersedeCfg.KEY_TENANT, SupersedeCfg.DEF_TENANT);
 	}
 
 	public String getBasicAuth() {
@@ -110,26 +111,36 @@ public class LoginLogic {
 		Map<String, List<String>> map = conn.getHeaderFields();
 		List<String> cookies = map.get("Set-Cookie");
 
-//		if (authToken == null || authToken.isEmpty()) {
-			String xsrf = null;
-			for (String s : cookies) {
-				String[] split = s.split("=");
-				if (split.length > 1) {
-					if (split[0].equalsIgnoreCase("xsrf-token")) {
-						xsrf = split[1].substring(0, split[1].indexOf(';'));
-					}
+		// if (authToken == null || authToken.isEmpty()) {
+		String xsrf = null;
+		for (String s : cookies) {
+			String[] split = s.split("=");
+			if (split.length > 1) {
+				if (split[0].equalsIgnoreCase("xsrf-token")) {
+					xsrf = split[1].substring(0, split[1].indexOf(';'));
 				}
 			}
-			authToken = xsrf;
-			System.out.println("XSRF token is " + xsrf);
-//		}
+		}
+		authToken = xsrf;
+		System.out.println("XSRF token is " + xsrf);
+		// }
 		return authToken;
 	}
 
 	public String getCurrentProject() {
 		// this should be set in the query: otherwise a project should be picked
 		// up by the user
+		UserUtil util = ComponentAccessor.getUserUtil();
+		SortedSet<Group> groups = util.getGroupsForUser(getCurrentUser().getName());
+		for (Group g : groups) {
+			if (g.getName().startsWith(GROUP_TENANT_PREFIX)) {
+				return g.getName().split("-")[2];
+			}
+		}
+		
+		//TODO: Provisional check in order to return the default cfg tenant until extensive test
 		return tenantOverride.length() > 0 ? tenantOverride : currentProject;
+
 	}
 
 	public String getUrl() {

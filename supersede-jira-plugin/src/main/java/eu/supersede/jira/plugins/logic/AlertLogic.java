@@ -188,7 +188,6 @@ public class AlertLogic {
 				a.setSentiment(r.getInt("overallSentiment"));
 				a.setPositive(r.getInt("positiveSentiment"));
 				a.setNegative(r.getInt("negativeSentiment"));
-				// TODO
 				Set<String> issues = getRelatedIssues(req, supersedeFieldId, il, o.getString("id"));
 				a.setCount(issues.size());
 				String[] issuesArray = issues.toArray(new String[issues.size()]);

@@ -1,7 +1,5 @@
 <html>
-<head>
-$webResourceManager.requireResourcesForContext("content-supersede-alerts.context")
-$webResourceManager.requireResourcesForContext("content-supersede-prioritization.context")
+<head>$webResourceManager.requireResourcesForContext("content-supersede-alerts.context") $webResourceManager.requireResourcesForContext("content-supersede-prioritization.context")
 
 </head>
 
@@ -11,66 +9,62 @@ $webResourceManager.requireResourcesForContext("content-supersede-prioritization
 
 	<form class="aui">
 		<div class="field-group">
-			<label for="filter-select">$i18n.getText("supersede-prioritization-filters.label")</label>
-			<select class="select" id="filter-select" name="search-filters">
-				#foreach($filter in $filters)
+			<label for="filter-select">$i18n.getText("supersede-prioritization-filters.label")</label> <select class="select" id="filter-select" name="search-filters"> #foreach($filter in $filters)
 				<option value=$filter.getId()>$filter.getName()</option> #end
 			</select>
-
 		</div>
 	</form>
-	
-	<section role="dialog" id="create-process-dialog" class="aui-layer aui-dialog2 aui-dialog2-medium" aria-hidden="true">
-				<!-- Dialog header -->
-				<header class="aui-dialog2-header">
-					<!-- The dialog's title -->
-					<h2 class="aui-dialog2-header-main">$i18n.getText("supersede-prioritization-create-process-dialog.title")</h2>
-					<!-- Close icon -->
-					<a class="aui-dialog2-header-close"> <span class="aui-icon aui-icon-small aui-iconfont-close-dialog">$i18n.getText("supersede-alerts-close.btn.label")</span>
-					</a>
 
-				</header>
-				<!-- Main dialog content -->
-				<div class="aui-dialog2-content">
-					<aui-label for="processId">$i18n.getText("supersede-prioritization-process-id.label")</aui-label>
-					<input name="processId" id="processId">
-					<aui-label for="description">$i18n.getText("supersede-prioritization-process-description.label")</aui-label>
-					<input name="description" id="description">
-						
-				</div>
-				<!-- Dialog footer -->
-				<footer class="aui-dialog2-footer">
-					<!-- Actions to render on the right of the footer -->
-					<div class="aui-dialog2-footer-actions">
-						<form action="supersede-prioritization" method="post">
-							<input type="hidden" class="procId" name="procId"> <input type="hidden" class="procDesc" name="procDesc">
-							<input type="hidden" class="procFilter" name="procFilter">
-							<button id="dialog-submit-button" class="aui-button aui-button-primary dialogButton" name="action" value="CreateProc">$i18n.getText("supersede-prioritization-create-btn.label")</button>
-						</form>
-					</div>
-					<!-- HINT TEXT -->
-				</footer>
-			</section>
-	
-	
-	<button style="margin-left: 20px" id="create-process-button"
-		name="action" value="Create" class="aui-button aui-button-primary">
-		<span class="glyphicon glyphicon-plus"></span> <span
-			class="submit-text">$i18n.getText("supersede-prioritization-create-process-btn.label")</span>
+	<button style="margin-left: 20px" id="create-process-button" name="action" value="Create" class="aui-button aui-button-primary">
+		<span class="glyphicon glyphicon-plus"></span> <span class="submit-text">$i18n.getText("supersede-prioritization-create-process-btn.label")</span>
 	</button>
-	
-<!-- 	<button style="margin-left: 20px" id="show-processes-button" -->
-<!-- 		name="action" value="Show" class="aui-button aui-button-secondary"> -->
-<!-- 		<span class="glyphicon glyphicon-plus"></span> <span -->
-<!-- 			class="submit-text">$i18n.getText("supersede-prioritization-show-processes-btn.label")</span> -->
-<!-- 	</button> -->
-	
-<!-- 	<button style="margin-left: 20px" id="hide-processes-button" -->
-<!-- 		name="action" value="Show" class="aui-button aui-button-secondary"> -->
-<!-- 		<span class="glyphicon glyphicon-plus"></span> <span -->
-<!-- 			class="submit-text">$i18n.getText("supersede-prioritization-show-processes-btn.label")</span> -->
-<!-- 	</button> -->
-	
+
+	<section role="dialog" id="create-process-dialog" class="aui-layer aui-dialog2 aui-dialog2-medium" aria-hidden="true">
+		<!-- Dialog header -->
+		<header class="aui-dialog2-header">
+			<!-- The dialog's title -->
+			<h2 class="aui-dialog2-header-main">$i18n.getText("supersede-prioritization-create-process-dialog.title")</h2>
+			<!-- Close icon -->
+			<a class="aui-dialog2-header-close"> <span class="aui-icon aui-icon-small aui-iconfont-close-dialog">$i18n.getText("supersede-alerts-close.btn.label")</span>
+			</a>
+
+		</header>
+		<!-- Main dialog content -->
+		<div class="aui-dialog2-content">
+			<aui-label for="processId">$i18n.getText("supersede-prioritization-process-id.label")</aui-label>
+			<input name="processId" id="processId">
+			<aui-label for="description">$i18n.getText("supersede-prioritization-process-description.label")</aui-label>
+			<input name="description" id="description">
+
+		</div>
+		<!-- Dialog footer -->
+		<footer class="aui-dialog2-footer">
+			<!-- Actions to render on the right of the footer -->
+			<div class="aui-dialog2-footer-actions">
+				<form action="supersede-prioritization" method="post">
+					<input type="hidden" class="procId" name="procId"> <input type="hidden" class="procDesc" name="procDesc"> <input type="hidden" class="procFilter" name="procFilter">
+					<button id="dialog-submit-button" class="aui-button aui-button-primary dialogButton" name="action" value="CreateProc">$i18n.getText("supersede-prioritization-create-btn.label")</button>
+				</form>
+			</div>
+			<!-- HINT TEXT -->
+		</footer>
+	</section>
+
+
+
+
+	<!-- 	<button style="margin-left: 20px" id="show-processes-button" -->
+	<!-- 		name="action" value="Show" class="aui-button aui-button-secondary"> -->
+	<!-- 		<span class="glyphicon glyphicon-plus"></span> <span -->
+	<!-- 			class="submit-text">$i18n.getText("supersede-prioritization-show-processes-btn.label")</span> -->
+	<!-- 	</button> -->
+
+	<!-- 	<button style="margin-left: 20px" id="hide-processes-button" -->
+	<!-- 		name="action" value="Show" class="aui-button aui-button-secondary"> -->
+	<!-- 		<span class="glyphicon glyphicon-plus"></span> <span -->
+	<!-- 			class="submit-text">$i18n.getText("supersede-prioritization-show-processes-btn.label")</span> -->
+	<!-- 	</button> -->
+
 	<div id='export-data'>#parse("/templates/prioritization-export-data.vm")</div>
 
 

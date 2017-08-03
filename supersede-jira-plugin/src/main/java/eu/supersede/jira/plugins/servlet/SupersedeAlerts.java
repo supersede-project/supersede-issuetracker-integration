@@ -157,6 +157,10 @@ public class SupersedeAlerts extends HttpServlet {
 					}
 				}
 			}
+			
+			//reload issue list in order to update counter
+			alerts = alertLogic.fetchAlerts(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic);
+			context.put("alerts", alerts);
 
 		} else if ("y".equals(req.getParameter("refreshAlerts"))) {
 			context.put("date", new Date().toString());

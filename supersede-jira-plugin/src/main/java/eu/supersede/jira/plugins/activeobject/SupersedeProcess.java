@@ -51,9 +51,9 @@ public interface SupersedeProcess extends Entity {
 	// Creation date (since more than a process could be started with the same
 	// query)
 
-	Date getCreationDate();
+	Date getLastRankingImportDate();
 
-	void setCreationDate(Date creationDate);
+	void setLastRankingImportDate(Date lastRankingImportDate);
 
 	
 	

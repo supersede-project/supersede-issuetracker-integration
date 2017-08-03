@@ -259,7 +259,6 @@ public class SupersedeMan extends HttpServlet {
 //					errors.add("importing " + a.getId());
 //					issueLogic.attachToIssue(a, issueLogic.getIssues(req, supersedeFieldId, issueID).get(0));
 //
-//					// TODO: attach to an issue
 //
 //				} else {
 //					// attach to an existing issue
@@ -268,13 +267,10 @@ public class SupersedeMan extends HttpServlet {
 //						errors.add("attaching " + a.getId());
 //						issueLogic.attachToIssue(a, issueLogic.getIssues(req, supersedeFieldId, issuesList[j]).get(0));
 //					}
-//					// TODO: retrieve hidden input issue number
-//					// TODO: attach to that issue
 //
 //				}
 //			}
 //
-//			// FIXME: FIELDS BELOW HAVE TO BE REMOVED OR MOVED IN OTHER TABS IN
 //			// FINAL VERSION
 //		} else if ("y".equals(req.getParameter("export"))) {
 //			errors.add("exporting " + req.getParameter("issuekey"));

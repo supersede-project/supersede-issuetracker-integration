@@ -184,6 +184,9 @@ public class SupersedePrioritization extends HttpServlet {
 
 					issueManager.updateIssue(loginLogic.getCurrentUser(), mIssue, EventDispatchOption.ISSUE_UPDATED, true);
 				}
+				
+				sp.setLastRankingImportDate(new Date());
+				sp.save();
 
 			}
 			doGet(req, res);

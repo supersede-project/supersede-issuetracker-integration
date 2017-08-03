@@ -10,7 +10,7 @@
 	<tbody class="issues-list">
 		#if ($issues.isEmpty())
 		<tr>
-			<td colspan="2"><b>There are no issues in this search!</b></td>
+			<td colspan="2"><b>$i18n.getText("supersede-alerts-table-none.label")</b></td>
 		</tr>
 		#end #foreach( $issue in $issues )
 		<tr>
@@ -35,14 +35,15 @@
 			<th class="td-small">$i18n.getText("supersede-prioritization-process-id.label")</th>
 			<th class="td-med">$i18n.getText("supersede-prioritization-process-description.label")</th>
 			<th class="td-max">$i18n.getText("supersede-prioritization-process-query.label")</th>
-			<th class="td-med">$i18n.getText("supersede-prioritization-process-ss-id.label")</th>
-			<th class="td-med">Rankings</th>
+			<th class="td-small">$i18n.getText("supersede-prioritization-process-ss-id.label")</th>
+			<th class="td-small">Rankings</th>
+			<th class="td-med">Last Import Date</th>
 		</tr>
 	</thead>
 	<tbody class="process-list">
 		#if ($processes.isEmpty())
 		<tr>
-			<td colspan="4">No processes created!</td>
+			<td colspan="4">$i18n.getText("supersede-prioritization-process-none.label")</td>
 		</tr>
 		#end #foreach( $process in $processes )
 		<tr>
@@ -67,21 +68,27 @@
 			</td>
 			<td class="td-truncate">$process.getSSProjectId()</td>
 
-			<td class="td-truncate">#if($process.getRankings() >= 1) $process.getRankings() #else - #end #if($process.getRankings() == 1)
-				<form action="supersede-prioritization" method="POST">
-					<input type="hidden" name="processId" id="ranking-process-id" value=$process.getSSProjectId()>
-					<button class="aui-button aui-button-secondary rankingButton" id=$process.getSSProjectId() name="action" value="rankingImport">Importa risultati</button>
-				</form> #end
+			<td class="td-truncate">
+				<div id="ranking">
+					<div id="rankingNumber">#if($process.getRankings()>= 1) $process.getRankings() #else - #end</div>
+					#if($process.getRankings() == 1)
+					<form action="supersede-prioritization" method="POST">
+						<input type="hidden" name="processId" id="ranking-process-id" value=$process.getSSProjectId()>
+						<button class="aui-button aui-button-secondary rankingButton" id=$process.getSSProjectId() name="action" value="rankingImport">$i18n.getText("supersede-prioritization-process-result-import.label")</button>
+					</form>
+					#end
+				</div>
+			</td>
+
+			<td class="td-truncate">
+			#if($process.getLastRankingImportDate()) 
+			$process.getLastRankingImportDate()
+			#else
+			 - 
+			#end
 			</td>
 
 		</tr>
 		#end
 	</tbody>
 </table>
-
-<!-- <div class="aui-message aui-message-success">
-    <p class="title">
-        <strong>$process.getProcId()</strong>
-    </p>
-    <p>$process.getQuery()</p>
-</div> -->

@@ -46,3 +46,13 @@
 	max-height: 500px;
 	display: inline-block;
 }
+
+#rankingNumber {
+    float: left;
+}
+
+
+.rankingButton {
+    margin-left: 10px;
+    float: left;
+}
