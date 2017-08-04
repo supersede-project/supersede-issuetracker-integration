@@ -42,7 +42,6 @@ import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
 import com.google.common.collect.Maps;
-import com.google.gson.JsonObject;
 
 import eu.supersede.jira.plugins.activeobject.ProcessService;
 import eu.supersede.jira.plugins.activeobject.SupersedeProcess;
@@ -150,21 +149,38 @@ public class SupersedePrioritization extends HttpServlet {
 						// creating a String map "key###value,key2###value2.."
 						issueRequirementsMap.append(i.getKey()).append(ProcessLogic.MAP_SEPARATOR).append(requirementId).append(",");
 
-						//find issue links and send them to SS only if both parts of issues are included in this process
+						// find issue links and send them to SS only if both
+						// parts of issues are included in this process
 						IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
-						List<IssueLink> linkList = issueLinkManager.getOutwardLinks(i.getNumber());
-						List<String> requirementsToLink = new LinkedList<>();
-						//For every link related to this issue, if target is in process issues, add it as link
-						for(IssueLink il: linkList) {
+						List<IssueLink> linkListO = issueLinkManager.getOutwardLinks(i.getId());
+						List<IssueLink> linkListI = issueLinkManager.getInwardLinks(i.getId());
+						// since in SS links go both ways, let's merge the lists
+						List<IssueLink> mergedList = new LinkedList<IssueLink>();
+						mergedList.addAll(linkListI);
+						mergedList.addAll(linkListO);
+						
+						List<Long> requirementsToLink = new LinkedList<Long>();
+						// For every link related to this issue, if target is in
+						// process issues, add it as link
+						
+						//TODO: check if inwardsLink has inverted source/target data. In outwards we need target, don't know if inwards is the same
+						boolean hasLinks = false;
+						for (IssueLink il : mergedList) {
+							if (!"Dependency".equals(il.getIssueLinkType().getName())) {
+								continue;
+							}
 							Issue targetIssue = il.getDestinationObject();
-							if(issueMap.containsKey(targetIssue.getKey())) {
-								requirementsToLink.add(issueMap.get(targetIssue.getKey()));
+							if (issueMap.containsKey(targetIssue.getKey())) {
+								requirementsToLink.add(Long.parseLong(issueMap.get(targetIssue.getKey())));
+								hasLinks = true;
 							}
 						}
-						requirementLogic.setRequirementLinks(processSSID, requirementId, requirementsToLink);
-						
+						if (hasLinks) {
+							requirementLogic.setRequirementLinks(processSSID, requirementId, requirementsToLink);
+						}
+
 					}
-					
+
 					// ProcessService added at last
 					processService.add(description, processSSID, issueRequirementsMap.toString(), sr.getQuery().getQueryString(), "In progress");
 
@@ -203,7 +219,7 @@ public class SupersedePrioritization extends HttpServlet {
 
 					issueManager.updateIssue(loginLogic.getCurrentUser(), mIssue, EventDispatchOption.ISSUE_UPDATED, true);
 				}
-				
+
 				sp.setLastRankingImportDate(new Date());
 				sp.save();
 

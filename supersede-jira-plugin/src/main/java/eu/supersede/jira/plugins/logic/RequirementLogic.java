@@ -11,17 +11,14 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.http.client.utils.URLEncodedUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.bc.issue.IssueService;
-import com.atlassian.jira.bc.issue.IssueService.IssueResult;
 import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.bc.project.ProjectService;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.util.json.JSONArray;
 import com.atlassian.jira.util.json.JSONException;
@@ -224,16 +221,20 @@ public class RequirementLogic {
 		return "";
 
 	}
-	
-	public String setRequirementLinks(String processId, String requirementId, List<String> requirementsToLink) {
+
+	public String setRequirementLinks(String processId, String requirementId, List<Long> requirementsToLink) {
 		int response = -1;
 		String responseData = "";
 		try {
 			String sessionId = loginLogic.login();
-			URL url = new URL(loginLogic.getUrl() + "supersede-dm-app/processes/requirements//dependencies/submit");
+			URL url = new URL(loginLogic.getUrl() + "supersede-dm-app/processes/requirements/dependencies/submit");
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-			String listJson = new Gson().toJson(requirementsToLink);
-			StringBuilder params = new StringBuilder("processId=").append(processId).append("&requirementId=").append(requirementId).append("&requirements=").append(listJson);
+			StringBuilder reqList = new StringBuilder();
+			for (Long l : requirementsToLink) {
+				reqList.append(l);
+				reqList.append(",");
+			}
+			StringBuilder params = new StringBuilder("processId=").append(processId).append("&requirementId=").append(requirementId).append("&dependencies=").append(reqList.toString().substring(0, reqList.length() - 1));
 			conn.setConnectTimeout(LoginLogic.CONN_TIMEOUT);
 			conn.setReadTimeout(LoginLogic.CONN_TIMEOUT);
 			conn.setDoOutput(true);
