@@ -155,9 +155,11 @@ public class SupersedePrioritization extends HttpServlet {
 						List<IssueLink> linkListO = issueLinkManager.getOutwardLinks(i.getId());
 						List<IssueLink> linkListI = issueLinkManager.getInwardLinks(i.getId());
 						// since in SS links go both ways, let's merge the lists
-						List<IssueLink> mergedList = new LinkedList<IssueLink>();
-						mergedList.addAll(linkListI);
-						mergedList.addAll(linkListO);
+						
+						//NOT REQUIRED: SS links go in one way
+//						List<IssueLink> mergedList = new LinkedList<IssueLink>();
+//						mergedList.addAll(linkListI);
+//						mergedList.addAll(linkListO);
 						
 						List<Long> requirementsToLink = new LinkedList<Long>();
 						// For every link related to this issue, if target is in
@@ -165,7 +167,7 @@ public class SupersedePrioritization extends HttpServlet {
 						
 						//TODO: check if inwardsLink has inverted source/target data. In outwards we need target, don't know if inwards is the same
 						boolean hasLinks = false;
-						for (IssueLink il : mergedList) {
+						for (IssueLink il : linkListO /*mergedList*/) {
 							if (!"Dependency".equals(il.getIssueLinkType().getName())) {
 								continue;
 							}
