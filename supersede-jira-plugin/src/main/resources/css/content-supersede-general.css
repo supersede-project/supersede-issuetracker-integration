@@ -42,17 +42,43 @@
 }
 
 #attach-dialog-data {
-	min-width:parent;
+	min-width: parent;
 	max-height: 500px;
 	display: inline-block;
 }
 
 #rankingNumber {
-    float: left;
+	float: left;
 }
 
-
 .rankingButton {
-    margin-left: 10px;
-    float: left;
+	margin-left: 10px;
+	float: left;
+}
+
+#data {
+	margin-left: 10%;
+	margin-right: 10%;
+}
+
+#export-data {
+	margin-bottom: 10%;
+}
+
+#buttons form .field-group {
+	width: 20%;
+	float: left;
+	padding: 4px 0 4px 4%;
+}
+
+#buttons form .field-group label {
+	padding: 5px 0 0 0;
+}
+
+#create-process-button {
+	margin-top: 5px;
+}
+
+.collapsible-content {
+	display: none;
 }

@@ -42,7 +42,8 @@
 }
 
 #attach-dialog-data {
-	min-width:parent;
+	min-width: parent;
 	max-height: 500px;
 	display: inline-block;
 }
+
