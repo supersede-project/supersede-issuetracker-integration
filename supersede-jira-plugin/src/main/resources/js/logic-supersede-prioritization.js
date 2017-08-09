@@ -15,9 +15,6 @@ AJS.$(document).ready(function() {
 });
 
 function onPageLoad() {
-	alert("setto sortable");
-	AJS.tablessortable.setTableSortable(AJS.$(".sortableTableProcesses"));
-
 	AJS.$(".icon-tooltip").tooltip();
 
 	$('#filter-select').change(function() {
