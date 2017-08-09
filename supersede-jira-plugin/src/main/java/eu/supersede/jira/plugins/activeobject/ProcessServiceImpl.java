@@ -37,8 +37,9 @@ public class ProcessServiceImpl implements ProcessService {
 	}
 
 	@Override
-	public SupersedeProcess add(String desc, String query) {
+	public SupersedeProcess add(String name, String desc, String query) {
 		final SupersedeProcess process = ao.create(SupersedeProcess.class);
+		process.setName(name);
 		process.setDescription(desc);
 		process.setQuery(query);
 		process.setSSProjectId("");
@@ -47,16 +48,16 @@ public class ProcessServiceImpl implements ProcessService {
 	}
 
 	@Override
-	public SupersedeProcess add(String desc, String query, String status) {
-		SupersedeProcess process = add(desc, query);
+	public SupersedeProcess add(String name, String desc, String query, String status) {
+		SupersedeProcess process = add(name, desc, query);
 		process.setStatus(status);
 		process.save();
 		return process;
 	}
 
 	@Override
-	public SupersedeProcess add(String desc, String processID, String issueRequirementsMap, String query, String status) {
-		SupersedeProcess process = add(desc, query);
+	public SupersedeProcess add(String name, String desc, String processID, String issueRequirementsMap, String query, String status) {
+		SupersedeProcess process = add(name, desc, query);
 		process.setSSProjectId(processID);
 		process.setIssuesRequirementsMap(issueRequirementsMap);
 		process.setStatus(status);

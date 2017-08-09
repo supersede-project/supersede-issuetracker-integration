@@ -12,6 +12,10 @@ public interface SupersedeProcess extends Entity {
 
 	void setProcId(String id);
 
+	String getName();
+
+	void setName(String name);
+
 	// Description
 	String getDescription();
 
@@ -41,11 +45,11 @@ public interface SupersedeProcess extends Entity {
 	//
 	// // Mapping betweeen Issues and Requirements, because 2 Processes could be
 	// // going involving the same issue
-	@StringLength(value=StringLength.UNLIMITED)
+	@StringLength(value = StringLength.UNLIMITED)
 	String getIssuesRequirementsMap();
 
 	//
-	@StringLength(value=StringLength.UNLIMITED)
+	@StringLength(value = StringLength.UNLIMITED)
 	void setIssuesRequirementsMap(String issuesRequirementsMap);
 
 	// Creation date (since more than a process could be started with the same
@@ -55,8 +59,6 @@ public interface SupersedeProcess extends Entity {
 
 	void setLastRankingImportDate(Date lastRankingImportDate);
 
-	
-	
 	int getRankings();
 
 	void setRankings(int rankings);

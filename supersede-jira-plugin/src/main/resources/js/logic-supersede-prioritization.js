@@ -4,14 +4,14 @@ AJS.$(document).ready(function() {
 		type : "get",
 		url : "supersede-prioritization?loadIssues=y&filter=" + $('#filter-select').val(),
 		success : function(data) {
-			$("#export-data").html(data);
-			onPageLoad();
+			$("#issues-table-data").html(data);
 		},
 		error : function() {
 			console.log('error', arguments);
 		}
 	});
 	onPageLoad();
+	// Needed just one time
 });
 
 function onPageLoad() {
@@ -25,8 +25,7 @@ function onPageLoad() {
 			url : "supersede-prioritization?loadIssues=y&filter=" + $(this).val(),
 			success : function(data) {
 				console.log('dom', self, data);
-				$("#export-data").html(data);
-				onPageLoad();
+				$("#issues-table-data").html(data);
 			},
 			error : function() {
 				console.log('error', arguments);

@@ -110,12 +110,12 @@ public class SupersedePrioritization extends HttpServlet {
 				SearchRequest sr = ComponentAccessor.getComponentOfType(SearchRequestService.class).getFilter(new JiraServiceContextImpl(user), Long.valueOf(filter));
 				context.put("issues", issueLogic.getIssuesFromFilter(req, sr.getQuery()));
 				context.put("filter", sr);
-				List<SupersedeProcess> processes = processService.getAllProcesses();
-				processService.updateAllProcessesStatus(processes);
-				context.put("processes", processes);
-				templateRenderer.render("/templates/prioritization-export-data.vm", context, resp.getWriter());
+				templateRenderer.render("/templates/issues-table-data.vm", context, resp.getWriter());
 				return;
 			}
+			List<SupersedeProcess> processes = processService.getAllProcesses();
+			processService.updateAllProcessesStatus(processes);
+			context.put("processes", processes);
 			resp.setContentType("text/html;charset=utf-8");
 			templateRenderer.render("/templates/logic-supersede-prioritization.vm", context, resp.getWriter());
 		}
@@ -126,14 +126,14 @@ public class SupersedePrioritization extends HttpServlet {
 		try {
 			// This must create a process on SS and "on JIRA" at the same time
 			if ("CreateProc".equals(req.getParameter(PARAM_ACTION))) {
-				String id = req.getParameter("procId");
+				String name = req.getParameter("procId");
 				String description = req.getParameter("procDesc");
 				String filter = req.getParameter("procFilter");
 				if (filter != null && !filter.isEmpty()) {
 					ApplicationUser user = loginLogic.getCurrentUser();
 					SearchRequest sr = ComponentAccessor.getComponentOfType(SearchRequestService.class).getFilter(new JiraServiceContextImpl(user), Long.valueOf(filter));
 
-					String processSSID = processLogic.createProcess(req, id);
+					String processSSID = processLogic.createProcess(req, name);
 
 					// Get a list of issues from this query
 					List<Issue> issueList = issueLogic.getIssuesFromFilter(req, sr.getQuery());
@@ -152,22 +152,27 @@ public class SupersedePrioritization extends HttpServlet {
 						// find issue links and send them to SS only if both
 						// parts of issues are included in this process
 						IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
+						// If specs require INWARDS LINK management, swap
+						// comments in following 2 lines
 						List<IssueLink> linkListO = issueLinkManager.getOutwardLinks(i.getId());
-						List<IssueLink> linkListI = issueLinkManager.getInwardLinks(i.getId());
-						// since in SS links go both ways, let's merge the lists
-						
-						//NOT REQUIRED: SS links go in one way
-//						List<IssueLink> mergedList = new LinkedList<IssueLink>();
-//						mergedList.addAll(linkListI);
-//						mergedList.addAll(linkListO);
-						
+						// List<IssueLink> linkListI =
+						// issueLinkManager.getInwardLinks(i.getId());
+
+						// If specs require BOTH WAYS link management
+						// List<IssueLink> mergedList = new
+						// LinkedList<IssueLink>();
+						// mergedList.addAll(linkListI);
+						// mergedList.addAll(linkListO);
+
 						List<Long> requirementsToLink = new LinkedList<Long>();
 						// For every link related to this issue, if target is in
 						// process issues, add it as link
-						
-						//TODO: check if inwardsLink has inverted source/target data. In outwards we need target, don't know if inwards is the same
+
+						// TODO: check if inwardsLink has inverted source/target
+						// data. In outwards we need target, don't know if
+						// inwards is the same
 						boolean hasLinks = false;
-						for (IssueLink il : linkListO /*mergedList*/) {
+						for (IssueLink il : linkListO /* mergedList */) {
 							if (!"Dependency".equals(il.getIssueLinkType().getName())) {
 								continue;
 							}
@@ -184,7 +189,7 @@ public class SupersedePrioritization extends HttpServlet {
 					}
 
 					// ProcessService added at last
-					processService.add(description, processSSID, issueRequirementsMap.toString(), sr.getQuery().getQueryString(), "In progress");
+					processService.add(name, description, processSSID, issueRequirementsMap.toString(), sr.getQuery().getQueryString(), "In progress");
 
 				}
 				res.sendRedirect(req.getContextPath() + "/plugins/servlet/supersede-prioritization");
@@ -225,6 +230,14 @@ public class SupersedePrioritization extends HttpServlet {
 				sp.setLastRankingImportDate(new Date());
 				sp.save();
 
+			} else if ("closeProject".equals(req.getParameter(PARAM_ACTION))) {
+				String processId = req.getParameter("processId");
+				SupersedeProcess sp = processService.getProcess(processId);
+				int closeResponse = processLogic.closeProcess(sp.getSSProjectId());
+				if (closeResponse == 200) {
+					sp.setLastRankingImportDate(new Date());
+					sp.save();
+				}
 			}
 			doGet(req, res);
 

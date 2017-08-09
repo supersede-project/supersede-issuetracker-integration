@@ -1,0 +1,23 @@
+
+<blockquote>$filter.getQuery().getQueryString();</blockquote>
+<strong class="title">Issues:</strong>
+<table class="aui table-truncate aui-table-sortable sortableTableIssues ">
+	<thead>
+		<tr>
+			<th>$i18n.getText("supersede-alerts-table-id.label")</th>
+			<th>$i18n.getText("supersede-alerts-table-description.label")</th>
+		</tr>
+	</thead>
+	<tbody class="issues-list">
+		#if ($issues.isEmpty())
+		<tr>
+			<td colspan="2"><b>$i18n.getText("supersede-alerts-table-none.label")</b></td>
+		</tr>
+		#end #foreach( $issue in $issues )
+		<tr>
+			<td class="td-truncate">$issue.getKey()</td>
+			<td class="td-truncate">$issue.getSummary()</td>
+		</tr>
+		#end
+	</tbody>
+</table>

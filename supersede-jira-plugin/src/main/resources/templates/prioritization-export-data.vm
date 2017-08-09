@@ -1,25 +1,4 @@
-<blockquote>$filter.getQuery().getQueryString();</blockquote>
-<strong class="title">Issues:</strong>
-<table class="aui table-truncate aui-table-sortable sortableTableIssues ">
-	<thead>
-		<tr>
-			<th>$i18n.getText("supersede-alerts-table-id.label")</th>
-			<th>$i18n.getText("supersede-alerts-table-description.label")</th>
-		</tr>
-	</thead>
-	<tbody class="issues-list">
-		#if ($issues.isEmpty())
-		<tr>
-			<td colspan="2"><b>$i18n.getText("supersede-alerts-table-none.label")</b></td>
-		</tr>
-		#end #foreach( $issue in $issues )
-		<tr>
-			<td class="td-truncate">$issue.getKey()</td>
-			<td class="td-truncate">$issue.getSummary()</td>
-		</tr>
-		#end
-	</tbody>
-</table>
+<div id="issues-table-data">#parse("/templates/issues-table-data.vm")</div>
 <hr>
 <div class="collapsible">
 	<div class="collapsible-header">
@@ -32,9 +11,9 @@
 		<table class="aui table-truncate aui-table-sortable sortableTableProcesses">
 			<thead>
 				<tr>
-					<th class="td-small">Status</th>
+					<th class="td-med">Status</th>
 					<th class="td-small">$i18n.getText("supersede-prioritization-process-id.label")</th>
-					<th class="td-med">$i18n.getText("supersede-prioritization-process-description.label")</th>
+					<th class="td-small">$i18n.getText("supersede-prioritization-process-description.label")</th>
 					<th class="td-max">$i18n.getText("supersede-prioritization-process-query.label")</th>
 					<th class="td-small">$i18n.getText("supersede-prioritization-process-ss-id.label")</th>
 					<th class="td-small">Rankings</th>
@@ -48,11 +27,15 @@
 				</tr>
 				#end #foreach( $process in $processes )
 				<tr>
-					<td class="td-truncate">#if($process.getStatus() == 'InProgress') <span class=".icon-tooltip aui-icon aui-icon-small aui-iconfont-build" title="Process in progress">In progress</span> #elseif($process.getStatus() == 'Done') <span
-						class=".icon-tooltip aui-icon aui-icon-small aui-iconfont-success" title="Process completed successfullt">Done</span> #elseif($process.getStatus() == 'Closed') <span class=".icon-tooltip aui-icon aui-icon-small aui-iconfont-locked"
-						title="This process is closed">Closed</span> #elseif($process.getStatus() == 'Retry') <span class=".icon-tooltip aui-icon aui-icon-small aui-iconfont-warning" title="There was a problem during evaluation of this process">Retry</span> #else <span
-						class=".icon-tooltip aui-icon aui-icon-small aui-iconfont-remove-label">Removed</span> #end
-					</td>
+					<td class="td-truncate">#if($process.getStatus() == 'InProgress') <span class="icon-tooltip aui-icon aui-icon-small aui-iconfont-build" title="Process in progress">In progress</span> #elseif($process.getStatus() == 'Done') <span
+						class="icon-tooltip aui-icon aui-icon-small aui-iconfont-success" title="Process completed successfullt">Done</span> #elseif($process.getStatus() == 'Closed') <span class="icon-tooltip aui-icon aui-icon-small aui-iconfont-locked"
+						title="This process is closed">Closed</span> #elseif($process.getStatus() == 'Retry') <span class="icon-tooltip aui-icon aui-icon-small aui-iconfont-warning" title="There was a problem during evaluation of this process">Retry</span> #else <span class
+							="icon-tooltip aui-icon aui-icon-smallaui-iconfont-remove-label">Removed</span> #end #if($process.getStatus() != 'Removed' && $process.getStatus() != 'Closed')
+						<form action="supersede-prioritization" method="POST">
+							<input type="hidden" name="processId" id="ranking-process-id" value=$process.getSSProjectId()>
+							<button class="aui-button aui-button-secondary closeProjectButton" id=$process.getSSProjectId() name="action" value="closeProject">$i18n.getText("supersede-prioritization-process-result-close.label")</button>
+						</form>
+						#end </td>
 					<td class="td-truncate">$process.getID()</td>
 					<td class="td-truncate">$process.getDescription()</td>
 					<td class="td-truncate issueQuery">$process.getQuery()</td>
