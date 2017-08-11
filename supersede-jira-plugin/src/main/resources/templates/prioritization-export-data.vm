@@ -30,10 +30,17 @@
 					<td class="td-truncate">#if($process.getStatus() == 'InProgress') <span class="icon-tooltip aui-icon aui-icon-small aui-iconfont-build" title="Process in progress">In progress</span> #elseif($process.getStatus() == 'Done') <span
 						class="icon-tooltip aui-icon aui-icon-small aui-iconfont-success" title="Process completed successfullt">Done</span> #elseif($process.getStatus() == 'Closed') <span class="icon-tooltip aui-icon aui-icon-small aui-iconfont-locked"
 						title="This process is closed">Closed</span> #elseif($process.getStatus() == 'Retry') <span class="icon-tooltip aui-icon aui-icon-small aui-iconfont-warning" title="There was a problem during evaluation of this process">Retry</span> #else <span class
-							="icon-tooltip aui-icon aui-icon-smallaui-iconfont-remove-label">Removed</span> #end #if($process.getStatus() != 'Removed' && $process.getStatus() != 'Closed')
+							="icon-tooltip aui-icon aui-icon-smallaui-iconfont-remove-label">Removed</span> #end 
+							#if($process.getStatus() != 'Removed' && $process.getStatus() != 'Closed')
 						<form action="supersede-prioritization" method="POST">
 							<input type="hidden" name="processId" id="ranking-process-id" value=$process.getSSProjectId()>
-							<button class="aui-button aui-button-secondary closeProjectButton" id=$process.getSSProjectId() name="action" value="closeProject">$i18n.getText("supersede-prioritization-process-result-close.label")</button>
+							<button class="aui-button aui-button-secondary actionProjectButton" id=$process.getSSProjectId() name="action" value="closeProject">$i18n.getText("supersede-prioritization-process-result-close.label")</button>
+						</form>
+						#end 
+													#if($process.getStatus() == 'Closed')
+						<form action="supersede-prioritization" method="POST">
+							<input type="hidden" name="processId" id="ranking-process-id" value=$process.getSSProjectId()>
+							<button class="aui-button aui-button-error actionProjectButton removeProjectButton" id=$process.getSSProjectId() name="action" value="removeProject">$i18n.getText("supersede-prioritization-process-result-remove.label")</button>
 						</form>
 						#end </td>
 					<td class="td-truncate">$process.getID()</td>

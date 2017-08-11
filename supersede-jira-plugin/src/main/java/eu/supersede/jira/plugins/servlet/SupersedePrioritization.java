@@ -239,6 +239,16 @@ public class SupersedePrioritization extends HttpServlet {
 					sp.save();
 				}
 			}
+			
+			else if ("removeProject".equals(req.getParameter(PARAM_ACTION))) {
+				String processId = req.getParameter("processId");
+				SupersedeProcess sp = processService.getProcess(processId);
+				int closeResponse = processLogic.deleteProcess(sp.getSSProjectId());
+				if (closeResponse == 200) {
+					sp.setLastRankingImportDate(new Date());
+					sp.save();
+				}
+			}
 			doGet(req, res);
 
 		} catch (JSONException e) {

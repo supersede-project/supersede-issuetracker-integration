@@ -83,7 +83,7 @@
 	display: none;
 }
 
-.closeProjectButton {
+.actionProjectButton {
 	margin-left: 10px;
 	float: left;
 	display: none;
@@ -93,8 +93,12 @@ tr {
 	height: 50px;
 }
 
-tr:hover .closeProjectButton {
+tr:hover .actionProjectButton {
 	display: block;
+}
+
+.removeProjectButton {
+	background:#ff0000;
 }
 
 tr:hover td {

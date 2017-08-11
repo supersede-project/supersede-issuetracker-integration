@@ -214,5 +214,46 @@ public class ProcessLogic {
 		}
 		return -1;
 	}
+	
+	public int deleteProcess(String processId) {
+		int response = -1;
+		String responseData = "";
+		try {
+
+			String sessionId = loginLogic.login();
+			URL url = new URL(loginLogic.getUrl() + "supersede-dm-app/processes/delete");
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			StringBuilder params = new StringBuilder("processId=").append(processId);
+
+			conn.setConnectTimeout(LoginLogic.CONN_TIMEOUT);
+			conn.setReadTimeout(LoginLogic.CONN_TIMEOUT);
+			conn.setDoOutput(true);
+			conn.setRequestMethod("POST");
+			conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+			conn.setRequestProperty("Content-Length", String.valueOf(params.length()));
+			conn.setRequestProperty("TenantId", loginLogic.getCurrentProject());
+			conn.setRequestProperty("Cookie", "SESSION=" + sessionId + ";");
+			conn.setRequestProperty("X-XSRF-TOKEN", loginLogic.authenticate(sessionId));
+			conn.setDoOutput(true);
+			OutputStreamWriter outputStreamWriter = new OutputStreamWriter(conn.getOutputStream());
+			outputStreamWriter.write(params.toString());
+			outputStreamWriter.flush();
+
+			response = conn.getResponseCode();
+			responseData = conn.getResponseMessage();
+
+			if (response == 200) {
+				return response;
+			}
+
+			return -1;
+
+		} catch (
+
+		Exception e) {
+			e.printStackTrace();
+		}
+		return -1;
+	}
 
 }
