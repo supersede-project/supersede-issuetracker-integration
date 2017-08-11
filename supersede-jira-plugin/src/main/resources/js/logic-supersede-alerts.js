@@ -120,7 +120,6 @@ function onPageLoad() {
 			});
 	jQuery('.dialogChkSelected').click(
 			function() {
-				alert("hi mom");
 				if ($(this).prop('checked')) {
 					// Write a string containing the IDs of selected
 					// alerts
@@ -225,6 +224,7 @@ function onPageLoad() {
 						// self.parent().parent().remove();
 						AJS.tablessortable.setTableSortable(AJS
 								.$(".sortableDialogTable"));
+						onPageLoad();
 					},
 					error : function() {
 						console.log('error', arguments);
