@@ -27,6 +27,9 @@ public class XMLFileGenerator {
 	private String description;
 	private Date date; // for testing purposes, if date changes during jira use,
 						// new data was loaded
+	private int sentiment;
+	private int positive;
+	private int negative;
 
 	public XMLFileGenerator() {
 		super();
@@ -45,6 +48,9 @@ public class XMLFileGenerator {
 		this.applicationId = a.getApplicationId();
 		this.creationDate = a.getTimestamp();
 		this.date = new Date();
+		this.sentiment = a.getSentiment();
+		this.positive = a.getPositive();
+		this.negative = a.getNegative();
 	}
 
 	public String getId() {
@@ -103,6 +109,30 @@ public class XMLFileGenerator {
 		this.description = description;
 	}
 
+	public int getSentiment() {
+		return sentiment;
+	}
+
+	public void setSentiment(int sentiment) {
+		this.sentiment = sentiment;
+	}
+
+	public int getPositive() {
+		return positive;
+	}
+
+	public void setPositive(int positive) {
+		this.positive = positive;
+	}
+
+	public int getNegative() {
+		return negative;
+	}
+
+	public void setNegative(int negative) {
+		this.negative = negative;
+	}
+
 	public File generateXMLFile() {
 		try {
 			Document doc = buildXMLData();
@@ -131,18 +161,14 @@ public class XMLFileGenerator {
 		return null;
 	}
 
-	
 	/**
 	 * Builds the XML file structure
 	 * 
 	 * Example:
 	 * 
-	 * <alert id="foo">
-	 *     <creationDate></creationDate>
-	 *     <description></description>
-	 *     <applicationId></applicationId>
-	 *     <timestamp><timestamp>
-	 * </alert>
+	 * <alert id="foo"> <creationDate></creationDate>
+	 * <description></description> <applicationId></applicationId>
+	 * <timestamp><timestamp> </alert>
 	 * 
 	 * @return
 	 * @throws ParserConfigurationException
@@ -179,6 +205,21 @@ public class XMLFileGenerator {
 		Element timestamp = doc.createElement("timestamp");
 		timestamp.appendChild(doc.createTextNode(getDate().toString()));
 		rootAlert.appendChild(timestamp);
+
+		// sentiment elements
+		Element sentiment = doc.createElement("sentiment");
+		timestamp.appendChild(doc.createTextNode(String.valueOf(getSentiment())));
+		rootAlert.appendChild(sentiment);
+
+		// positive elements
+		Element positive = doc.createElement("positive");
+		timestamp.appendChild(doc.createTextNode(String.valueOf(getPositive())));
+		rootAlert.appendChild(positive);
+
+		// negative elements
+		Element negative = doc.createElement("negative");
+		timestamp.appendChild(doc.createTextNode(String.valueOf(getNegative())));
+		rootAlert.appendChild(negative);
 
 		return doc;
 

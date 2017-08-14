@@ -1,6 +1,7 @@
 package eu.supersede.jira.plugins.servlet;
 
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -11,6 +12,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.httpclient.Cookie;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -98,6 +100,17 @@ public class SupersedeAlerts extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
+		try {
+			LoginLogic loginLogic = LoginLogic.getInstance();
+			String sessionId = loginLogic.login();
+			String xsrf = loginLogic.authenticate(sessionId);
+
+			loginLogic.setSessionCookie(resp, sessionId);
+			loginLogic.setXsrfCookie(resp, xsrf);
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
+
 		Map<String, Object> context = Maps.newHashMap();
 		try {
 			supersedeCustomFieldLogic.checkSupersedeField();
@@ -114,13 +127,13 @@ public class SupersedeAlerts extends HttpServlet {
 		// If no project is specified (e.g. at first start), insert first
 		// project in list
 		context.put("projectField", req.getParameter("projectField") != null && !"".equals(req.getParameter("projectField")) ? req.getParameter("projectField") : projects.get(0).getKey());
-		
+
 		// process request
 		List<Issue> issues = issueLogic.getIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId());
-		List<Alert> alerts = alertLogic.fetchAlerts(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic);
+		List<Alert> alerts = alertLogic.fetchAlerts(req, resp, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic);
 		context.put("alerts", alerts);
 		context.put("issues", issues);
-		
+
 		List<String> errors = new LinkedList<String>();
 		if (!"".equals(req.getParameter(PARAM_ACTION)) && req.getParameter(PARAM_ACTION) != null) {
 			// true = import clicked - false = attach clicked
@@ -131,13 +144,13 @@ public class SupersedeAlerts extends HttpServlet {
 			IssueResult newIssue = null;
 			if (isImport) {
 				String project = req.getParameter("projectField");
-				Alert a = alertLogic.fetchAlerts(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic, list[0], "").get(0);
+				Alert a = alertLogic.fetchAlerts(req, resp, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic, list[0], "").get(0);
 				issueID = a.getId() + System.currentTimeMillis();
 				newIssue = issueLogic.newIssue(req, "Issue " + a.getId(), a.getDescription(), issueID, errors, supersedeCustomFieldLogic.getSupersedeCustomField(), project);
 			}
 			Alert a = null;
 			for (int i = 0; i < list.length; i++) {
-				a = alertLogic.fetchAlerts(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic, list[i], "").get(0);
+				a = alertLogic.fetchAlerts(req, resp, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic, list[i], "").get(0);
 				if (isImport) {
 					// attach file to the newly created issue
 					errors.add(newIssue != null ? newIssue.getIssue().getKey() : "importing " + a.getId());// else
@@ -157,9 +170,9 @@ public class SupersedeAlerts extends HttpServlet {
 					}
 				}
 			}
-			
-			//reload issue list in order to update counter
-			alerts = alertLogic.fetchAlerts(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic);
+
+			// reload issue list in order to update counter
+			alerts = alertLogic.fetchAlerts(req, resp, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic);
 			context.put("alerts", alerts);
 
 		} else if ("y".equals(req.getParameter("refreshAlerts"))) {
@@ -168,7 +181,7 @@ public class SupersedeAlerts extends HttpServlet {
 			return;
 		} else if ("y".equals(req.getParameter("searchAlerts"))) {
 			String searchAlerts = req.getParameter(PARAM_SEARCH_ALERTS);
-			alerts = alertLogic.fetchAlerts(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic, "", searchAlerts);
+			alerts = alertLogic.fetchAlerts(req, resp, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic, "", searchAlerts);
 			context.put("alerts", alerts);
 			context.put("date", new Date().toString());
 			templateRenderer.render("/templates/content-supersede-alerts.vm", context, resp.getWriter());
@@ -188,7 +201,7 @@ public class SupersedeAlerts extends HttpServlet {
 			return;
 		} else if ("y".equals(req.getParameter("xmlAlert"))) {
 			String xmlAlert = req.getParameter(PARAM_XML_ALERT);
-			alerts = alertLogic.fetchAlerts(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic, xmlAlert, "");
+			alerts = alertLogic.fetchAlerts(req, resp, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic, xmlAlert, "");
 			resp.setContentType("text/xml;charset=utf-8");
 			context.put("alert", alerts.get(0));
 			templateRenderer.render("/templates/xml-alert.vm", context, resp.getWriter());

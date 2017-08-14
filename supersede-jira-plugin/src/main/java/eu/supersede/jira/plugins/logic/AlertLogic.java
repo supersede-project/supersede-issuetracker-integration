@@ -5,6 +5,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
@@ -14,7 +15,11 @@ import java.util.List;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import javax.xml.ws.RespectBinding;
 
+import org.apache.commons.httpclient.Cookie;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,16 +49,20 @@ public class AlertLogic {
 		return logic;
 	}
 
-	public List<Alert> fetchAlerts(HttpServletRequest req, Long supersedeFieldId, IssueLogic il) {
+	public List<Alert> fetchAlerts(HttpServletRequest req, HttpServletResponse res, Long supersedeFieldId, IssueLogic il) {
 		// retrieves a list of all alerts on SS
-		return fetchAlerts(req, supersedeFieldId, il, "", "");
+		return fetchAlerts(req, res, supersedeFieldId, il, "", "");
 	}
 
-	public List<Alert> fetchAlerts(HttpServletRequest req, Long supersedeFieldId, IssueLogic il, String alertId, String searchAlerts) {
+	public List<Alert> fetchAlerts(HttpServletRequest req, HttpServletResponse res, Long supersedeFieldId, IssueLogic il, String alertId, String searchAlerts) {
 		List<Alert> alerts = new LinkedList<Alert>();
 		try {
 			// retrieve the list of all alerts from the specified tenant
 			String sessionId = loginLogic.login();
+			String xsrf = loginLogic.authenticate(sessionId);
+			HttpSession session = req.getSession();
+			session.setAttribute("Cookie", "SESSION=" + sessionId + ";");
+
 			if (alertId != null && !alertId.isEmpty()) {
 				alertId = "?id=" + alertId;
 			} else {

@@ -2,13 +2,18 @@ package eu.supersede.jira.plugins.logic;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.http.HttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +33,8 @@ public class LoginLogic {
 
 	private String serverUrl, username, password, tenantOverride;
 
-	private String currentProject; //TODO: 20170803 No longer required, if "get tenant from user group" is confirmed
+	private String currentProject; // TODO: 20170803 No longer required, if "get
+									// tenant from user group" is confirmed
 
 	public static final int CONN_TIMEOUT = 10000;
 
@@ -137,8 +143,9 @@ public class LoginLogic {
 				return g.getName().split("-")[2];
 			}
 		}
-		
-		//TODO: Provisional check in order to return the default cfg tenant until extensive test
+
+		// TODO: Provisional check in order to return the default cfg tenant
+		// until extensive test
 		return tenantOverride.length() > 0 ? tenantOverride : currentProject;
 
 	}
@@ -153,6 +160,20 @@ public class LoginLogic {
 
 	public String getPassword() {
 		return this.password;
+	}
+
+	public void setSessionCookie(HttpServletResponse res, String sessionId) {
+		Cookie cookie = new Cookie("SESSION", sessionId);
+		cookie.setPath("/");
+		cookie.setMaxAge(60 * 60 * 24 * 365);
+		res.addCookie(cookie);
+	}
+
+	public void setXsrfCookie(HttpServletResponse res, String xsrf) {
+		Cookie cookie = new Cookie("XSRF-TOKEN", xsrf);
+		cookie.setPath("/");
+		cookie.setMaxAge(60 * 60 * 24 * 365);
+		res.addCookie(cookie);
 	}
 
 }
