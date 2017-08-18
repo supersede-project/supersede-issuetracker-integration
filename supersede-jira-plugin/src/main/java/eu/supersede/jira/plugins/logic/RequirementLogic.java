@@ -270,4 +270,29 @@ public class RequirementLogic {
 
 	}
 
+	public boolean deleteRequirement(String requirementId) {
+		int response = -1;
+		try {
+			String sessionId = loginLogic.login();
+			URL url = new URL(loginLogic.getUrl() + "/supersede-dm-app/requirement/" + requirementId);
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			conn.setConnectTimeout(LoginLogic.CONN_TIMEOUT);
+			conn.setReadTimeout(LoginLogic.CONN_TIMEOUT);
+			conn.setDoOutput(true);
+			conn.setRequestMethod("DELETE");
+			conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+			conn.setRequestProperty("TenantId", loginLogic.getCurrentProject());
+			conn.setRequestProperty("Cookie", "SESSION=" + sessionId + ";");
+			conn.setRequestProperty("X-XSRF-TOKEN", loginLogic.authenticate(sessionId));
+			response = conn.getResponseCode();
+			conn.getInputStream();
+			log.debug("requirement " + requirementId + "deleted");
+
+			conn.disconnect();
+		} catch (Exception e) {
+			log.error(e.getMessage());
+		}
+		return response == HttpURLConnection.HTTP_OK;
+	}
+
 }

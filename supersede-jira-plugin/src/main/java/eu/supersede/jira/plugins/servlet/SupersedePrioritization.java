@@ -3,6 +3,7 @@ package eu.supersede.jira.plugins.servlet;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -14,6 +15,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.jfree.util.Log;
 
 import com.atlassian.jira.bc.JiraServiceContextImpl;
 import com.atlassian.jira.bc.filter.SearchRequestService;
@@ -244,7 +247,17 @@ public class SupersedePrioritization extends HttpServlet {
 				String processId = req.getParameter("processId");
 				SupersedeProcess sp = processService.getProcess(processId);
 				int closeResponse = processLogic.deleteProcess(sp.getSSProjectId());
-				if (closeResponse == 200) {
+				
+				boolean requirementResult = true;
+				for(String key : processLogic.getIssueRequirementsHashMap(sp).keySet()) {
+					requirementResult &= requirementLogic.deleteRequirement(key);
+				}
+
+				if(!requirementResult) {
+					System.out.println("Requirement deletion gave an error");
+				}
+				
+				if (closeResponse == HttpURLConnection.HTTP_OK) {
 					sp.setLastRankingImportDate(new Date());
 					sp.save();
 				}
