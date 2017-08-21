@@ -109,3 +109,7 @@ tr:hover td {
 	margin-top: 5px;
 	float: left;
 }
+
+aui-inline-dialog table tbody tr {
+	height:5px;
+}

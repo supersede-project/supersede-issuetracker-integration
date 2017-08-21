@@ -4,8 +4,10 @@
 	plugins-version="2">
 	<!-- GD0996 TEST -->
 	<ao key="ao-module">
-  		<description>The module configuring the Active Objects service used by this plugin</description>
-  		<entity>eu.supersede.jira.plugins.activeobject.SupersedeProcess</entity>
+		<description>The module configuring the Active Objects service used by
+			this plugin</description>
+		<entity>eu.supersede.jira.plugins.activeobject.SupersedeProcess
+		</entity>
 	</ao>
 	<!-- GD0996 TEST END -->
 	<plugin-info>
@@ -69,16 +71,16 @@
 			location="/js/logic-supersede-alerts.js" />
 		<context>logic-supersede-alerts.context</context>
 	</web-resource>
-	
+
 	<web-resource name="LogicPriority" key="LogicPriority">
-			<resource type="download" name="content-supersede-general.css"
+		<resource type="download" name="content-supersede-general.css"
 			location="/css/content-supersede-general.css" />
 		<resource type="download" name="logic-supersede-prioritization.js"
 			location="/js/logic-supersede-prioritization.js" />
 		<context>logic-supersede-prioritization.context</context>
 		<transformation extension="js">
-            <transformer key="jsI18n"/>
-        </transformation>
+			<transformer key="jsI18n" />
+		</transformation>
 	</web-resource>
 
 	<!-- RESOURCES FOR XML ALERT PAGE -->
@@ -95,7 +97,7 @@
 			location="/js/content-supersede-alerts.js" />
 		<context>content-supersede-alerts.context</context>
 	</web-resource>
-	
+
 	<component-import key="templateRenderer"
 		interface="com.atlassian.templaterenderer.TemplateRenderer" filter="" />
 	<component-import key="userManager"
@@ -105,10 +107,10 @@
 		filter="" />
 	<component-import key="customFieldManager"
 		interface="com.atlassian.jira.issue.CustomFieldManager" filter="" />
-		<!-- GD0996 TEST -->
+	<!-- GD0996 TEST -->
 	<component-import key="ao"
 		interface="com.atlassian.activeobjects.external.ActiveObjects" filter="" />
-		<!-- GD0996 TEST END-->
+	<!-- GD0996 TEST END -->
 
 
 	<!-- SUPERSEDE CUSTOM FIELD -->
@@ -134,8 +136,7 @@
 		<resource name="search" type="velocity"
 			location="/templates/customfields/supersede-field-searcher/search.vm" />
 	</customfield-searcher>
-
-
+	
 	<!-- SUPERSEDE CONFIG PAGE -->
 
 	<web-item name="supersedeAdminItem" i18n-name-key="supersede-admin-item.name"
@@ -180,19 +181,21 @@
 		<description key="supersede-alerts.description">The Supersede Alerts Plugin</description>
 		<url-pattern>/supersede-alerts</url-pattern>
 	</servlet>
-	
+
 	<!-- SUPERSEDE PRIORITIZATION -->
 
 	<web-item name="supersede-prioritization" i18n-name-key="supersede-prioritization.name"
 		key="supersede-prioritization-item" section="supersede-dropdown-menu/supersede-section"
 		weight="1000">
-		<description key="supersede-prioritization.description">The supersede-prioritization Plugin</description>
+		<description key="supersede-prioritization.description">The supersede-prioritization Plugin
+		</description>
 		<label key="supersede-prioritization.label" />
 		<link linkId="supersede-prioritization-link">/plugins/servlet/supersede-prioritization</link>
 	</web-item>
 	<servlet name="Supersede Prioritization" i18n-name-key="supersede-prioritization.name"
 		key="supersede-prioritization" class="eu.supersede.jira.plugins.servlet.SupersedePrioritization">
-		<description key="supersede-prioritization.description">The Supersede Prioritization Plugin</description>
+		<description key="supersede-prioritization.description">The Supersede Prioritization Plugin
+		</description>
 		<url-pattern>/supersede-prioritization</url-pattern>
 	</servlet>
 
