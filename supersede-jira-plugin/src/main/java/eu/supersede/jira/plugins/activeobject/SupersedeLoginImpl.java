@@ -27,6 +27,7 @@ public class SupersedeLoginImpl implements SupersedeLoginService {
 		login.setJiraUser(jiraUser);
 		login.setSSUser(ssUser);
 		login.setSSPassword(ssPassword);
+		login.setTenant(tenant);
 		login.save();
 		return login;
 	}
@@ -34,9 +35,13 @@ public class SupersedeLoginImpl implements SupersedeLoginService {
 	@Override
 	public SupersedeLogin update(SupersedeLogin source, String jiraUser, String ssUser, String ssPassword, String tenant) {
 		SupersedeLogin login = ao.get(SupersedeLogin.class, source.getID());
+		if (login == null) {
+			return null;
+		}
 		login.setJiraUser(jiraUser);
 		login.setSSUser(ssUser);
 		login.setSSPassword(ssPassword);
+		login.setTenant(tenant);
 		login.save();
 		return login;
 	}

@@ -146,11 +146,12 @@ public class SupersedeCfg extends HttpServlet {
 			String ssPass = req.getParameter("SSpassword");
 			String ssTenant = req.getParameter("SStenant");
 			String jiraUser = loginLogic.getCurrentUser().getUsername();
-			SupersedeLogin ssLogin = ssLoginService.getLogin(ssUser);
+			SupersedeLogin ssLogin = ssLoginService.getLogin(jiraUser);
 			if (ssLogin != null) {
-				ssLoginService.add(jiraUser, ssUser, ssPass, ssTenant);
+				ssLoginService.update(ssLogin, jiraUser, ssUser, ssPass, ssTenant);
 			}
-			ssLoginService.update(ssLogin, jiraUser, ssUser, ssPass, ssTenant);
+			ssLoginService.add(jiraUser, ssUser, ssPass, ssTenant);
+
 		}
 		resp.sendRedirect("supersede-cfg");
 	}
@@ -172,6 +173,12 @@ public class SupersedeCfg extends HttpServlet {
 		context.put(KEY_HOSTNAME, hostSetting);
 		context.put(KEY_USERNAME, usernameSetting);
 		context.put(KEY_TENANT, tenantSetting);
+
+		String jiraUser = loginLogic.getCurrentUser().getUsername();
+		SupersedeLogin ssLogin = ssLoginService.getLogin(jiraUser);
+		context.put("ssUser", ssLogin != null ? ssLogin.getSSUser() : "");
+		context.put("ssTenant", ssLogin != null ? ssLogin.getTenant(): "");
+
 		resp.setContentType("text/html;charset=utf-8");
 		// Pass in the list of issues as the context
 		templateRenderer.render(CONFIG_BROWSER_TEMPLATE, context, resp.getWriter());
