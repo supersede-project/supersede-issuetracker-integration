@@ -12,6 +12,8 @@
  */
 package eu.supersede.jira.plugins.servlet;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
@@ -32,13 +34,17 @@ import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
 import com.google.common.collect.Maps;
 
+import eu.supersede.jira.plugins.activeobject.SupersedeLogin;
+import eu.supersede.jira.plugins.activeobject.SupersedeLoginService;
+import eu.supersede.jira.plugins.logic.LoginLogic;
+
 /**
  * 
  * @author matteo.pedrotti@deltainformatica.eu
  *
  */
-public class SupersedeCfg extends HttpServlet{
-    /**
+public class SupersedeCfg extends HttpServlet {
+	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -8883489846712728448L;
@@ -49,95 +55,112 @@ public class SupersedeCfg extends HttpServlet{
 	 * Velocity model used to output the html
 	 */
 	private static final String CONFIG_BROWSER_TEMPLATE = "/templates/supersede-cfg.vm";
-	
-	public static final String 
-			KEY_HOSTNAME = "hostname",
-			KEY_USERNAME = "username",
-			KEY_PASSWORD = "password",
-			KEY_TENANT = "tenant";
-	
-	public static final String 
-			DEF_HOSTNAME = "http://localhost",
-			DEF_USERNAME = "admin",
-			DEF_PASSWORD = "admin",
-			DEF_TENANT = "";
-	
+
+	public static final String KEY_HOSTNAME = "hostname", KEY_USERNAME = "username", KEY_PASSWORD = "password", KEY_TENANT = "tenant";
+
+	public static final String DEF_HOSTNAME = "http://localhost", DEF_USERNAME = "admin", DEF_PASSWORD = "admin", DEF_TENANT = "";
+
 	private UserManager userManager;
 	private TemplateRenderer templateRenderer;
 	private final com.atlassian.jira.user.util.UserManager jiraUserManager;
 	private final PluginSettingsFactory pluginSettingsFactory;
 
-	public SupersedeCfg(UserManager userManager, com.atlassian.jira.user.util.UserManager jiraUserManager,
-			TemplateRenderer templateRenderer, PluginSettingsFactory pluginSettingsFactory) {
+	private final LoginLogic loginLogic = LoginLogic.getInstance();
+
+	private final SupersedeLoginService ssLoginService;
+
+	public SupersedeCfg(UserManager userManager, com.atlassian.jira.user.util.UserManager jiraUserManager, TemplateRenderer templateRenderer, PluginSettingsFactory pluginSettingsFactory, SupersedeLoginService ssLoginService) {
 		this.userManager = userManager;
 		this.templateRenderer = templateRenderer;
 		this.jiraUserManager = jiraUserManager;
 		this.pluginSettingsFactory = pluginSettingsFactory;
+		this.ssLoginService = checkNotNull(ssLoginService);
 	}
-	
+
 	/**
 	 * retrieve the actual storage key for any given locally scoped key
+	 * 
 	 * @param key
 	 * @return
 	 */
-	public static String getStorageKey(String key){
-		return SupersedeCfg.class.getPackage().getName()+"."+key;
+	public static String getStorageKey(String key) {
+		return SupersedeCfg.class.getPackage().getName() + "." + key;
 	}
-	
+
 	/**
 	 * Retrieve the key stored in the given plugin settings
-	 * @param pluginSettings an instance of the pluginSettings to use. Use the settingsFactory.createGlobalSettings() to retrieve it.
-	 * @param key the locally scoped key, just the name of the variable. The actual stored key is package dependent but it's name is handled automatically.
-	 * @param defaultValue if no such value exists, the default value is set in the settings and returned
+	 * 
+	 * @param pluginSettings
+	 *            an instance of the pluginSettings to use. Use the
+	 *            settingsFactory.createGlobalSettings() to retrieve it.
+	 * @param key
+	 *            the locally scoped key, just the name of the variable. The
+	 *            actual stored key is package dependent but it's name is
+	 *            handled automatically.
+	 * @param defaultValue
+	 *            if no such value exists, the default value is set in the
+	 *            settings and returned
 	 * @return
 	 */
-	public static String getConfigurationValue(PluginSettings pluginSettings, String key, String defaultValue){
+	public static String getConfigurationValue(PluginSettings pluginSettings, String key, String defaultValue) {
 		final String k = getStorageKey(key);
-		String v = (String)pluginSettings.get(k);
-		if(null == v){
+		String v = (String) pluginSettings.get(k);
+		if (null == v) {
 			v = defaultValue;
 			pluginSettings.put(k, v);
 		}
 		return v;
 	}
-	
+
 	/**
 	 * Forcefully set the given key/value pair in the pluginSettings
+	 * 
 	 * @param pluginSettings
-	 * @param key a locally scoped key. The actual storage key is handled internally
+	 * @param key
+	 *            a locally scoped key. The actual storage key is handled
+	 *            internally
 	 * @param value
 	 * @return
 	 */
-	public static void setConfigurationValue(PluginSettings pluginSettings, String key, String value){
+	public static void setConfigurationValue(PluginSettings pluginSettings, String key, String value) {
 		final String k = getStorageKey(key);
 		pluginSettings.put(k, value);
 	}
-	
+
 	@Override
-	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException ,IOException {
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		if ("y".equals(req.getParameter("config"))) {
 			PluginSettings pluginSettings = pluginSettingsFactory.createGlobalSettings();
 			pluginSettings.put(getStorageKey(KEY_HOSTNAME), req.getParameter(KEY_HOSTNAME));
 			pluginSettings.put(getStorageKey(KEY_USERNAME), req.getParameter(KEY_USERNAME));
-			//only set the password if set
+			// only set the password if set
 			String pwd = req.getParameter(KEY_PASSWORD);
-			if(null != pwd && pwd.trim().length()>0){
+			if (null != pwd && pwd.trim().length() > 0) {
 				pluginSettings.put(getStorageKey(KEY_PASSWORD), pwd);
 			}
 		} else if ("y".equals(req.getParameter("options"))) {
 			PluginSettings pluginSettings = pluginSettingsFactory.createGlobalSettings();
 			pluginSettings.put(getStorageKey(KEY_TENANT), req.getParameter(KEY_TENANT));
+		} else if ("y".equals(req.getParameter("SSlogin"))) {
+			String ssUser = req.getParameter("SSusername");
+			String ssPass = req.getParameter("SSpassword");
+			String ssTenant = req.getParameter("SStenant");
+			String jiraUser = loginLogic.getCurrentUser().getUsername();
+			SupersedeLogin ssLogin = ssLoginService.getLogin(ssUser);
+			if (ssLogin != null) {
+				ssLoginService.add(jiraUser, ssUser, ssPass, ssTenant);
+			}
+			ssLoginService.update(ssLogin, jiraUser, ssUser, ssPass, ssTenant);
 		}
 		resp.sendRedirect("supersede-cfg");
 	}
-    
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
-    {
-    	//what request?
+
+	@Override
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		// what request?
 		List<String> errors = new LinkedList<String>();
-		
-		//get parameters
+
+		// get parameters
 		PluginSettings pluginSettings = pluginSettingsFactory.createGlobalSettings();
 		String hostSetting = getConfigurationValue(pluginSettings, KEY_HOSTNAME, DEF_HOSTNAME);
 		String usernameSetting = getConfigurationValue(pluginSettings, KEY_USERNAME, DEF_USERNAME);
@@ -152,6 +175,6 @@ public class SupersedeCfg extends HttpServlet{
 		resp.setContentType("text/html;charset=utf-8");
 		// Pass in the list of issues as the context
 		templateRenderer.render(CONFIG_BROWSER_TEMPLATE, context, resp.getWriter());
-    }
+	}
 
 }

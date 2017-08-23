@@ -1,100 +1,119 @@
 <html>
 <head>
-    <title>SUPERSEDE - Configuration</title>
-    <meta name="decorator" content="atl.general">
+<title>SUPERSEDE - Configuration</title>
+<meta name="decorator" content="atl.general">
 </head>
 <body class="page-type-admin">
-<header class="aui-page-header">
-	<div class="aui-page-header-inner">
-		<div class="aui-page-header-main">
-			<h1>
-			<img src="$baseurl/download/resources/eu.supersede.jira.plugins.supersede-jira-plugin:supersede-jira-plugin-resources/images/supersede_color.png">
-			Configuration
-			</h1>
-			<!-- .aui-page-header-main -->
+	<header class="aui-page-header">
+		<div class="aui-page-header-inner">
+			<div class="aui-page-header-main">
+				<h1>
+					<img src="$baseurl/download/resources/eu.supersede.jira.plugins.supersede-jira-plugin:supersede-jira-plugin-resources/images/supersede_color.png"> Configuration
+				</h1>
+				<!-- .aui-page-header-main -->
+			</div>
+		</div>
+		<!-- .aui-page-header-inner -->
+	</header>
+
+	#if ($errors && $errors.size()>0)
+	<div class="content-container">
+		<div class="content-body">
+			<div class="aui-message error shadowed">
+				#foreach($error in $errors)
+				<p class="title">
+					<span class="aui-icon icon-error"></span> <strong>$error</strong>
+				</p>
+				#end
+			</div>
+			<!-- .aui-message -->
 		</div>
 	</div>
-	<!-- .aui-page-header-inner -->
-</header>
+	#end
 
-#if ($errors && $errors.size()>0)
-<div class="content-container">
-    <div class="content-body">
-            <div class="aui-message error shadowed">
-                #foreach($error in $errors)
-                    <p class="title">
-                        <span class="aui-icon icon-error"></span>
-                        <strong>$error</strong>
-                    </p>
-                #end
-            </div>
-            <!-- .aui-message -->
-    </div>
-</div>
-#end
+	<div class="aui-page-panel" id="browse-issues-page">
+		<div class="aui-page-panel-inner">
 
-<div class="aui-page-panel" id="browse-issues-page">
-	<div class="aui-page-panel-inner">
-	
-		<section class="aui-page-panel-content">
-			<div class="module">
-				<div class="mod-header" id="connect-params-head">
-					<div>
-						<h2>Connection parameters</h2>
+			<section class="aui-page-panel-content">
+				<div class="module">
+					<div class="mod-header" id="connect-params-head">
+						<div>
+							<h2>Connection parameters</h2>
+						</div>
+					</div>
+
+					<div class="mod-content" id="connection-params">
+						<form method="post" action="supersede-cfg" class="aui dont-default-focus">
+							<input type="hidden" name="config" value="y">
+							<p>
+								<label for="hostname-input">Hostname URL:</label> <input type="text" id="hostname-input" name="hostname" value="$hostname">
+							</p>
+							<p>
+								<label for="username-input">Username:</label> <input type="text" id="username-input" name="username" value="$username">
+							</p>
+							<p>
+								<label for="password-input">Password:</label> <input type="password" id="password-input" name="password" value="">
+							</p>
+							<p>
+								<input type="submit" class="button" value="Save">
+							</p>
+						</form>
 					</div>
 				</div>
-				
-				<div class="mod-content" id="connection-params">
-					<form method="post" action="supersede-cfg" class="aui dont-default-focus">
-			            <input type="hidden" name="config" value="y">
-			            <p>
-			            <label for="hostname-input">Hostname URL:</label>
-			            <input type="text" id="hostname-input" name="hostname" value="$hostname">
-			            </p>
-			            <p>
-			            <label for="username-input">Username:</label>
-			            <input type="text" id="username-input" name="username" value="$username">
-			            </p>
-			            <p>
-			            <label for="password-input">Password:</label>
-			            <input type="password" id="password-input" name="password" value="">
-			            </p>
-			            <p>
-			            <input type="submit" class="button" value="Save">
-			            </p>
-			        </form>
-				</div>
-			</div>
-			
-			<div class="module">
-				<div class="mod-header" id="interface-options-head">
-					<div>
-						<h2>Interface options</h2>
+
+				<div class="module">
+					<div class="mod-header" id="interface-options-head">
+						<div>
+							<h2>Interface options</h2>
+						</div>
 					</div>
+
+					<div class="mod-content" id="interface-options">
+						<form method="post" action="supersede-cfg" class="aui dont-default-focus">
+							<input type="hidden" name="options" value="y">
+							<p>
+							<p>
+								If specified, will use this tenant when fetching or creating requirements/features in SUPERSEDE.<br /> If not specified, the project name will be used as the tenant.
+							</p>
+							<p>
+								<label for="tenant-input">Force tenant:</label> <input type="text" id="tenant-input" name="tenant" value="$tenant">
+							</p>
+							<p>
+								<input type="submit" class="button" value="Save">
+							</p>
+						</form>
+					</div>
+
 				</div>
-				
-				<div class="mod-content" id="interface-options">
+
+				<div class="module">
+					<div class="mod-header" id="interface-options-head">
+						<div>
+							<h2>Supersede login options</h2>
+						</div>
+					</div>
 					<form method="post" action="supersede-cfg" class="aui dont-default-focus">
-			            <input type="hidden" name="options" value="y">
-			            <p>
-			            <p>
-			            If specified, will use this tenant when fetching or creating requirements/features in SUPERSEDE.<br/>
-			            If not specified, the project name will be used as the tenant.
-			            </p>
-			            <label for="tenant-input">Force tenant:</label>
-			            <input type="text" id="tenant-input" name="tenant" value="$tenant">
-			            </p>
-			            <p>
-			            <input type="submit" class="button" value="Save">
-			            </p>
-			        </form>
+						Insert the Supersede username and password. This will be used when performing tasks instead of above general login. This will be saved and will be available only to you. If user below is filled, there is an entry saved for your user. Every save of
+						this data overwrites the data already in tables. <input type="hidden" name="SSlogin" value="y">
+						<p>
+							<label for="ss-username-input">SS Username:</label> <input type="text" id="ss-username-input" name="SSusername" value="$ssUser">
+						</p>
+						<p>
+							<label for="ss-password-input">Password:</label> <input type="password" id="ss-password-input" name="SSpassword" value="">
+						</p>
+						<p>
+							<label for="ss-tenant-input">Force tenant:</label> <input type="text" id="ss-tenant-input" name="SStenant" value="$ssTenant">
+						</p>
+						<p>
+							<input type="submit" class="button" value="Save">
+						</p>
+					</form>
 				</div>
-			</div>
-		</section>
-		
-	<!-- .aui-page-panel-content -->
+			</section>
+
+			<!-- .aui-page-panel-content -->
+		</div>
+		<!-- .aui-page-panel-inner -->
 	</div>
-<!-- .aui-page-panel-inner -->
-</div>
 </body>
 </html>

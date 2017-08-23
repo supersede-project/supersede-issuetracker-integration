@@ -5,8 +5,11 @@
 	<!-- GD0996 TEST -->
 	<ao key="ao-module">
 		<description>The module configuring the Active Objects service used by
-			this plugin</description>
+			this plugin
+		</description>
 		<entity>eu.supersede.jira.plugins.activeobject.SupersedeProcess
+		</entity>
+		<entity>eu.supersede.jira.plugins.activeobject.SupersedeLogin
 		</entity>
 	</ao>
 	<!-- GD0996 TEST END -->
@@ -136,7 +139,7 @@
 		<resource name="search" type="velocity"
 			location="/templates/customfields/supersede-field-searcher/search.vm" />
 	</customfield-searcher>
-	
+
 	<!-- SUPERSEDE CONFIG PAGE -->
 
 	<web-item name="supersedeAdminItem" i18n-name-key="supersede-admin-item.name"

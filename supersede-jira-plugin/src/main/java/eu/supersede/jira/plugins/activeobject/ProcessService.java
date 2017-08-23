@@ -1,6 +1,5 @@
 package eu.supersede.jira.plugins.activeobject;
 
-import java.util.HashMap;
 import java.util.List;
 
 import com.atlassian.activeobjects.tx.Transactional;

@@ -19,6 +19,8 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.user.util.UserUtil;
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 
+import eu.supersede.jira.plugins.activeobject.SupersedeLogin;
+import eu.supersede.jira.plugins.activeobject.SupersedeLoginService;
 import eu.supersede.jira.plugins.servlet.SupersedeCfg;
 
 public class LoginLogic {
@@ -57,6 +59,12 @@ public class LoginLogic {
 	}
 
 	public String getBasicAuth() {
+//		LoginLogic loginLogic = LoginLogic.getInstance();
+//		String jiraUser = loginLogic.getCurrentUser().getUsername();
+//		SupersedeLogin ssLogin = ssLoginService.getLogin(ssUser);
+//		
+//		String username = ssLogin != null 
+//		
 		String userpass = getUsername() + ":" + getPassword();
 		String basicAuth = "Basic " + new String(new Base64().encode(userpass.getBytes()));
 		return basicAuth;
@@ -171,5 +179,6 @@ public class LoginLogic {
 		cookie.setMaxAge(60 * 60 * 24 * 365);
 		res.addCookie(cookie);
 	}
+	
 
 }
