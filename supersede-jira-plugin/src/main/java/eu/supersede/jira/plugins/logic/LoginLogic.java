@@ -22,6 +22,7 @@ import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import eu.supersede.jira.plugins.activeobject.SupersedeLogin;
 import eu.supersede.jira.plugins.activeobject.SupersedeLoginService;
 import eu.supersede.jira.plugins.servlet.SupersedeCfg;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public class LoginLogic {
 
@@ -40,6 +41,8 @@ public class LoginLogic {
 
 	private static final String GROUP_TENANT_PREFIX = "supersede-tenant-";
 
+	private static SupersedeLoginService ssLoginService;
+
 	private LoginLogic() {
 	}
 
@@ -50,21 +53,40 @@ public class LoginLogic {
 		return logic;
 	}
 
+	private LoginLogic(SupersedeLoginService loginService) {
+		ssLoginService = checkNotNull(loginService);
+	}
+
+	public static LoginLogic getInstance(SupersedeLoginService loginService) {
+		if (logic == null || ssLoginService == null) {
+			logic = new LoginLogic(loginService);
+		}
+		return logic;
+	}
+
 	public void loadConfiguration(PluginSettings settings) {
 		PluginSettings pluginSettings = settings;
+		
+		String jiraUser = getCurrentUser().getUsername();
+		SupersedeLogin ssLogin = ssLoginService.getLogin(jiraUser);
+		
+		if("".equals(ssLogin.getSSUser()) || ssLogin.getSSUser() == null) {
+			ssLogin = null;
+		}
+		
 		serverUrl = SupersedeCfg.getConfigurationValue(pluginSettings, SupersedeCfg.KEY_HOSTNAME, SupersedeCfg.DEF_HOSTNAME);
-		username = SupersedeCfg.getConfigurationValue(pluginSettings, SupersedeCfg.KEY_USERNAME, SupersedeCfg.DEF_USERNAME);
-		password = SupersedeCfg.getConfigurationValue(pluginSettings, SupersedeCfg.KEY_PASSWORD, SupersedeCfg.DEF_PASSWORD);
-		tenantOverride = SupersedeCfg.getConfigurationValue(pluginSettings, SupersedeCfg.KEY_TENANT, SupersedeCfg.DEF_TENANT);
+		username = ssLogin != null ? ssLogin.getSSUser() : SupersedeCfg.getConfigurationValue(pluginSettings, SupersedeCfg.KEY_USERNAME, SupersedeCfg.DEF_USERNAME);
+		password = ssLogin != null ? ssLogin.getSSPassword() : SupersedeCfg.getConfigurationValue(pluginSettings, SupersedeCfg.KEY_PASSWORD, SupersedeCfg.DEF_PASSWORD);
+		tenantOverride = ssLogin != null ? ssLogin.getTenant() : SupersedeCfg.getConfigurationValue(pluginSettings, SupersedeCfg.KEY_TENANT, SupersedeCfg.DEF_TENANT);
 	}
 
 	public String getBasicAuth() {
-//		LoginLogic loginLogic = LoginLogic.getInstance();
-//		String jiraUser = loginLogic.getCurrentUser().getUsername();
-//		SupersedeLogin ssLogin = ssLoginService.getLogin(ssUser);
-//		
-//		String username = ssLogin != null 
-//		
+		// LoginLogic loginLogic = LoginLogic.getInstance();
+		// String jiraUser = loginLogic.getCurrentUser().getUsername();
+		// SupersedeLogin ssLogin = ssLoginService.getLogin(ssUser);
+		//
+		// String username = ssLogin != null
+		//
 		String userpass = getUsername() + ":" + getPassword();
 		String basicAuth = "Basic " + new String(new Base64().encode(userpass.getBytes()));
 		return basicAuth;
@@ -179,6 +201,5 @@ public class LoginLogic {
 		cookie.setMaxAge(60 * 60 * 24 * 365);
 		res.addCookie(cookie);
 	}
-	
 
 }

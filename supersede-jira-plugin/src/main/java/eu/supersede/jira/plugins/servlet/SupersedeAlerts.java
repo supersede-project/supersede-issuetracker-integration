@@ -29,6 +29,7 @@ import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
 import com.google.common.collect.Maps;
 
+import eu.supersede.jira.plugins.activeobject.SupersedeLoginService;
 import eu.supersede.jira.plugins.logic.AlertLogic;
 import eu.supersede.jira.plugins.logic.IssueLogic;
 import eu.supersede.jira.plugins.logic.LoginLogic;
@@ -67,15 +68,16 @@ public class SupersedeAlerts extends HttpServlet {
 	private SupersedeCustomFieldLogic supersedeCustomFieldLogic;
 
 	public SupersedeAlerts(IssueService issueService, ProjectService projectService, SearchService searchService, UserManager userManager, com.atlassian.jira.user.util.UserManager jiraUserManager, TemplateRenderer templateRenderer,
-			PluginSettingsFactory pluginSettingsFactory, CustomFieldManager customFieldManager) {
+			PluginSettingsFactory pluginSettingsFactory, CustomFieldManager customFieldManager, SupersedeLoginService ssLoginService) {
 		this.templateRenderer = templateRenderer;
 		this.customFieldManager = customFieldManager;
-		loginLogic = LoginLogic.getInstance();
+		
+		loginLogic = LoginLogic.getInstance(ssLoginService);
+		loginLogic.loadConfiguration(pluginSettingsFactory.createGlobalSettings());
+		
 		issueLogic = IssueLogic.getInstance(issueService, projectService, searchService);
 		alertLogic = AlertLogic.getInstance();
 		supersedeCustomFieldLogic = SupersedeCustomFieldLogic.getInstance(customFieldManager);
-
-		loginLogic.loadConfiguration(pluginSettingsFactory.createGlobalSettings());
 	}
 
 	@Override

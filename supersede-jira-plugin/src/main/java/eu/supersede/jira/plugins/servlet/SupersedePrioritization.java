@@ -47,6 +47,7 @@ import com.atlassian.templaterenderer.TemplateRenderer;
 import com.google.common.collect.Maps;
 
 import eu.supersede.jira.plugins.activeobject.ProcessService;
+import eu.supersede.jira.plugins.activeobject.SupersedeLoginService;
 import eu.supersede.jira.plugins.activeobject.SupersedeProcess;
 import eu.supersede.jira.plugins.logic.IssueLogic;
 import eu.supersede.jira.plugins.logic.LoginLogic;
@@ -75,15 +76,18 @@ public class SupersedePrioritization extends HttpServlet {
 	private static final String PARAM_ACTION = "action";
 
 	public SupersedePrioritization(IssueService issueService, ProjectService projectService, SearchService searchService, UserManager userManager, com.atlassian.jira.user.util.UserManager jiraUserManager, TemplateRenderer templateRenderer,
-			PluginSettingsFactory pluginSettingsFactory, CustomFieldManager customFieldManager, ProcessService processService) {
+			PluginSettingsFactory pluginSettingsFactory, CustomFieldManager customFieldManager, ProcessService processService, SupersedeLoginService ssLoginService) {
 		this.templateRenderer = templateRenderer;
+		
+		
+		loginLogic = LoginLogic.getInstance(ssLoginService);
+		loginLogic.loadConfiguration(pluginSettingsFactory.createGlobalSettings());
+		
 		processLogic = ProcessLogic.getInstance();
-		loginLogic = LoginLogic.getInstance();
 		requirementLogic = RequirementLogic.getInstance(issueService, projectService, searchService);
 		issueLogic = IssueLogic.getInstance(issueService, projectService, searchService);
 		this.processService = checkNotNull(processService);
 
-		loginLogic.loadConfiguration(pluginSettingsFactory.createGlobalSettings());
 	}
 
 	public void getResult(HttpServletRequest req) {

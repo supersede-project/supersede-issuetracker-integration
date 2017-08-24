@@ -21,13 +21,12 @@ import com.atlassian.jira.util.json.JSONArray;
 import com.atlassian.jira.util.json.JSONException;
 import com.atlassian.jira.util.json.JSONObject;
 
+import eu.supersede.jira.plugins.activeobject.SupersedeLoginService;
 import eu.supersede.jira.plugins.activeobject.SupersedeProcess;
 
 public class ProcessLogic {
 
 	private static ProcessLogic logic;
-
-	private LoginLogic loginLogic;
 
 	private static final Logger log = LoggerFactory.getLogger(AlertLogic.class);
 
@@ -38,7 +37,6 @@ public class ProcessLogic {
 	public final static String MAP_SEPARATOR = "###";
 
 	private ProcessLogic() {
-		loginLogic = LoginLogic.getInstance();
 	}
 
 	public static ProcessLogic getInstance() {
@@ -52,7 +50,7 @@ public class ProcessLogic {
 		int response = -1;
 		String responseData = "";
 		try {
-
+			LoginLogic loginLogic = LoginLogic.getInstance();
 			String sessionId = loginLogic.login();
 			URL url = new URL(loginLogic.getUrl() + "supersede-dm-app/processes/new");
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -178,7 +176,7 @@ public class ProcessLogic {
 		int response = -1;
 		String responseData = "";
 		try {
-
+			LoginLogic loginLogic = LoginLogic.getInstance();
 			String sessionId = loginLogic.login();
 			URL url = new URL(loginLogic.getUrl() + "supersede-dm-app/processes/close");
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -214,12 +212,12 @@ public class ProcessLogic {
 		}
 		return -1;
 	}
-	
+
 	public int deleteProcess(String processId) {
 		int response = -1;
 		String responseData = "";
 		try {
-
+			LoginLogic loginLogic = LoginLogic.getInstance();
 			String sessionId = loginLogic.login();
 			URL url = new URL(loginLogic.getUrl() + "supersede-dm-app/processes/delete");
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
