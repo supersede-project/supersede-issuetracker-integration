@@ -93,7 +93,7 @@ public class LoginLogic {
 	}
 
 	public ApplicationUser getCurrentUser() {
-		return ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser().;
+		return ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser();
 	}
 
 	/**
