@@ -38,7 +38,7 @@
 				<div class="module">
 					<div class="mod-header" id="connect-params-head">
 						<div>
-							<h2>Connection parameters</h2>
+							<h2>Default Connection parameters</h2>
 						</div>
 					</div>
 
@@ -64,7 +64,7 @@
 				<div class="module">
 					<div class="mod-header" id="interface-options-head">
 						<div>
-							<h2>Interface options</h2>
+							<h2>Default Interface options</h2>
 						</div>
 					</div>
 
@@ -89,7 +89,7 @@
 				<div class="module">
 					<div class="mod-header" id="interface-options-head">
 						<div>
-							<h2>Supersede login options</h2>
+							<h2>User-specific Supersede login options</h2>
 						</div>
 					</div>
 					<form method="post" action="supersede-cfg" class="aui dont-default-focus">
