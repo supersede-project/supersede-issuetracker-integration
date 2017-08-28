@@ -97,9 +97,6 @@ tr:hover .actionProjectButton {
 	display: block;
 }
 
-.removeProjectButton {
-	background:#ff0000;
-}
 
 tr:hover td {
 	background: #ebf2f9;
