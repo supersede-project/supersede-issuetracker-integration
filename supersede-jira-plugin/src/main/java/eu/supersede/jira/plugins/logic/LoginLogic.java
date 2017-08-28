@@ -66,14 +66,14 @@ public class LoginLogic {
 
 	public void loadConfiguration(PluginSettings settings) {
 		PluginSettings pluginSettings = settings;
-		
+
 		String jiraUser = getCurrentUser().getUsername();
 		SupersedeLogin ssLogin = ssLoginService.getLogin(jiraUser);
-		
-		if("".equals(ssLogin.getSSUser()) || ssLogin.getSSUser() == null) {
+
+		if (ssLogin != null && ("".equals(ssLogin.getSSUser()) || ssLogin.getSSUser() == null)) {
 			ssLogin = null;
 		}
-		
+
 		serverUrl = SupersedeCfg.getConfigurationValue(pluginSettings, SupersedeCfg.KEY_HOSTNAME, SupersedeCfg.DEF_HOSTNAME);
 		username = ssLogin != null ? ssLogin.getSSUser() : SupersedeCfg.getConfigurationValue(pluginSettings, SupersedeCfg.KEY_USERNAME, SupersedeCfg.DEF_USERNAME);
 		password = ssLogin != null ? ssLogin.getSSPassword() : SupersedeCfg.getConfigurationValue(pluginSettings, SupersedeCfg.KEY_PASSWORD, SupersedeCfg.DEF_PASSWORD);
@@ -93,7 +93,7 @@ public class LoginLogic {
 	}
 
 	public ApplicationUser getCurrentUser() {
-		return ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser().;
+		return ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser();
 	}
 
 	/**
