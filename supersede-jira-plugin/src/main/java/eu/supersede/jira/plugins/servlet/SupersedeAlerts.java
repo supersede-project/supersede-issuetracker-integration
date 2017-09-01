@@ -1,7 +1,9 @@
 package eu.supersede.jira.plugins.servlet;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -23,6 +25,7 @@ import com.atlassian.jira.bc.project.ProjectService;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.CustomFieldManager;
 import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.project.Project;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.user.UserManager;
@@ -71,10 +74,10 @@ public class SupersedeAlerts extends HttpServlet {
 			PluginSettingsFactory pluginSettingsFactory, CustomFieldManager customFieldManager, SupersedeLoginService ssLoginService) {
 		this.templateRenderer = templateRenderer;
 		this.customFieldManager = customFieldManager;
-		
+
 		loginLogic = LoginLogic.getInstance(ssLoginService);
 		loginLogic.loadConfiguration(pluginSettingsFactory.createGlobalSettings());
-		
+
 		issueLogic = IssueLogic.getInstance(issueService, projectService, searchService);
 		alertLogic = AlertLogic.getInstance();
 		supersedeCustomFieldLogic = SupersedeCustomFieldLogic.getInstance(customFieldManager);
@@ -133,8 +136,12 @@ public class SupersedeAlerts extends HttpServlet {
 		// process request
 		List<Issue> issues = issueLogic.getIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId());
 		List<Alert> alerts = alertLogic.fetchAlerts(req, resp, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic);
+		Collection<IssueType> issueTypes = ComponentAccessor.getConstantsManager().getAllIssueTypeObjects();
+		
 		context.put("alerts", alerts);
 		context.put("issues", issues);
+		context.put("types", issueTypes);
+		
 
 		List<String> errors = new LinkedList<String>();
 		if (!"".equals(req.getParameter(PARAM_ACTION)) && req.getParameter(PARAM_ACTION) != null) {
@@ -146,23 +153,31 @@ public class SupersedeAlerts extends HttpServlet {
 			IssueResult newIssue = null;
 			if (isImport) {
 				String project = req.getParameter("projectField");
+				String type = req.getParameter("issueType");
 				Alert a = alertLogic.fetchAlerts(req, resp, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic, list[0], "").get(0);
 				issueID = a.getId() + System.currentTimeMillis();
-				newIssue = issueLogic.newIssue(req, "Issue " + a.getId(), a.getDescription(), issueID, errors, supersedeCustomFieldLogic.getSupersedeCustomField(), project);
+				newIssue = issueLogic.newIssue(req, "Issue " + a.getId(), a.getDescription(), issueID, errors, supersedeCustomFieldLogic.getSupersedeCustomField(), project, type);
 			}
 			Alert a = null;
+			boolean firstLoop = false;
 			for (int i = 0; i < list.length; i++) {
 				a = alertLogic.fetchAlerts(req, resp, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic, list[i], "").get(0);
 				if (isImport) {
 					// attach file to the newly created issue
-					errors.add(newIssue != null ? newIssue.getIssue().getKey() : "importing " + a.getId());// else
+					if (!firstLoop) {
+						errors.add(newIssue != null ? newIssue.getIssue().getKey() : "importing " + a.getId());// else
+						firstLoop = true;
+					}
 					issueLogic.attachToIssue(a, issueLogic.getIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issueID).get(0));
 				} else {
 					// attach to an existing issue
 					String[] issuesList = req.getParameter(PARAM_ISSUES_SELECTION_LIST).split(SEPARATOR);
 					for (int j = 0; j < issuesList.length; j++) {
 						Issue issue = issueLogic.getIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issuesList[j]).get(0);
-						errors.add(issue != null ? issue.getKey() : "attaching " + a.getId());
+						if (!firstLoop) {
+							errors.add(issue != null ? issue.getKey() : "attaching " + a.getId());
+							firstLoop = true;
+						}
 						issueLogic.attachToIssue(a, issue);
 					}
 				}

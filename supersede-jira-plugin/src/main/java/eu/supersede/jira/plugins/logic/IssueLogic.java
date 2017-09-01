@@ -23,11 +23,13 @@ import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.issue.attachment.CreateAttachmentParamsBean;
 import com.atlassian.jira.issue.fields.CustomField;
+import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.issue.search.SearchException;
 import com.atlassian.jira.issue.search.SearchResults;
 import com.atlassian.jira.jql.builder.JqlClauseBuilder;
 import com.atlassian.jira.jql.builder.JqlQueryBuilder;
 import com.atlassian.jira.project.Project;
+import com.atlassian.jira.project.version.Version;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.web.bean.PagerFilter;
 import com.atlassian.jira.web.util.AttachmentException;
@@ -213,7 +215,7 @@ public class IssueLogic {
 		newIssue(req, req.getParameter("name"), req.getParameter("description"), req.getParameter("id"), errors, supersedeField, loginLogic.getCurrentProject().toUpperCase());
 	}
 
-	public IssueResult newIssue(HttpServletRequest req, String name, String description, String id, Collection<String> errors, CustomField supersedeField, String projectId) {
+	public IssueResult newIssue(HttpServletRequest req, String name, String description, String id, Collection<String> errors, CustomField supersedeField, String projectId, String type) {
 		IssueResult issue = null;
 		ApplicationUser user = loginLogic.getCurrentUser();
 		// Perform creation if the "new" param is passed in
@@ -225,7 +227,9 @@ public class IssueLogic {
 		issueInputParameters.setSummary(name);
 		issueInputParameters.setDescription(description);
 		issueInputParameters.addCustomFieldValue(supersedeField.getId(), id);
-
+		
+		//TODO: set issue type
+		
 		// We need to set the assignee, reporter, project, and issueType...
 		// For assignee and reporter, we'll just use the currentUser
 		// issueInputParameters.setAssigneeId(user.getName());
@@ -311,6 +315,7 @@ public class IssueLogic {
 		log.error("####### I RETRIEVED " + JIRAissues.size() + " JIRA Issues");
 		log.error("####### I RETRIEVED " + requirements.size() + " SS Issues");
 		for (Issue i : JIRAissues) {
+			
 			for (Requirement r : requirements) {
 				String value = (String) i.getCustomFieldValue(supersedeField);
 				log.error("VALUES " + String.valueOf(value) + " " + r.getId());
