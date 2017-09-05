@@ -1,15 +1,14 @@
-AJS.$(document).ready(
-		function() {
-			$('#project-select-import').val($('.projectField').val()).trigger(
-					'change');
-			$('#project-select-attach').val($('.projectField').val()).trigger(
-					'change');
-			onPageLoad();
-		});
+AJS.$(document).ready(function() {
+	$('#project-select-import').val($('.projectField').val()).trigger('change');
+	$('#project-select-attach').val($('.projectField').val()).trigger('change');
+	onPageLoad();
+});
 
 function onPageLoad() {
 	AJS.$('#project-select-import').auiSelect2();
 	AJS.$('#project-select-attach').auiSelect2();
+	AJS.$('#issue-type-selector').auiSelect2();
+	$('#issue-type-selector').on('change', issueTypeSelectorChange);
 	$(".toEnable").prop('disabled', true);
 	$(".toEnableDialog").prop('disabled', true);
 	var selectionString = '';
@@ -33,63 +32,54 @@ function onPageLoad() {
 		});
 	});
 
-	jQuery('.searchBtn').click(
-			function() {
-				$("#selectionList").val(selectionString);
-				var self = jQuery(this);
-				var searchStr = $('#searchAlertsInput').val();
-				if (!searchStr) {
-					searchStr = "";
-				}
-				jQuery.ajax({
-					type : "get",
-					url : "supersede-alerts?searchAlerts=y&searchAlertsInput="
-							+ searchStr,
-					success : function(data) {
-						console.log('dom', self, data);
-						$("#data").html(data);
-						// self.parent().parent().remove();
-						AJS.tablessortable.setTableSortable(AJS
-								.$(".sortableTable"));
-						onPageLoad();
-					},
-					error : function() {
-						console.log('error', arguments);
-					}
-				});
-			});
+	jQuery('.searchBtn').click(function() {
+		$("#selectionList").val(selectionString);
+		var self = jQuery(this);
+		var searchStr = $('#searchAlertsInput').val();
+		if (!searchStr) {
+			searchStr = "";
+		}
+		jQuery.ajax({
+			type : "get",
+			url : "supersede-alerts?searchAlerts=y&searchAlertsInput=" + searchStr,
+			success : function(data) {
+				console.log('dom', self, data);
+				$("#data").html(data);
+				// self.parent().parent().remove();
+				AJS.tablessortable.setTableSortable(AJS.$(".sortableTable"));
+				onPageLoad();
+			},
+			error : function() {
+				console.log('error', arguments);
+			}
+		});
+	});
 
-	jQuery('.searchBtnDialog').click(
-			function() {
-				$("#selectionList").val(selectionString);
-				var self = jQuery(this);
-				var searchStr = $('#searchAlertsInput').val();
-				var searchIssueStr = $('#searchIssuesDialogInput').val();
-				if (!searchStr) {
-					searchStr = " ";
-				}
-				if (!searchIssueStr) {
-					searchIssueStr = " ";
-				}
-				jQuery.ajax({
-					type : "get",
-					url : "supersede-alerts?searchIssues=y&searchAlertsInput="
-							+ searchStr + "&searchIssuesInput="
-							+ searchIssueStr,
-					success : function(data) {
-						console.log('dom', self, data);
-						$("#attach-dialog-data").html(data);
-						// self.parent().parent().remove();
-						AJS.tablessortable.setTableSortable(AJS
-								.$(".sortableDialogTable"));
-						onPageLoad();
-						// alert("load!");
-					},
-					error : function() {
-						console.log('error', arguments);
-					}
-				});
-			});
+	jQuery('.searchBtnDialog').click(function() {
+		$("#selectionList").val(selectionString);
+		var self = jQuery(this);
+		var searchStr = $('#searchAlertsInput').val();
+		var searchIssueStr = $('#searchIssuesDialogInput').val();
+		if (!searchStr) {
+			searchStr = " ";
+		}
+		if (!searchIssueStr) {
+			searchIssueStr = " ";
+		}
+		jQuery.ajax({
+			type : "get",
+			url : "supersede-alerts?searchIssues=y&searchAlertsInput=" + searchStr + "&searchIssuesInput=" + searchIssueStr,
+			success : function(data) {
+				console.log('dom', self, data);
+				$("#attach-dialog-data").html(data);
+				AJS.tablessortable.setTableSortable(AJS.$(".sortableDialogTable"));
+				onPageLoad();
+			},
+			error : function() {
+				console.log('error', arguments);
+			}
+		});
+	});
 
 	jQuery("#searchAlertsInput").keyup(function(event) {
 		if (event.keyCode == 13) {
@@ -97,57 +87,49 @@ function onPageLoad() {
 		}
 	});
 
-	jQuery('.chkSelected').click(
-			function() {
-				if ($(this).prop('checked')) {
-					// Write a string containing the IDs of selected
-					// alerts
-					selectionString += $(this).attr('id');
-					selectionString += ':::';
-					$(".toEnable").prop('disabled', false);
-					$(".toEnable").prop('enabled', true);
-					// alert(selectionString);
-				} else {
-					// Remove the selected ID if checkbox gets unchecked
-					selectionString = selectionString.replace($(this)
-							.attr('id')
-							+ ':::', '');
-					if (!selectionString) {
-						$(".toEnable").prop('disabled', true);
-						$(".toEnable").prop('enabled', false);
-					}
-				}
-			});
-	jQuery('.dialogChkSelected').click(
-			function() {
-				if ($(this).prop('checked')) {
-					// Write a string containing the IDs of selected
-					// alerts
-					// alert("entered");
-					issuesSelectionString += $(this).attr('id');
-					issuesSelectionString += ':::';
-					$(".toEnableDialog").prop('disabled', false);
-					$(".toEnableDialog").prop('enabled', true);
-				} else {
-					// Remove the selected ID if checkbox gets unchecked
-					issuesSelectionString = issuesSelectionString.replace($(
-							this).attr('id')
-							+ ':::', '');
-					if (!issuesSelectionString) {
-						$(".toEnableDialog").prop('disabled', true);
-						$(".toEnableDialog").prop('enabled', false);
-					}
-				}
-			});
+	jQuery('.chkSelected').click(function() {
+		if ($(this).prop('checked')) {
+			// Write a string containing the IDs of selected
+			// alerts
+			selectionString += $(this).attr('id');
+			selectionString += ':::';
+			$(".toEnable").prop('disabled', false);
+			$(".toEnable").prop('enabled', true);
+			// alert(selectionString);
+		} else {
+			// Remove the selected ID if checkbox gets unchecked
+			selectionString = selectionString.replace($(this).attr('id') + ':::', '');
+			if (!selectionString) {
+				$(".toEnable").prop('disabled', true);
+				$(".toEnable").prop('enabled', false);
+			}
+		}
+	});
+	jQuery('.dialogChkSelected').click(function() {
+		if ($(this).prop('checked')) {
+			// Write a string containing the IDs of selected
+			// alerts
+			// alert("entered");
+			issuesSelectionString += $(this).attr('id');
+			issuesSelectionString += ':::';
+			$(".toEnableDialog").prop('disabled', false);
+			$(".toEnableDialog").prop('enabled', true);
+		} else {
+			// Remove the selected ID if checkbox gets unchecked
+			issuesSelectionString = issuesSelectionString.replace($(this).attr('id') + ':::', '');
+			if (!issuesSelectionString) {
+				$(".toEnableDialog").prop('disabled', true);
+				$(".toEnableDialog").prop('enabled', false);
+			}
+		}
+	});
 
 	jQuery('#chkDeleteOnClick').click(function() {
-		// alert("triggereabbd")
 		if ($(this).prop('checked')) {
 			$(".chkDeleteStatus").val("true");
 		} else {
 			$(".chkDeleteStatus").val("true");
 		}
-		// alert($(this).prop('checked'));
 	});
 
 	var opt = {
@@ -188,8 +170,9 @@ function onPageLoad() {
 
 	// DIALOG
 	jQuery('.dialogButton').click(function() {
-		console.log('alert management')
+		console.log('alert management');
 		$("#issuesSelectionList").val(issuesSelectionString);
+		alert($('.issueType').val());
 	});
 
 	// DIALOG
@@ -208,37 +191,44 @@ function onPageLoad() {
 
 	$('#project-select-import').change(function() {
 		$('.projectField').val($(this).val());
+		var self = jQuery(this);
+		jQuery.ajax({
+			type : "get",
+			url : "supersede-alerts?getIssueTypes=y&projectField=" + $(this).val(),
+			success : function(data) {
+				$("#issue-type").html(data);
+				AJS.$('#issue-type-selector').auiSelect2();
+				$('#issue-type-selector').on('change', issueTypeSelectorChange);
+			},
+			error : function() {
+				console.log('error', arguments);
+			}
+		});
 	});
 
-	$('#project-select-attach').change(
-			function() {
-				$('.projectField').val($(this).val());
-				var self = jQuery(this);
-				jQuery.ajax({
-					type : "get",
-					url : "supersede-alerts?searchIssues=y&projectField="
-							+ $(this).val(),
-					success : function(data) {
-						console.log('dom', self, data);
-						$("#attach-dialog-data").html(data);
-						// self.parent().parent().remove();
-						AJS.tablessortable.setTableSortable(AJS
-								.$(".sortableDialogTable"));
-						onPageLoad();
-					},
-					error : function() {
-						console.log('error', arguments);
-					}
-				});
-				// alert("load!");
-			});
-
-	// MOVED TO THE .searchBtn function above
-	// jQuery('.searchBtn').click(function() {
-	// $("#selectionList").val(selectionString);
-	// });
-
-	// jQuery('.clickable-dialog').mousedown(function() {
-	// $(".clickable-dialog").prop('href', '#'+$(this).prop('id'));
-	// });
+	$('#project-select-attach').change(function() {
+		$('.projectField').val($(this).val());
+		var self = jQuery(this);
+		jQuery.ajax({
+			type : "get",
+			url : "supersede-alerts?searchIssues=y&projectField=" + $(this).val(),
+			success : function(data) {
+				console.log('dom', self, data);
+				$("#attach-dialog-data").html(data);
+				// self.parent().parent().remove();
+				AJS.tablessortable.setTableSortable(AJS.$(".sortableDialogTable"));
+				onPageLoad();
+			},
+			error : function() {
+				console.log('error', arguments);
+			}
+		});
+		// alert("load!");
+	});
+	
+	function issueTypeSelectorChange() {
+		$('.issueType').val($(this).val());
+		alert($('.issueType').val());
+	};
 }
+

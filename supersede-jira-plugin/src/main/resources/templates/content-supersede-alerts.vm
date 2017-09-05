@@ -82,19 +82,15 @@
 							<option value=$project.getKey()>$project.getKey()</option> #end
 						</select>
 					</form>
-					<form class="aui">
-						<aui-label for="issue-type">$i18n.getText("supersede-alerts-project-import.label")</aui-label>
-						<select id="issue-type"> #foreach($type in $types)
-							<option value=$type.getName()>$type.getName()</option> #end
-						</select>
-					</form>
+					<div id='issue-type'>#parse("/templates/content-supersede-alerts-issue-type.vm")</div>
 				</div>
 				<!-- Dialog footer -->
 				<footer class="aui-dialog2-footer">
 					<!-- Actions to render on the right of the footer -->
 					<div class="aui-dialog2-footer-actions">
 						<form action="supersede-alerts" method="get">
-							<input type="hidden" class="selectionList" name="selectionList"> <input type="hidden" class="chkDeleteStatus" name="chkDeleteStatus"> <input type="hidden" class="projectField" value=$projectField name="projectField">
+							<input type="hidden" class="selectionList" name="selectionList"><input type="hidden" class="issueType" name="issueType" value=$defaultType><input type="hidden" class="chkDeleteStatus" name="chkDeleteStatus"> <input
+								type="hidden" class="projectField" value=$projectField name="projectField">
 							<button id="dialog-submit-button" class="aui-button aui-button-primary dialogButton" name="action" value="Import">$i18n.getText("supersede-alerts-create-btn.label")</button>
 						</form>
 					</div>

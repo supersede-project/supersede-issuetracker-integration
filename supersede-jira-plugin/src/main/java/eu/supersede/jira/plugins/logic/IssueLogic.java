@@ -1,8 +1,10 @@
 package eu.supersede.jira.plugins.logic;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -112,9 +114,9 @@ public class IssueLogic {
 		} catch (SearchException e) {
 			e.printStackTrace();
 		}
-		//It must be 0 or 1
+		// It must be 0 or 1
 		List<Issue> list = searchResults.getIssues();
-		
+
 		return list.size() == 1 ? list.get(0) : null;
 	}
 
@@ -212,10 +214,10 @@ public class IssueLogic {
 	}
 
 	private void newIssue(HttpServletRequest req, Collection<String> errors, CustomField supersedeField) {
-		newIssue(req, req.getParameter("name"), req.getParameter("description"), req.getParameter("id"), errors, supersedeField, loginLogic.getCurrentProject().toUpperCase());
+		newIssue(req, req.getParameter("name"), req.getParameter("description"), req.getParameter("id"), errors, supersedeField, loginLogic.getCurrentProject().toUpperCase(), "");
 	}
 
-	public IssueResult newIssue(HttpServletRequest req, String name, String description, String id, Collection<String> errors, CustomField supersedeField, String projectId, String type) {
+	public IssueResult newIssue(HttpServletRequest req, String name, String description, String id, Collection<String> errors, CustomField supersedeField, String projectId, String typeId) {
 		IssueResult issue = null;
 		ApplicationUser user = loginLogic.getCurrentUser();
 		// Perform creation if the "new" param is passed in
@@ -227,9 +229,7 @@ public class IssueLogic {
 		issueInputParameters.setSummary(name);
 		issueInputParameters.setDescription(description);
 		issueInputParameters.addCustomFieldValue(supersedeField.getId(), id);
-		
-		//TODO: set issue type
-		
+
 		// We need to set the assignee, reporter, project, and issueType...
 		// For assignee and reporter, we'll just use the currentUser
 		// issueInputParameters.setAssigneeId(user.getName());
@@ -242,7 +242,7 @@ public class IssueLogic {
 		} else {
 			issueInputParameters.setProjectId(project.getId());
 			// We also hard-code the issueType to be a "bug" == 1
-			issueInputParameters.setIssueTypeId(project.getIssueTypes().iterator().next().getId());
+			issueInputParameters.setIssueTypeId(typeId != null && !typeId.isEmpty() ? typeId : project.getIssueTypes().iterator().next().getId());
 			// Perform the validation
 			issueInputParameters.setSkipScreenCheck(true);
 			IssueService.CreateValidationResult result = issueService.validateCreate(user, issueInputParameters);
@@ -315,7 +315,7 @@ public class IssueLogic {
 		log.error("####### I RETRIEVED " + JIRAissues.size() + " JIRA Issues");
 		log.error("####### I RETRIEVED " + requirements.size() + " SS Issues");
 		for (Issue i : JIRAissues) {
-			
+
 			for (Requirement r : requirements) {
 				String value = (String) i.getCustomFieldValue(supersedeField);
 				log.error("VALUES " + String.valueOf(value) + " " + r.getId());
@@ -337,6 +337,23 @@ public class IssueLogic {
 			}
 		}
 		return differences;
+	}
+
+	public Collection<IssueType> getIssueTypesByProject(String projectKey) {
+		Project proj = ComponentAccessor.getProjectManager().getProjectByCurrentKey(projectKey);
+		Collection<IssueType> issueTypes = ComponentAccessor.getIssueTypeSchemeManager().getIssueTypesForProject(proj);
+		ArrayList<IssueType> filteredIssueTypes = new ArrayList<IssueType>();
+		
+		//Remove subtypes from list (you cannot create a subtask from outside an issue, so it doesn't make sense to include it
+		Iterator<IssueType> iter = issueTypes.iterator();
+		while (iter.hasNext()) {
+			IssueType it = iter.next();
+			if(!it.isSubTask()) {
+				filteredIssueTypes.add(it);
+			}
+		}
+		
+		return filteredIssueTypes;
 	}
 
 }

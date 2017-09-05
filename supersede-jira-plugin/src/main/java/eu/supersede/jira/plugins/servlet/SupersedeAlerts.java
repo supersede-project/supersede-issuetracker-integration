@@ -18,6 +18,7 @@ import org.apache.commons.httpclient.Cookie;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.atlassian.jira.avatar.Avatar;
 import com.atlassian.jira.bc.issue.IssueService;
 import com.atlassian.jira.bc.issue.IssueService.IssueResult;
 import com.atlassian.jira.bc.issue.search.SearchService;
@@ -27,6 +28,7 @@ import com.atlassian.jira.issue.CustomFieldManager;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.project.Project;
+import com.atlassian.jira.util.I18nHelper;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
@@ -136,12 +138,13 @@ public class SupersedeAlerts extends HttpServlet {
 		// process request
 		List<Issue> issues = issueLogic.getIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId());
 		List<Alert> alerts = alertLogic.fetchAlerts(req, resp, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic);
-		Collection<IssueType> issueTypes = ComponentAccessor.getConstantsManager().getAllIssueTypeObjects();
-		
+
 		context.put("alerts", alerts);
 		context.put("issues", issues);
+
+		Collection<IssueType> issueTypes = issueLogic.getIssueTypesByProject(req.getParameter("projectField") != null && !"".equals(req.getParameter("projectField")) ? req.getParameter("projectField") : projects.get(0).getKey());
 		context.put("types", issueTypes);
-		
+		context.put("defaultType", issueTypes.iterator().next().getId());
 
 		List<String> errors = new LinkedList<String>();
 		if (!"".equals(req.getParameter(PARAM_ACTION)) && req.getParameter(PARAM_ACTION) != null) {
@@ -222,6 +225,13 @@ public class SupersedeAlerts extends HttpServlet {
 			resp.setContentType("text/xml;charset=utf-8");
 			context.put("alert", alerts.get(0));
 			templateRenderer.render("/templates/xml-alert.vm", context, resp.getWriter());
+			return;
+		} else if ("y".equals(req.getParameter("getIssueTypes"))) {
+
+			issueTypes = issueLogic.getIssueTypesByProject(req.getParameter("projectField"));
+			context.put("types", issueTypes);
+			context.put("defaultType", issueTypes.iterator().next().getId());
+			templateRenderer.render("/templates/content-supersede-alerts-issue-type.vm", context, resp.getWriter());
 			return;
 		}
 
