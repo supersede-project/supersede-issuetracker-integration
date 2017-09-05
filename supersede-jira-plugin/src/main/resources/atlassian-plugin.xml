@@ -201,6 +201,16 @@
 		</description>
 		<url-pattern>/supersede-prioritization</url-pattern>
 	</servlet>
+	
+<!-- 	SUPERSEDE WEBHOOK MANAGEMENT -->
+
+	<!-- SUPERSEDE ALERTS PAGE -->
+
+	<servlet name="Supersede Plan" i18n-name-key="supersede-webhook.name"
+		key="supersede-webhook" class="eu.supersede.jira.plugins.servlet.WebHookManagement">
+		<description key="supersede-alerts.description">The Supersede Webhook Management</description>
+		<url-pattern>/webhook</url-pattern>
+	</servlet>
 
 
 	<!-- SUPERSEDE MAN PAGE (DEPRECATED) -->

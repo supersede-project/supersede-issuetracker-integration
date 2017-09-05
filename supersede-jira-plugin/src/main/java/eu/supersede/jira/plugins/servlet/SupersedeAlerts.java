@@ -106,6 +106,15 @@ public class SupersedeAlerts extends HttpServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		if ("y".equals(req.getParameter("webhook"))) {
+			String issueKey = "test";
+			String issueId = "prova";
+
+			System.out.println("##############################################");
+			System.out.println("ISSUE EDITED: " + issueKey + " " + issueId);
+			System.out.println("##############################################");
+			return;
+		}
 
 		try {
 			LoginLogic loginLogic = LoginLogic.getInstance();
@@ -227,7 +236,6 @@ public class SupersedeAlerts extends HttpServlet {
 			templateRenderer.render("/templates/xml-alert.vm", context, resp.getWriter());
 			return;
 		} else if ("y".equals(req.getParameter("getIssueTypes"))) {
-
 			issueTypes = issueLogic.getIssueTypesByProject(req.getParameter("projectField"));
 			context.put("types", issueTypes);
 			context.put("defaultType", issueTypes.iterator().next().getId());
