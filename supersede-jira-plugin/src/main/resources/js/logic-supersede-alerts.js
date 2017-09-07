@@ -174,6 +174,11 @@ function onPageLoad() {
 		$("#issuesSelectionList").val(issuesSelectionString);
 		alert($('.issueType').val());
 	});
+	
+	jQuery('.similarityButton').click(function() {
+		alert(selectionString);
+		$(".selectionList").val(selectionString);
+	});
 
 	// DIALOG
 	jQuery('.dialogDeleteButton').click(function() {

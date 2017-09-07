@@ -18,6 +18,14 @@
 				<span class="glyphicon glyphicon-search"></span>
 			</button>
 		</div>
+
+		<!-- 		SIMILARITY CHECK -->
+		<div class="similarityCheck">
+			<form action="supersede-alerts" method="get">
+				<input type="hidden" name="similarity" value=y> <input type="hidden" class="selectionList" name="selectionList">
+				<button class="aui-button similarityButton">Check Alert Similarity</button>
+			</form>
+		</div>
 	</div>
 
 	<!-- 	DATA TABLE -->

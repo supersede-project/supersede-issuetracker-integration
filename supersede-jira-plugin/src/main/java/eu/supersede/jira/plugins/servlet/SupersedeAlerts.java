@@ -1,6 +1,10 @@
 package eu.supersede.jira.plugins.servlet;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -106,16 +110,6 @@ public class SupersedeAlerts extends HttpServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		if ("y".equals(req.getParameter("webhook"))) {
-			String issueKey = "test";
-			String issueId = "prova";
-
-			System.out.println("##############################################");
-			System.out.println("ISSUE EDITED: " + issueKey + " " + issueId);
-			System.out.println("##############################################");
-			return;
-		}
-
 		try {
 			LoginLogic loginLogic = LoginLogic.getInstance();
 			String sessionId = loginLogic.login();
@@ -241,6 +235,30 @@ public class SupersedeAlerts extends HttpServlet {
 			context.put("defaultType", issueTypes.iterator().next().getId());
 			templateRenderer.render("/templates/content-supersede-alerts-issue-type.vm", context, resp.getWriter());
 			return;
+		} else if ("y".equals(req.getParameter("similarity"))) {
+			String[] list = req.getParameter(PARAM_SELECTION_LIST).split(SEPARATOR);
+			if(list.length != 1 || list[0].isEmpty()) {
+				errors.add("Cannot perform similarity with no (o more than one) alert");
+			} else {
+				try {
+					URL url = new URL("http://localhost:8080/alerts/list?id=" + list[0]);
+					HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+					conn.setConnectTimeout(LoginLogic.CONN_TIMEOUT);
+					conn.setReadTimeout(LoginLogic.CONN_TIMEOUT);
+					conn.setRequestMethod("GET");
+					BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
+					String output;
+					StringBuffer sb = new StringBuffer();
+					while ((output = br.readLine()) != null) {
+						sb.append(output);
+					}
+					conn.disconnect();
+					errors.add(sb.toString());
+				} catch (Exception e) {
+					e.printStackTrace();
+				
+				}
+			}
 		}
 
 		context.put("errors", errors);
