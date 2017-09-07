@@ -42,6 +42,7 @@ import eu.supersede.jira.plugins.activeobject.SupersedeLoginService;
 import eu.supersede.jira.plugins.logic.AlertLogic;
 import eu.supersede.jira.plugins.logic.IssueLogic;
 import eu.supersede.jira.plugins.logic.LoginLogic;
+import eu.supersede.jira.plugins.logic.SimilarityLogic;
 import eu.supersede.jira.plugins.logic.SupersedeCustomFieldLogic;
 
 public class SupersedeAlerts extends HttpServlet {
@@ -235,30 +236,15 @@ public class SupersedeAlerts extends HttpServlet {
 			context.put("defaultType", issueTypes.iterator().next().getId());
 			templateRenderer.render("/templates/content-supersede-alerts-issue-type.vm", context, resp.getWriter());
 			return;
-		} else if ("y".equals(req.getParameter("similarity"))) {
+		} else if ("y".equals(req.getParameter("alerts-similarity"))) {
 			String[] list = req.getParameter(PARAM_SELECTION_LIST).split(SEPARATOR);
 			if(list.length != 1 || list[0].isEmpty()) {
 				errors.add("Cannot perform similarity with no (o more than one) alert");
 			} else {
-				try {
-					URL url = new URL("http://localhost:8080/alerts/list?id=" + list[0]);
-					HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-					conn.setConnectTimeout(LoginLogic.CONN_TIMEOUT);
-					conn.setReadTimeout(LoginLogic.CONN_TIMEOUT);
-					conn.setRequestMethod("GET");
-					BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
-					String output;
-					StringBuffer sb = new StringBuffer();
-					while ((output = br.readLine()) != null) {
-						sb.append(output);
-					}
-					conn.disconnect();
-					errors.add(sb.toString());
-				} catch (Exception e) {
-					e.printStackTrace();
-				
-				}
+				errors.add(SimilarityLogic.getAlertSimilarity(list[0]));
 			}
+		} else if ("y".equals(req.getParameter("issue-similarity"))) {
+			errors.add("FUNZIONA");
 		}
 
 		context.put("errors", errors);

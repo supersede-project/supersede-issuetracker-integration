@@ -19,159 +19,207 @@
 			</button>
 		</div>
 
-		<!-- 		SIMILARITY CHECK -->
+		<!-- 	ALERT	SIMILARITY CHECK -->
 		<div class="similarityCheck">
 			<form action="supersede-alerts" method="get">
-				<input type="hidden" name="similarity" value=y> <input type="hidden" class="selectionList" name="selectionList">
+				<input type="hidden" name="alerts-similarity" value=y> <input type="hidden" class="selectionList" name="selectionList">
 				<button class="aui-button similarityButton">Check Alert Similarity</button>
 			</form>
 		</div>
-	</div>
 
-	<!-- 	DATA TABLE -->
-	<div id="data-section">
-		<div class="p-list">
-			<table class="aui table-truncate aui-table-sortable sortableTable">
-				<thead>
-					<tr>
-						<th class="td-tiny"></th>
-						<th class="td-med">$i18n.getText("supersede-alerts-table-id.label")</th>
-						<th class="td-small">$i18n.getText("supersede-alerts-table-app-id.label")</th>
-						<th class="td-med">$i18n.getText("supersede-alerts-table-timestamp.label")</th>
-						<th class="td-max">$i18n.getText("supersede-alerts-table-description.label")</th>
-						<th class="td-tiny">$i18n.getText("supersede-alerts-table-positive.label")</th>
-						<th class="td-tiny">$i18n.getText("supersede-alerts-table-negative.label")</th>
-						<th class="td-tiny">$i18n.getText("supersede-alerts-table-sentiment.label")</th>
-						<th class="td-med">$i18n.getText("supersede-alerts-table-attachment.label")</th>
-					</tr>
-				</thead>
-				<tbody class="projects-list">
-					#foreach( $alert in $alerts )
-					<tr>
-						<td class="td-truncate"><input class="chkSelected checkbox" type="checkbox" id=$alert.getId()></td>
-						<td class="td-truncate alertId"><a href="supersede-alerts?xmlAlert=y&xmlAlertId=$alert.getId()" target="_blank">$alert.getId()</a></td>
-						<td class="td-truncate">$alert.getApplicationId()</td>
-						<td class="td-truncate">$alert.getTimestamp()</td>
-						<td class="td-truncate">$alert.getDescription()</td>
-						<td class="td-truncate">$alert.getPositive()</td>
-						<td class="td-truncate">$alert.getNegative()</td>
-						<td class="td-truncate">$alert.getSentiment()</td>
-						<td class="td-truncate"><a data-aui-trigger aria-controls=$alert.getFilteredId() href="#">$alert.getCount()</a> <!-- 						INLINE DIALOG (RELATED TO ROW)  --> <aui-inline-dialog id=$alert.getFilteredId()> #foreach( $issue in
-							$alert.getIssues())
-							<table>
-								<tbody>
-									<tr>
-										<a href="$baseurl/browse/$issue">$issue</a>
-									</tr>
-								</tbody>
-							</table>
-							#end </aui-inline-dialog></td>
-					</tr>
-					#end
-				</tbody>
-			</table>
+		<!-- 		ISSUE SIMILARITY CHECK -->
+		<button style="margin-left: 20px" id="issue-similarity-button" name="action" value="Import" class="aui-button aui-button-primary alertManagement" title="Create new issue from selected alert(s)">
+			<span class="glyphicon glyphicon-plus"></span> <span class="submit-text">Check Issue Similarity</span>
+		</button>
 
-			<!-- PROJECT SELECTION IMPORT DIALOG -->
-			<section role="dialog" id="import-dialog" class="aui-layer aui-dialog2 aui-dialog2-medium" aria-hidden="true">
-				<!-- Dialog header -->
-				<header class="aui-dialog2-header">
-					<!-- The dialog's title -->
-					<h2 class="aui-dialog2-header-main">$i18n.getText("supersede-alerts-project.title")</h2>
-					<!-- Close icon -->
-					<a class="aui-dialog2-header-close"> <span class="aui-icon aui-icon-small aui-iconfont-close-dialog">$i18n.getText("supersede-alerts-close.btn.label")</span>
-					</a>
 
-				</header>
-				<!-- Main dialog content -->
-				<div class="aui-dialog2-content">
-					<form class="aui">
-						<aui-label for="project-select-import">$i18n.getText("supersede-alerts-project-import.label")</aui-label>
-						<select id="project-select-import"> #foreach($project in $projects)
-							<option value=$project.getKey()>$project.getKey()</option> #end
-						</select>
-					</form>
-					<div id='issue-type'>#parse("/templates/content-supersede-alerts-issue-type.vm")</div>
-				</div>
-				<!-- Dialog footer -->
-				<footer class="aui-dialog2-footer">
-					<!-- Actions to render on the right of the footer -->
-					<div class="aui-dialog2-footer-actions">
-						<form action="supersede-alerts" method="get">
-							<input type="hidden" class="selectionList" name="selectionList"><input type="hidden" class="issueType" name="issueType" value=$defaultType><input type="hidden" class="chkDeleteStatus" name="chkDeleteStatus"> <input
-								type="hidden" class="projectField" value=$projectField name="projectField">
-							<button id="dialog-submit-button" class="aui-button aui-button-primary dialogButton" name="action" value="Import">$i18n.getText("supersede-alerts-create-btn.label")</button>
+
+		<!-- 	DATA TABLE -->
+		<div id="data-section">
+			<div class="p-list">
+				<table class="aui table-truncate aui-table-sortable sortableTable">
+					<thead>
+						<tr>
+							<th class="td-tiny"></th>
+							<th class="td-med">$i18n.getText("supersede-alerts-table-id.label")</th>
+							<th class="td-small">$i18n.getText("supersede-alerts-table-app-id.label")</th>
+							<th class="td-med">$i18n.getText("supersede-alerts-table-timestamp.label")</th>
+							<th class="td-max">$i18n.getText("supersede-alerts-table-description.label")</th>
+							<th class="td-tiny">$i18n.getText("supersede-alerts-table-positive.label")</th>
+							<th class="td-tiny">$i18n.getText("supersede-alerts-table-negative.label")</th>
+							<th class="td-tiny">$i18n.getText("supersede-alerts-table-sentiment.label")</th>
+							<th class="td-med">$i18n.getText("supersede-alerts-table-attachment.label")</th>
+						</tr>
+					</thead>
+					<tbody class="projects-list">
+						#foreach( $alert in $alerts )
+						<tr>
+							<td class="td-truncate"><input class="chkSelected checkbox" type="checkbox" id=$alert.getId()></td>
+							<td class="td-truncate alertId"><a href="supersede-alerts?xmlAlert=y&xmlAlertId=$alert.getId()" target="_blank">$alert.getId()</a></td>
+							<td class="td-truncate">$alert.getApplicationId()</td>
+							<td class="td-truncate">$alert.getTimestamp()</td>
+							<td class="td-truncate">$alert.getDescription()</td>
+							<td class="td-truncate">$alert.getPositive()</td>
+							<td class="td-truncate">$alert.getNegative()</td>
+							<td class="td-truncate">$alert.getSentiment()</td>
+							<td class="td-truncate"><a data-aui-trigger aria-controls=$alert.getFilteredId() href="#">$alert.getCount()</a> <!-- 						INLINE DIALOG (RELATED TO ROW)  --> <aui-inline-dialog id=$alert.getFilteredId()> #foreach( $issue in
+								$alert.getIssues())
+								<table>
+									<tbody>
+										<tr>
+											<a href="$baseurl/browse/$issue">$issue</a>
+										</tr>
+									</tbody>
+								</table>
+								#end </aui-inline-dialog></td>
+						</tr>
+						#end
+					</tbody>
+				</table>
+
+				<!-- PROJECT SELECTION IMPORT DIALOG -->
+				<section role="dialog" id="import-dialog" class="aui-layer aui-dialog2 aui-dialog2-medium" aria-hidden="true">
+					<!-- Dialog header -->
+					<header class="aui-dialog2-header">
+						<!-- The dialog's title -->
+						<h2 class="aui-dialog2-header-main">$i18n.getText("supersede-alerts-project.title")</h2>
+						<!-- Close icon -->
+						<a class="aui-dialog2-header-close"> <span class="aui-icon aui-icon-small aui-iconfont-close-dialog">$i18n.getText("supersede-alerts-close.btn.label")</span>
+						</a>
+
+					</header>
+					<!-- Main dialog content -->
+					<div class="aui-dialog2-content">
+						<form class="aui">
+							<aui-label for="project-select-import">$i18n.getText("supersede-alerts-project-import.label")</aui-label>
+							<select id="project-select-import"> #foreach($project in $projects)
+								<option value=$project.getKey()>$project.getKey()</option> #end
+							</select>
 						</form>
+						<div id='issue-type'>#parse("/templates/content-supersede-alerts-issue-type.vm")</div>
 					</div>
-					<!-- HINT TEXT -->
-				</footer>
-			</section>
+					<!-- Dialog footer -->
+					<footer class="aui-dialog2-footer">
+						<!-- Actions to render on the right of the footer -->
+						<div class="aui-dialog2-footer-actions">
+							<form action="supersede-alerts" method="get">
+								<input type="hidden" class="selectionList" name="selectionList"><input type="hidden" class="issueType" name="issueType" value=$defaultType><input type="hidden" class="chkDeleteStatus" name="chkDeleteStatus"> <input
+									type="hidden" class="projectField" value=$projectField name="projectField">
+								<button id="dialog-submit-button" class="aui-button aui-button-primary dialogButton" name="action" value="Import">$i18n.getText("supersede-alerts-create-btn.label")</button>
+							</form>
+						</div>
+						<!-- HINT TEXT -->
+					</footer>
+				</section>
 
 
-			<!-- ATTACH DIALOG -->
-			<section role="dialog" id="attach-dialog" class="aui-layer aui-dialog2 aui-dialog2-medium" aria-hidden="true">
-				<!-- Dialog header -->
-				<header class="aui-dialog2-header">
-					<!-- The dialog's title -->
-					<h2 class="aui-dialog2-header-main">$i18n.getText("supersede-alerts-issue.title")</h2>
-					<!-- Actions to render on the right of the header -->
-					<div class="aui-dialog2-header-secondary searchPaneDialog">
-						<input name="searchIssuesDialogInput" id="searchIssuesDialogInput" placeholder='$i18n.getText("supersede-alerts-issue-search.placeholder")'>
-						<button class="aui-button aui-button-primary searchBtnDialog">
-							<span class="glyphicon glyphicon-search"></span>
-						</button>
-					</div>
-					<!-- Close icon -->
-					<a class="aui-dialog2-header-close"> <span class="aui-icon aui-icon-small aui-iconfont-close-dialog">$i18n.getText("supersede-alerts-close.btn.label")</span>
-					</a>
-				</header>
-				<!-- Main dialog content -->
-				<div class="aui-dialog2-content">
-					<form class="aui">
-						<aui-label for="project-select-attach">$i18n.getText("supersede-alerts-project-import.label")</aui-label>
-						<select id="project-select-attach"> #foreach($project in $projects)
-							<option value=$project.getKey()>$project.getKey()</option> #end
-						</select>
-					</form>
-					<div id='attach-dialog-data'>#parse("/templates/attach-dialog-data.vm")</div>
-				</div>
-				<!-- Dialog footer -->
-				<footer class="aui-dialog2-footer">
-					<!-- Actions to render on the right of the footer -->
-					<div class="aui-dialog2-footer-actions">
-						<form action="supersede-alerts" method="get">
-							<input type="hidden" class="projectField" value=$projectField name="projectField"> <input type="hidden" class="selectionList" name="selectionList"> <input type="hidden" id="issuesSelectionList" name="issuesSelectionList"> <input
-								type="hidden" class="chkDeleteStatus" name="chkDeleteStatus">
-							<button id="dialog-submit-button" class="aui-button aui-button-primary dialogButton toEnableDialog" name="action" value="Attach">$i18n.getText("supersede-alerts-attach-dialog-btn.label")</button>
+				<!-- ATTACH DIALOG -->
+				<section role="dialog" id="attach-dialog" class="aui-layer aui-dialog2 aui-dialog2-medium" aria-hidden="true">
+					<!-- Dialog header -->
+					<header class="aui-dialog2-header">
+						<!-- The dialog's title -->
+						<h2 class="aui-dialog2-header-main">$i18n.getText("supersede-alerts-issue.title")</h2>
+						<!-- Actions to render on the right of the header -->
+						<div class="aui-dialog2-header-secondary searchPaneDialog">
+							<input name="searchIssuesDialogInput" id="searchIssuesDialogInput" placeholder='$i18n.getText("supersede-alerts-issue-search.placeholder")'>
+							<button class="aui-button aui-button-primary searchBtnDialog">
+								<span class="glyphicon glyphicon-search"></span>
+							</button>
+						</div>
+						<!-- Close icon -->
+						<a class="aui-dialog2-header-close"> <span class="aui-icon aui-icon-small aui-iconfont-close-dialog">$i18n.getText("supersede-alerts-close.btn.label")</span>
+						</a>
+					</header>
+					<!-- Main dialog content -->
+					<div class="aui-dialog2-content">
+						<form class="aui">
+							<aui-label for="project-select-attach">$i18n.getText("supersede-alerts-project-import.label")</aui-label>
+							<select id="project-select-attach"> #foreach($project in $projects)
+								<option value=$project.getKey()>$project.getKey()</option> #end
+							</select>
 						</form>
-						<button id="dialog-close-button" class="aui-button aui-button-link">$i18n.getText("supersede-alerts-close.btn.label")</button>
+						<div id='attach-dialog-data'>#parse("/templates/attach-dialog-data.vm")</div>
 					</div>
-					<!-- HINT TEXT -->
-				</footer>
-			</section>
+					<!-- Dialog footer -->
+					<footer class="aui-dialog2-footer">
+						<!-- Actions to render on the right of the footer -->
+						<div class="aui-dialog2-footer-actions">
+							<form action="supersede-alerts" method="get">
+								<input type="hidden" class="projectField" value=$projectField name="projectField"> <input type="hidden" class="selectionList" name="selectionList"> <input type="hidden" id="issuesSelectionList" name="issuesSelectionList"> <input
+									type="hidden" class="chkDeleteStatus" name="chkDeleteStatus">
+								<button id="dialog-submit-button" class="aui-button aui-button-primary dialogButton toEnableDialog" name="action" value="Attach">$i18n.getText("supersede-alerts-attach-dialog-btn.label")</button>
+							</form>
+							<button id="dialog-close-button" class="aui-button aui-button-link">$i18n.getText("supersede-alerts-close.btn.label")</button>
+						</div>
+						<!-- HINT TEXT -->
+					</footer>
+				</section>
 
-			<!-- DELETE DIALOG -->
-			<section role="dialog" id="delete-dialog" class="aui-layer aui-dialog2 aui-dialog2-medium aui-dialog2-warning" aria-hidden="true">
-				<!-- Dialog header -->
-				<header class="aui-dialog2-header">
-					<h2 class="aui-dialog2-header-main">$i18n.getText("supersede-alerts-delete-dialog.title")</h2>
-					<!-- Close icon -->
-					<a class="aui-dialog2-header-close"> <span class="aui-icon aui-icon-small aui-iconfont-close-dialog">Close</span>
-					</a>
-				</header>
-				<!-- Main dialog content -->
-				<div class="aui-dialog2-content dialogDataView"></div>
-				<!-- Dialog footer -->
-				<footer class="aui-dialog2-footer">
-					<!-- Actions to render on the right of the footer -->
-					<div class="aui-dialog2-footer-actions">
-						<form action="supersede-alerts" method="post">
-							<input type="hidden" class="selectionList" name="selectionList"> <input type="submit" id="dialog-submit-button" class="aui-button aui-button-primary dialogButton" name="deleteAction" value="Delete">
+				<!-- DELETE DIALOG -->
+				<section role="dialog" id="delete-dialog" class="aui-layer aui-dialog2 aui-dialog2-medium aui-dialog2-warning" aria-hidden="true">
+					<!-- Dialog header -->
+					<header class="aui-dialog2-header">
+						<h2 class="aui-dialog2-header-main">$i18n.getText("supersede-alerts-delete-dialog.title")</h2>
+						<!-- Close icon -->
+						<a class="aui-dialog2-header-close"> <span class="aui-icon aui-icon-small aui-iconfont-close-dialog">Close</span>
+						</a>
+					</header>
+					<!-- Main dialog content -->
+					<div class="aui-dialog2-content dialogDataView"></div>
+					<!-- Dialog footer -->
+					<footer class="aui-dialog2-footer">
+						<!-- Actions to render on the right of the footer -->
+						<div class="aui-dialog2-footer-actions">
+							<form action="supersede-alerts" method="post">
+								<input type="hidden" class="selectionList" name="selectionList"> <input type="submit" id="dialog-submit-button" class="aui-button aui-button-primary dialogButton" name="deleteAction" value="Delete">
+							</form>
+							<button id="dialog-close-button" class="aui-button aui-button-link">Close</button>
+						</div>
+						<!-- HINT TEXT -->
+					</footer>
+				</section>
+
+				<!-- 		ISSUE SIMILARITY CHECK (POPUP) -->
+				<section role="dialog" id="issue-similarity-dialog" class="aui-layer aui-dialog2 aui-dialog2-medium" aria-hidden="true">
+					<!-- Dialog header -->
+					<header class="aui-dialog2-header">
+						<!-- The dialog's title -->
+						<h2 class="aui-dialog2-header-main">Issue Similarity</h2>
+						<!-- Actions to render on the right of the header -->
+						<div class="aui-dialog2-header-secondary searchPaneDialog">
+							<input name="searchIssuesDialogInput" id="searchIssuesDialogInput" placeholder='$i18n.getText("supersede-alerts-issue-search.placeholder")'>
+							<button class="aui-button aui-button-primary searchBtnDialog">
+								<span class="glyphicon glyphicon-search"></span>
+							</button>
+						</div>
+						<!-- Close icon -->
+						<a class="aui-dialog2-header-close"> <span class="aui-icon aui-icon-small aui-iconfont-close-dialog">$i18n.getText("supersede-alerts-close.btn.label")</span>
+						</a>
+					</header>
+					<!-- Main dialog content -->
+					<div class="aui-dialog2-content">
+						<form class="aui">
+							<aui-label for="issue-similarity-list">Select an alert in order to define similarity with others</aui-label>
+							<select id="issue-similarity-list"> #foreach($project in $projects)
+								<option value=$project.getKey()>$project.getKey()</option> #end
+							</select>
 						</form>
-						<button id="dialog-close-button" class="aui-button aui-button-link">Close</button>
+						<div id='issue-similarity-data'>#parse("/templates/attach-dialog-data.vm")</div>
 					</div>
-					<!-- HINT TEXT -->
-				</footer>
-			</section>
+					<!-- Dialog footer -->
+					<footer class="aui-dialog2-footer">
+						<!-- Actions to render on the right of the footer -->
+						<div class="aui-dialog2-footer-actions">
+							<form action="supersede-alerts" method="get">
+								<input type="hidden" name="issue-similarity" value=y> <input type="hidden" class="projectField" value=$projectField name="projectField"> <input type="hidden" class="selectionList" name="selectionList">
+								<button id="dialog-submit-button" class="aui-button aui-button-primary dialogButton toEnableDialog">$i18n.getText("supersede-alerts-attach-dialog-btn.label")</button>
+							</form>
+							<button id="dialog-close-button" class="aui-button aui-button-link">$i18n.getText("supersede-alerts-close.btn.label")</button>
+						</div>
+						<!-- HINT TEXT -->
+					</footer>
+				</section>
+			</div>
 
 			<!-- 			IMPORT - ATTACH - DELETE BUTTONS  -->
 			<div class="aui-group">

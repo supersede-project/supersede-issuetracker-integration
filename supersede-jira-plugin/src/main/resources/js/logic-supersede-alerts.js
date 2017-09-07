@@ -1,12 +1,14 @@
 AJS.$(document).ready(function() {
 	$('#project-select-import').val($('.projectField').val()).trigger('change');
 	$('#project-select-attach').val($('.projectField').val()).trigger('change');
+	$('#issue-similarity-list').val($('.projectField').val()).trigger('change');
 	onPageLoad();
 });
 
 function onPageLoad() {
 	AJS.$('#project-select-import').auiSelect2();
 	AJS.$('#project-select-attach').auiSelect2();
+	AJS.$('#issue-similarity-list').auiSelect2();
 	AJS.$('#issue-type-selector').auiSelect2();
 	$('#issue-type-selector').on('change', issueTypeSelectorChange);
 	$(".toEnable").prop('disabled', true);
@@ -161,6 +163,10 @@ function onPageLoad() {
 	AJS.$("#dialog-delete-button").click(function() {
 		AJS.dialog2("#delete-dialog").show();
 	});
+	
+	AJS.$("#issue-similarity-button").click(function() {
+		AJS.dialog2("#issue-similarity-dialog").show();
+	});
 
 	// Hides the dialog
 	AJS.$("#dialog-close-button").click(function(e) {
@@ -235,5 +241,27 @@ function onPageLoad() {
 		$('.issueType').val($(this).val());
 		alert($('.issueType').val());
 	};
+	
+	// ISSUE SIMILARITY CHECK
+	
+	$('#issue-similarity-list').change(function() {
+		$('.projectField').val($(this).val());
+		var self = jQuery(this);
+		jQuery.ajax({
+			type : "get",
+			url : "supersede-alerts?searchIssues=y&projectField=" + $(this).val(),
+			success : function(data) {
+				alert("dati caricati");
+				console.log('dom', self, data);
+				$("#issue-similarity-data").html(data);
+				AJS.tablessortable.setTableSortable(AJS.$(".sortableDialogTable"));
+				onPageLoad();
+			},
+			error : function() {
+				console.log('error', arguments);
+			}
+		});
+		// alert("load!");
+	});
 }
 
