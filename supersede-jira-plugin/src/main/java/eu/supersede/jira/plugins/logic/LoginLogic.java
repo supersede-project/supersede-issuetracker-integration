@@ -2,6 +2,8 @@ package eu.supersede.jira.plugins.logic;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
@@ -13,9 +15,11 @@ import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.atlassian.applinks.api.PropertySet;
 import com.atlassian.crowd.embedded.api.Group;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.user.ApplicationUser;
+import com.atlassian.jira.user.UserPropertyManager;
 import com.atlassian.jira.user.util.UserUtil;
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 
@@ -81,12 +85,6 @@ public class LoginLogic {
 	}
 
 	public String getBasicAuth() {
-		// LoginLogic loginLogic = LoginLogic.getInstance();
-		// String jiraUser = loginLogic.getCurrentUser().getUsername();
-		// SupersedeLogin ssLogin = ssLoginService.getLogin(ssUser);
-		//
-		// String username = ssLogin != null
-		//
 		String userpass = getUsername() + ":" + getPassword();
 		String basicAuth = "Basic " + new String(new Base64().encode(userpass.getBytes()));
 		return basicAuth;
