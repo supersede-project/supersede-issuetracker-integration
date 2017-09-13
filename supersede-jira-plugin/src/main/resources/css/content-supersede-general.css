@@ -34,7 +34,8 @@
 }
 
 .buttonPane {
-	display: flex
+/* 	display: flex */
+width:100%;
 }
 
 .alertManagement {
@@ -73,6 +74,15 @@
 
 #buttons form .field-group label {
 	padding: 5px 0 0 0;
+}
+
+.field-group {
+	padding-bottom: 20px;
+}
+
+.buttonPaneItem {
+	float: left;
+	margin-left:10px;
 }
 
 #create-process-button {

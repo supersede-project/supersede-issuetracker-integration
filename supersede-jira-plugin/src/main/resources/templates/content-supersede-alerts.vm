@@ -19,21 +19,6 @@
 			</button>
 		</div>
 
-		<!-- 	ALERT	SIMILARITY CHECK -->
-		<div class="similarityCheck">
-			<form action="supersede-alerts" method="get">
-				<input type="hidden" name="alerts-similarity" value=y> <input type="hidden" class="selectionList" name="selectionList">
-				<button class="aui-button similarityButton">Check Alert Similarity</button>
-			</form>
-		</div>
-
-		<!-- 		ISSUE SIMILARITY CHECK -->
-		<button style="margin-left: 20px" id="issue-similarity-button" name="action" value="Import" class="aui-button aui-button-primary alertManagement" title="Create new issue from selected alert(s)">
-			<span class="glyphicon glyphicon-plus"></span> <span class="submit-text">Check Issue Similarity</span>
-		</button>
-
-
-
 		<!-- 	DATA TABLE -->
 		<div id="data-section">
 			<div class="p-list">
@@ -223,15 +208,27 @@
 
 			<!-- 			IMPORT - ATTACH - DELETE BUTTONS  -->
 			<div class="aui-group">
-				<div style="float: left" class="aui-item buttonPane">
-					<button style="margin-left: 20px" id="import-dialog-show-button" name="action" value="Import" class="aui-button aui-button-primary alertManagement toEnable simple-tooltip" title="Create new issue from selected alert(s)">
+				<div class="aui-item buttonPane button-group">
+					<button id="import-dialog-show-button" name="action" value="Import" class="aui-button aui-button-primary alertManagement toEnable simple-tooltip buttonPaneItem" title="Create new issue from selected alert(s)">
 						<span class="glyphicon glyphicon-plus"></span> <span class="submit-text">$i18n.getText("supersede-alerts-create-btn.label")</span>
 					</button>
-					<button style="margin-left: 20px" id="attach-dialog-show-button" class="aui-button aui-button-secondary alertManagement toEnable simple-tooltip" title="Attach selected alert to existing issue(s)">
+					<button id="attach-dialog-show-button" class="aui-button aui-button-secondary alertManagement toEnable simple-tooltip buttonPaneItem" title="Attach selected alert to existing issue(s)">
 						<span class="glyphicon glyphicon-paperclip"></span> $i18n.getText("supersede-alerts-attach-btn.label")
 					</button>
-					<input style="margin-left: 20px" type="checkbox" id="chkDeleteOnClick" class="toEnable" name="chkDeleteOnClick" value="" />$i18n.getText("supersede-alerts-delete-chekbox.label")
-					<button id="dialog-delete-button" class="aui-button aui-button-primary alertManagement toEnable simple-tooltip" title='$i18n.getText("supersede-alerts-delete-btn.tooltip")'>
+
+					<!-- 	ALERT	SIMILARITY CHECK -->
+					<form action="supersede-alerts" method="get">
+						<input type="hidden" name="alerts-similarity" value=y> <input type="hidden" class="selectionList" name="selectionList">
+						<button class="aui-button similarityButton toEnable buttonPaneItem">Check Alert Similarity</button>
+					</form>
+
+					<!-- 		ISSUE SIMILARITY CHECK -->
+					<button id="issue-similarity-button" name="action" value="Import" class="aui-button aui-button-primary alertManagement toEnable buttonPaneItem" title="Create new issue from selected alert(s)">
+						<span class="glyphicon glyphicon-plus"></span> <span class="submit-text">Check Issue Similarity</span>
+					</button>
+
+					<input type="checkbox" style="margin-left: 150px;" id="chkDeleteOnClick" class="toEnable buttonPaneItem" name="chkDeleteOnClick" value="" /><label for="chkDeleteOnClick" class="buttonPaneItem">$i18n.getText("supersede-alerts-delete-chekbox.label")</label>
+					<button id="dialog-delete-button" class="aui-button aui-button-primary alertManagement toEnable simple-tooltip buttonPaneItem" title='$i18n.getText("supersede-alerts-delete-btn.tooltip")'>
 						<span class="glyphicon glyphicon-trash"></span> $i18n.getText("supersede-alerts-delete-btn.label")
 					</button>
 				</div>
