@@ -257,6 +257,8 @@ public class SupersedeAlerts extends HttpServlet {
 			return;
 		}
 
+		issues = issueLogic.getIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId());
+		context.put("issues", issues);
 		context.put("errors", errors);
 		context.put("separator", SEPARATOR);
 		context.put("baseurl", ComponentAccessor.getApplicationProperties().getString("jira.baseurl"));

@@ -186,7 +186,6 @@ function onPageLoad() {
 	jQuery('.dialogButton').click(function() {
 		console.log('alert management');
 		$("#issuesSelectionList").val(issuesSelectionString);
-		alert($('.issueType').val());
 	});
 
 	// DIALOG
@@ -242,7 +241,6 @@ function onPageLoad() {
 	
 	function issueTypeSelectorChange() {
 		$('.issueType').val($(this).val());
-		alert($('.issueType').val());
 	};
 }
 
