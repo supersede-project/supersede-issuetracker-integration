@@ -1,5 +1,11 @@
 <html>
 <head>
+$webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2")
+<script>
+	AJS.$(document).ready(function() {
+		AJS.$('#jira-user').auiSelect2();
+	});
+</script>
 <title>SUPERSEDE - Configuration</title>
 <meta name="decorator" content="atl.general">
 </head>
@@ -83,32 +89,109 @@
 							</p>
 						</form>
 					</div>
+					
+					<br>
+					<br>
+					<hr>
+					<br>
 
-				</div>
+					<div class="module">
+						<div class="mod-header" id="interface-options-head">
+							<div>
+								<h2>Replan options</h2>
+							</div>
+						</div>
 
-				<div class="module">
-					<div class="mod-header" id="interface-options-head">
-						<div>
-							<h2>User-specific Supersede login options</h2>
+						<div class="mod-content" id="interface-options">
+							<form method="post" action="supersede-cfg" class="aui dont-default-focus">
+								<input type="hidden" name="replan" value="y">
+								<p>
+								<p>This will be the replan's main host for SUPERSEDE</p>
+								<p>
+									<label for="replan-host">Replan host:</label> <input type="text" id="replan-host" name="replan-host" value="$replan-host">
+								</p>
+								<p>
+									<input type="submit" class="button" value="Save">
+								</p>
+							</form>
+						</div>
+
+
+
+					</div>
+
+					<div class="module">
+						<div class="mod-header" id="interface-options-head">
+							<div>
+								<h2>User-specific Supersede login options</h2>
+							</div>
+						</div>
+						<form method="post" action="supersede-cfg" class="aui dont-default-focus">
+							Insert the Supersede username and password. This will be used when performing tasks instead of above general login. This will be saved and will be available only to you. If user below is filled, there is an entry saved for your user. Every save of
+							this data overwrites the data already in tables. <input type="hidden" name="SSlogin" value="y">
+							<p>
+								<label for="ss-username-input">SS Username:</label> <input type="text" id="ss-username-input" name="SSusername" value="$ssUser">
+							</p>
+							<p>
+								<label for="ss-password-input">Password:</label> <input type="password" id="ss-password-input" name="SSpassword" value="">
+							</p>
+							<p>
+								<label for="ss-tenant-input">Force tenant:</label> <input type="text" id="ss-tenant-input" name="SStenant" value="$ssTenant">
+							</p>
+							<p>
+								<input type="submit" class="button" value="Save">
+							</p>
+						</form>
+					</div>
+					<br> <br>
+					<hr>
+					<br>
+
+					<div>
+						<div class="module">
+							<div class="mod-header" id="interface-options-head">
+								<div>
+									<h2>Replan Login Table</h2>
+								</div>
+							</div>
+
+							<div class="mod-content" id="interface-options">
+								<form method="post" action="supersede-cfg" class="aui dont-default-focus">
+									<input type="hidden" name="replan-login-table" value="y">
+									<p>
+									<p>Select JIRA user and insert corresponding Replan user</p>
+									<p>
+										<label for="jira-user">JIRA user:</label> <select id="jira-user" name="jira-user"> #foreach($jiraUser in $users)
+											<option value=$jiraUser.getUsername()>$jiraUser.getUsername()</option> #end
+										</select>
+									</p>
+									<p>
+										<label for="replan-user">Replan user:</label> <input type="text" id="replan-user" name="replan-user">
+									</p>
+									<p>
+										<input type="submit" class="button" value="Insert">
+									</p>
+								</form>
+							</div>
+
+							<table class="aui">
+								<thead>
+									<tr>
+										<th id="jira-user">JIRA Username</th>
+										<th id="replan-user">Replan username</th>
+									</tr>
+								</thead>
+								<tbody>
+									#foreach($replanLogin in $replanLogins)
+									<tr>
+										<td headers="jira-user">$replanLogin.getJiraUsername()</td>
+										<td headers="replan-user">$replanLogin.getReplanUsername()</td>
+									</tr>
+									#end
+								</tbody>
+							</table>
 						</div>
 					</div>
-					<form method="post" action="supersede-cfg" class="aui dont-default-focus">
-						Insert the Supersede username and password. This will be used when performing tasks instead of above general login. This will be saved and will be available only to you. If user below is filled, there is an entry saved for your user. Every save of
-						this data overwrites the data already in tables. <input type="hidden" name="SSlogin" value="y">
-						<p>
-							<label for="ss-username-input">SS Username:</label> <input type="text" id="ss-username-input" name="SSusername" value="$ssUser">
-						</p>
-						<p>
-							<label for="ss-password-input">Password:</label> <input type="password" id="ss-password-input" name="SSpassword" value="">
-						</p>
-						<p>
-							<label for="ss-tenant-input">Force tenant:</label> <input type="text" id="ss-tenant-input" name="SStenant" value="$ssTenant">
-						</p>
-						<p>
-							<input type="submit" class="button" value="Save">
-						</p>
-					</form>
-				</div>
 			</section>
 
 			<!-- .aui-page-panel-content -->

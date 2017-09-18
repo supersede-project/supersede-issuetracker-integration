@@ -49,6 +49,7 @@ import com.google.common.collect.Maps;
 import eu.supersede.jira.plugins.activeobject.ProcessService;
 import eu.supersede.jira.plugins.activeobject.SupersedeLoginService;
 import eu.supersede.jira.plugins.activeobject.SupersedeProcess;
+import eu.supersede.jira.plugins.logic.FeatureLogic;
 import eu.supersede.jira.plugins.logic.IssueLogic;
 import eu.supersede.jira.plugins.logic.LoginLogic;
 import eu.supersede.jira.plugins.logic.ProcessLogic;
@@ -118,7 +119,14 @@ public class SupersedeReleasePlanner extends HttpServlet {
 				return;
 			} else if ("y".equals(req.getParameter("features"))) {
 				// Create Features
-				System.out.println("HI, I'm creating features!");
+				FeatureLogic featureLogic = FeatureLogic.getInstance();
+				// Get a list of issues from this query
+				String filter = req.getParameter("procFilter");
+				if (filter != null && !filter.isEmpty()) {
+					SearchRequest sr = ComponentAccessor.getComponentOfType(SearchRequestService.class).getFilter(new JiraServiceContextImpl(user), Long.valueOf(filter));
+					List<Issue> issueList = issueLogic.getIssuesFromFilter(req, sr.getQuery());
+				}
+				featureLogic.sendFeature(req, null);
 			}
 			templateRenderer.render("/templates/logic-supersede-release-planner.vm", context, resp.getWriter());
 		}

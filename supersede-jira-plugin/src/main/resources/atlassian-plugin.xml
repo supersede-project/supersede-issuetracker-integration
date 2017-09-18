@@ -11,6 +11,8 @@
 		</entity>
 		<entity>eu.supersede.jira.plugins.activeobject.SupersedeLogin
 		</entity>
+		<entity>eu.supersede.jira.plugins.activeobject.ReplanJiraLogin
+		</entity>
 	</ao>
 	<!-- GD0996 TEST END -->
 	<plugin-info>
