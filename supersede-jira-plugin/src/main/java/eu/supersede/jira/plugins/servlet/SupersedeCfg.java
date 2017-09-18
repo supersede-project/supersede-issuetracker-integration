@@ -16,6 +16,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +48,7 @@ import eu.supersede.jira.plugins.activeobject.ReplanJiraLoginService;
 import eu.supersede.jira.plugins.activeobject.SupersedeLogin;
 import eu.supersede.jira.plugins.activeobject.SupersedeLoginService;
 import eu.supersede.jira.plugins.logic.LoginLogic;
+import eu.supersede.jira.plugins.logic.ReplanLogic;
 import net.java.ao.EntityManager;
 import net.java.ao.RawEntity;
 
@@ -77,11 +79,10 @@ public class SupersedeCfg extends HttpServlet {
 	private final com.atlassian.jira.user.util.UserManager jiraUserManager;
 	private final PluginSettingsFactory pluginSettingsFactory;
 
-	private final LoginLogic loginLogic = LoginLogic.getInstance();
-
 	private final SupersedeLoginService ssLoginService;
 	private final UserSearchService userSearchService;
 	private final ReplanJiraLoginService replanJiraLoginService;
+	private final LoginLogic loginLogic;
 
 	public SupersedeCfg(UserManager userManager, com.atlassian.jira.user.util.UserManager jiraUserManager, TemplateRenderer templateRenderer, PluginSettingsFactory pluginSettingsFactory, SupersedeLoginService ssLoginService,
 			UserSearchService userSearchService, ReplanJiraLoginService replanJiraLoginService) {
@@ -92,6 +93,9 @@ public class SupersedeCfg extends HttpServlet {
 		this.ssLoginService = checkNotNull(ssLoginService);
 		this.userSearchService = userSearchService;
 		this.replanJiraLoginService = checkNotNull(replanJiraLoginService);
+		
+		loginLogic = LoginLogic.getInstance(ssLoginService);
+		loginLogic.loadConfiguration(pluginSettingsFactory.createGlobalSettings());
 	}
 
 	/**
@@ -226,7 +230,13 @@ public class SupersedeCfg extends HttpServlet {
 
 		// Pass a list of JIRA Users
 		List<ApplicationUser> activeUsers = userSearchService.findUsersAllowEmptyQuery(new JiraServiceContextImpl(loginLogic.getCurrentUser()), "");
+
+		// Get a list of tenant users
+		ReplanLogic replanLogic = ReplanLogic.getInstance();
+		List<String> replanUsers = replanLogic.getReplanUsersByTenant();
+
 		context.put("users", activeUsers);
+		context.put("replanUsers", replanUsers);
 		resp.setContentType("text/html;charset=utf-8");
 		// Pass in the list of issues as the context
 		templateRenderer.render(CONFIG_BROWSER_TEMPLATE, context, resp.getWriter());

@@ -4,6 +4,7 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2")
 <script>
 	AJS.$(document).ready(function() {
 		AJS.$('#jira-user').auiSelect2();
+		AJS.$('#replan-user').auiSelect2();
 	});
 </script>
 <title>SUPERSEDE - Configuration</title>
@@ -166,7 +167,9 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2")
 										</select>
 									</p>
 									<p>
-										<label for="replan-user">Replan user:</label> <input type="text" id="replan-user" name="replan-user">
+										<label for="replan-user">Replan user:</label> <select id="replan-user" name="replan-user"> #foreach($replanUser in $replanUsers)
+											<option value=$replanUser>$replanUser</option> #end
+										</select>
 									</p>
 									<p>
 										<input type="submit" class="button" value="Insert">
