@@ -48,7 +48,6 @@ public class ReplanJiraLoginImpl implements ReplanJiraLoginService {
 
 	@Override
 	public List<ReplanJiraLogin> getAllLogins() {
-		ao.deleteWithSQL(ReplanJiraLogin.class,"");
 		return newArrayList(ao.find(ReplanJiraLogin.class));
 	}
 	
