@@ -14,6 +14,7 @@ package eu.supersede.jira.plugins.servlet;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
@@ -27,7 +28,14 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.atlassian.application.api.Application;
+import com.atlassian.crowd.embedded.api.User;
+import com.atlassian.jira.bc.JiraServiceContext;
+import com.atlassian.jira.bc.JiraServiceContextImpl;
+import com.atlassian.jira.bc.user.search.UserSearchService;
 import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.user.ApplicationUser;
+import com.atlassian.jira.user.UserUtils;
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.user.UserManager;
@@ -37,6 +45,8 @@ import com.google.common.collect.Maps;
 import eu.supersede.jira.plugins.activeobject.SupersedeLogin;
 import eu.supersede.jira.plugins.activeobject.SupersedeLoginService;
 import eu.supersede.jira.plugins.logic.LoginLogic;
+import net.java.ao.EntityManager;
+import net.java.ao.RawEntity;
 
 /**
  * 
@@ -68,13 +78,16 @@ public class SupersedeCfg extends HttpServlet {
 	private final LoginLogic loginLogic = LoginLogic.getInstance();
 
 	private final SupersedeLoginService ssLoginService;
+	private final UserSearchService userSearchService;
 
-	public SupersedeCfg(UserManager userManager, com.atlassian.jira.user.util.UserManager jiraUserManager, TemplateRenderer templateRenderer, PluginSettingsFactory pluginSettingsFactory, SupersedeLoginService ssLoginService) {
+	public SupersedeCfg(UserManager userManager, com.atlassian.jira.user.util.UserManager jiraUserManager, TemplateRenderer templateRenderer, PluginSettingsFactory pluginSettingsFactory, SupersedeLoginService ssLoginService,
+			UserSearchService userSearchService) {
 		this.userManager = userManager;
 		this.templateRenderer = templateRenderer;
 		this.jiraUserManager = jiraUserManager;
 		this.pluginSettingsFactory = pluginSettingsFactory;
 		this.ssLoginService = checkNotNull(ssLoginService);
+		this.userSearchService = userSearchService;
 	}
 
 	/**
@@ -177,7 +190,7 @@ public class SupersedeCfg extends HttpServlet {
 		String jiraUser = loginLogic.getCurrentUser().getUsername();
 		SupersedeLogin ssLogin = ssLoginService.getLogin(jiraUser);
 		context.put("ssUser", ssLogin != null ? ssLogin.getSSUser() : "");
-		context.put("ssTenant", ssLogin != null ? ssLogin.getTenant(): "");
+		context.put("ssTenant", ssLogin != null ? ssLogin.getTenant() : "");
 
 		resp.setContentType("text/html;charset=utf-8");
 		// Pass in the list of issues as the context
