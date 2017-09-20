@@ -12,4 +12,8 @@ public interface ReplanJiraLogin extends Entity {
 
 	void setJiraUsername(String username);
 
+	String getTenant();
+
+	void setTenant(String tenant);
+
 }

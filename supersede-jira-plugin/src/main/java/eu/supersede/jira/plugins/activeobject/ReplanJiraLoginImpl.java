@@ -45,6 +45,15 @@ public class ReplanJiraLoginImpl implements ReplanJiraLoginService {
 		login.save();
 		return login;
 	}
+	
+	@Override
+	public ReplanJiraLogin add(String replanUsername, String jiraUsername, String tenant) {
+
+		ReplanJiraLogin login = add(replanUsername, jiraUsername);
+		login.setTenant(tenant);
+		login.save();
+		return login;
+	}
 
 	@Override
 	public List<ReplanJiraLogin> getAllLogins() {
@@ -52,8 +61,8 @@ public class ReplanJiraLoginImpl implements ReplanJiraLoginService {
 	}
 	
 	@Override
-	public ReplanJiraLogin getLoginByJiraUsername(String jiraUsername) {
-		ReplanJiraLogin[] result = ao.find(ReplanJiraLogin.class, Query.select().where("JIRA_USERNAME LIKE ?", jiraUsername));
+	public ReplanJiraLogin getLoginByJiraUsername(String jiraUsername, String tenant) {
+		ReplanJiraLogin[] result = ao.find(ReplanJiraLogin.class, Query.select().where("JIRA_USERNAME LIKE ? AND TENANT LIKE ?", jiraUsername, tenant));
 		if(result != null && result.length > 0) {
 			return result[0];
 		}
@@ -61,8 +70,8 @@ public class ReplanJiraLoginImpl implements ReplanJiraLoginService {
 	}
 	
 	@Override
-	public ReplanJiraLogin getLoginByReplanUsername(String replanUsername) {
-		ReplanJiraLogin[] result = ao.find(ReplanJiraLogin.class, Query.select().where("REPLAN_USERNAME LIKE ?", replanUsername));
+	public ReplanJiraLogin getLoginByReplanUsername(String replanUsername, String tenant) {
+		ReplanJiraLogin[] result = ao.find(ReplanJiraLogin.class, Query.select().where("REPLAN_USERNAME LIKE ? AND TENANT LIKE ?", replanUsername, tenant));
 		if(result != null && result.length > 0) {
 			return result[0];
 		}

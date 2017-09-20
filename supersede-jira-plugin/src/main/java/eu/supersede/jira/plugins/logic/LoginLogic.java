@@ -34,7 +34,7 @@ public class LoginLogic {
 
 	private static String authToken;
 
-	private String serverUrl, username, password, tenantOverride, replanHost;
+	private String serverUrl, username, password, tenantOverride, replanHost, replanTenant;
 
 	private String currentProject; // TODO: 20170803 No longer required, if "get
 									// tenant from user group" is confirmed
@@ -83,6 +83,7 @@ public class LoginLogic {
 		password = ssLogin != null ? ssLogin.getSSPassword() : SupersedeCfg.getConfigurationValue(pluginSettings, SupersedeCfg.KEY_PASSWORD, SupersedeCfg.DEF_PASSWORD);
 		tenantOverride = ssLogin != null ? ssLogin.getTenant() : SupersedeCfg.getConfigurationValue(pluginSettings, SupersedeCfg.KEY_TENANT, SupersedeCfg.DEF_TENANT);
 		replanHost = SupersedeCfg.getConfigurationValue(pluginSettings, SupersedeCfg.KEY_REPLAN_HOST, SupersedeCfg.DEF_REPLAN_HOST);
+		replanTenant = SupersedeCfg.getConfigurationValue(pluginSettings, SupersedeCfg.KEY_REPLAN_TENANT, SupersedeCfg.DEF_REPLAN_TENANT);
 	}
 
 	public String getBasicAuth() {
@@ -189,6 +190,10 @@ public class LoginLogic {
 
 	public String getReplanHost() {
 		return this.replanHost;
+	}
+
+	public String getReplanTenant() {
+		return this.replanTenant;
 	}
 
 	public void setSessionCookie(HttpServletResponse res, String sessionId) {

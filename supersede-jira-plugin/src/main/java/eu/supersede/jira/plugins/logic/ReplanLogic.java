@@ -33,7 +33,7 @@ public class ReplanLogic {
 	public List<String> getReplanUsersByTenant() {
 		LoginLogic loginLogic = LoginLogic.getInstance();
 		try {
-			URL url = new URL(loginLogic.getReplanHost() + loginLogic.getCurrentProject() + "/resources");
+			URL url = new URL(loginLogic.getReplanHost() + loginLogic.getReplanTenant() + "/resources");
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 			conn.setConnectTimeout(LoginLogic.CONN_TIMEOUT);
 			conn.setReadTimeout(LoginLogic.CONN_TIMEOUT);

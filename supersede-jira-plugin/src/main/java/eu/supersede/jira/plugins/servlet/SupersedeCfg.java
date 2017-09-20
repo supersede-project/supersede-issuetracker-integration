@@ -70,9 +70,9 @@ public class SupersedeCfg extends HttpServlet {
 	 */
 	private static final String CONFIG_BROWSER_TEMPLATE = "/templates/supersede-cfg.vm";
 
-	public static final String KEY_HOSTNAME = "hostname", KEY_USERNAME = "username", KEY_PASSWORD = "password", KEY_TENANT = "tenant", KEY_REPLAN_HOST = "replan-host";
+	public static final String KEY_HOSTNAME = "hostname", KEY_USERNAME = "username", KEY_PASSWORD = "password", KEY_TENANT = "tenant", KEY_REPLAN_HOST = "replan-host", KEY_REPLAN_TENANT = "replan-tenant";
 
-	public static final String DEF_HOSTNAME = "http://localhost", DEF_USERNAME = "admin", DEF_PASSWORD = "admin", DEF_TENANT = "", DEF_REPLAN_HOST = "";
+	public static final String DEF_HOSTNAME = "http://localhost", DEF_USERNAME = "admin", DEF_PASSWORD = "admin", DEF_TENANT = "", DEF_REPLAN_HOST = "", DEF_REPLAN_TENANT = "";
 
 	private UserManager userManager;
 	private TemplateRenderer templateRenderer;
@@ -93,7 +93,7 @@ public class SupersedeCfg extends HttpServlet {
 		this.ssLoginService = checkNotNull(ssLoginService);
 		this.userSearchService = userSearchService;
 		this.replanJiraLoginService = checkNotNull(replanJiraLoginService);
-		
+
 		loginLogic = LoginLogic.getInstance(ssLoginService);
 		loginLogic.loadConfiguration(pluginSettingsFactory.createGlobalSettings());
 	}
@@ -165,6 +165,7 @@ public class SupersedeCfg extends HttpServlet {
 		} else if ("y".equals(req.getParameter("replan"))) {
 			PluginSettings pluginSettings = pluginSettingsFactory.createGlobalSettings();
 			pluginSettings.put(getStorageKey(KEY_REPLAN_HOST), req.getParameter(KEY_REPLAN_HOST));
+			pluginSettings.put(getStorageKey(KEY_REPLAN_TENANT), req.getParameter(KEY_REPLAN_TENANT));
 		} else if ("y".equals(req.getParameter("replan-login-table"))) {
 			String jiraUsername = req.getParameter("jira-user");
 			String replanUsername = req.getParameter("replan-user");
@@ -173,17 +174,19 @@ public class SupersedeCfg extends HttpServlet {
 				return;
 			}
 
-			ReplanJiraLogin login = replanJiraLoginService.getLoginByJiraUsername(jiraUsername);
-			if (login == null) {
-				login = replanJiraLoginService.getLoginByReplanUsername(replanUsername);
-			}
+			ReplanJiraLogin login = replanJiraLoginService.getLoginByJiraUsername(jiraUsername, loginLogic.getReplanTenant());
+			// if (login == null) {
+			// login =
+			// replanJiraLoginService.getLoginByReplanUsername(replanUsername,
+			// loginLogic.getReplanTenant());
+			// }
 
 			if (login != null) {
 				login.setJiraUsername(jiraUsername);
 				login.setReplanUsername(replanUsername);
 				login.save();
 			} else {
-				replanJiraLoginService.add(replanUsername, jiraUsername);
+				replanJiraLoginService.add(replanUsername, jiraUsername, loginLogic.getReplanTenant());
 			}
 		} else if ("y".equals(req.getParameter("SSlogin"))) {
 			String ssUser = req.getParameter("SSusername");
@@ -211,6 +214,7 @@ public class SupersedeCfg extends HttpServlet {
 		String usernameSetting = getConfigurationValue(pluginSettings, KEY_USERNAME, DEF_USERNAME);
 		String tenantSetting = getConfigurationValue(pluginSettings, KEY_TENANT, DEF_TENANT);
 		String replanSetting = getConfigurationValue(pluginSettings, KEY_REPLAN_HOST, DEF_REPLAN_HOST);
+		String replanTenantSetting = getConfigurationValue(pluginSettings, KEY_REPLAN_TENANT, DEF_REPLAN_TENANT);
 
 		Map<String, Object> context = Maps.newHashMap();
 		context.put("baseurl", ComponentAccessor.getApplicationProperties().getString("jira.baseurl"));
@@ -219,6 +223,7 @@ public class SupersedeCfg extends HttpServlet {
 		context.put(KEY_USERNAME, usernameSetting);
 		context.put(KEY_TENANT, tenantSetting);
 		context.put(KEY_REPLAN_HOST, replanSetting);
+		context.put(KEY_REPLAN_TENANT, replanTenantSetting);
 
 		String jiraUser = loginLogic.getCurrentUser().getUsername();
 		SupersedeLogin ssLogin = ssLoginService.getLogin(jiraUser);

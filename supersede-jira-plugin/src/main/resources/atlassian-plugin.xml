@@ -96,7 +96,7 @@
 		<resource type="download" name="content-supersede-general.css"
 			location="/css/content-supersede-general.css" />
 		<resource type="download" name="logic-supersede-release-planner.js"
-			location="/js/logic-supersede-prioritization.js" />
+			location="/js/logic-supersede-release-planner.js" />
 		<context>logic-supersede-release-planner.context</context>
 		<transformation extension="js">
 			<transformer key="jsI18n" />

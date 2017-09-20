@@ -112,6 +112,9 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2")
 									<label for="replan-host">Replan host:</label> <input type="text" id="replan-host" name="replan-host" value="$replan-host">
 								</p>
 								<p>
+								<p>
+									<label for="replan-tenant">Replan tenant:</label> <input type="text" id="replan-tenant" name="replan-tenant" value="$replan-tenant">
+								</p>
 									<input type="submit" class="button" value="Save">
 								</p>
 							</form>

@@ -9,6 +9,9 @@ import java.net.URL;
 import javax.servlet.http.HttpServletRequest;
 
 import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.util.json.JSONArray;
+import com.atlassian.jira.util.json.JSONObject;
+import com.google.gson.JsonObject;
 
 public class FeatureLogic {
 
@@ -31,58 +34,55 @@ public class FeatureLogic {
 			LoginLogic loginLogic = LoginLogic.getInstance();
 			String sessionId = loginLogic.login();
 
-			// http://platform.supersede.eu:8280/replan/projects/<tenant>/features
-			// TODO: force tenant to a 4 as soon as upc gives us access
-			// URL url = new URL(loginLogic.getReplanHost() +
-			// loginLogic.getCurrentProject() + "/features");
-			// HttpURLConnection conn = (HttpURLConnection)
-			// url.openConnection();
-			// StringBuilder params = new
-			// StringBuilder("id=").append(i.getId());
-			// params.append("name=").append(i.getSummary());
-			// params.append("description").append(i.getDescription());
-			// params.append("effort").append(i.getEstimate());
-			// params.append("deadline").append(i.getDueDate());
-			// params.append("priority").append(i.getPriority().getId());
-			// conn.setConnectTimeout(LoginLogic.CONN_TIMEOUT);
-			// conn.setReadTimeout(LoginLogic.CONN_TIMEOUT);
-			// conn.setDoOutput(true);
-			// conn.setRequestMethod("POST");
-			// conn.setRequestProperty("Content-Type",
-			// "application/x-www-form-urlencoded");
-			// conn.setRequestProperty("Content-Length",
-			// String.valueOf(params.length()));
-			// conn.setRequestProperty("TenantId",
-			// loginLogic.getCurrentProject());
-			// conn.setRequestProperty("Cookie", "SESSION=" + sessionId + ";");
-			// conn.setRequestProperty("X-XSRF-TOKEN",
-			// loginLogic.authenticate(sessionId));
-			// conn.setDoOutput(true);
-			// OutputStreamWriter outputStreamWriter = new
-			// OutputStreamWriter(conn.getOutputStream());
-			// outputStreamWriter.flush();
-			//
-			// response = conn.getResponseCode();
-			// responseData = conn.getResponseMessage();
-			//
-			// BufferedReader br = new BufferedReader(new
-			// InputStreamReader((conn.getInputStream())));
-			// StringBuilder sb = new StringBuilder();
-			// String output;
-			// while ((output = br.readLine()) != null) {
-			// sb.append(output);
-			// }
-			// return sb.toString();
+			// http://platform.supersede.eu:8280/replan/projects/<ReplanTenant>/features
+			URL url = new URL(loginLogic.getReplanHost() + loginLogic.getReplanTenant() + "/features");
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			JSONObject feature = new JSONObject();
+			feature.put("id", i.getId());
+			feature.put("name", i.getSummary());
+			feature.put("description", i.getDescription());
+			feature.put("effort", "100");
+			feature.put("deadline", "2017-12-31");
+			feature.put("priority", i.getPriority() != null ? i.getPriority().getName() : "0");
+			feature.put("properties", new JSONArray());
+			feature.put("required_skills", new JSONArray());
+			feature.put("depends_on", new JSONArray());
+			feature.put("hard_dependencies", new JSONArray());
+			feature.put("soft_dependencies", new JSONArray());
+			
+			JSONArray features = new JSONArray();
+			features.put(feature);
+			
+			JSONObject container = new JSONObject();
+			container.put("features", features);
 
-			return "IT WORKS";
+			conn.setConnectTimeout(LoginLogic.CONN_TIMEOUT);
+			conn.setReadTimeout(LoginLogic.CONN_TIMEOUT);
+			conn.setDoOutput(true);
+			conn.setDoInput(true);
+			conn.setRequestMethod("POST");
+			conn.setRequestProperty("Accept", "application/json");
+			conn.setRequestProperty("Content-Type", "application/json");
+			OutputStreamWriter outputStreamWriter = new OutputStreamWriter(conn.getOutputStream());
+			outputStreamWriter.write(container.toString());
+			outputStreamWriter.flush();
 
-		} catch (
+			response = conn.getResponseCode();
+			responseData = conn.getResponseMessage();
 
-		Exception e) {
+			BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
+			StringBuilder sb = new StringBuilder();
+			String output;
+			while ((output = br.readLine()) != null) {
+				sb.append(output);
+			}
+			return sb.toString();
+
+		} catch (Exception e) {
 			e.printStackTrace();
+			return e.getMessage();
 		}
 
-		return "";
 	}
 
 }
