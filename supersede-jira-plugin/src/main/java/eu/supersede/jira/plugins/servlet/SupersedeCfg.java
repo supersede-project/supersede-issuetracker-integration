@@ -48,10 +48,7 @@ import eu.supersede.jira.plugins.activeobject.ReplanJiraLoginService;
 import eu.supersede.jira.plugins.activeobject.SupersedeLogin;
 import eu.supersede.jira.plugins.activeobject.SupersedeLoginService;
 import eu.supersede.jira.plugins.logic.LoginLogic;
-<<<<<<< HEAD
-=======
 import eu.supersede.jira.plugins.logic.ReplanLogic;
->>>>>>> develop
 import net.java.ao.EntityManager;
 import net.java.ao.RawEntity;
 
@@ -84,30 +81,21 @@ public class SupersedeCfg extends HttpServlet {
 
 	private final SupersedeLoginService ssLoginService;
 	private final UserSearchService userSearchService;
-<<<<<<< HEAD
-
-	public SupersedeCfg(UserManager userManager, com.atlassian.jira.user.util.UserManager jiraUserManager, TemplateRenderer templateRenderer, PluginSettingsFactory pluginSettingsFactory, SupersedeLoginService ssLoginService,
-			UserSearchService userSearchService) {
-=======
 	private final ReplanJiraLoginService replanJiraLoginService;
 	private final LoginLogic loginLogic;
 
 	public SupersedeCfg(UserManager userManager, com.atlassian.jira.user.util.UserManager jiraUserManager, TemplateRenderer templateRenderer, PluginSettingsFactory pluginSettingsFactory, SupersedeLoginService ssLoginService,
 			UserSearchService userSearchService, ReplanJiraLoginService replanJiraLoginService) {
->>>>>>> develop
 		this.userManager = userManager;
 		this.templateRenderer = templateRenderer;
 		this.jiraUserManager = jiraUserManager;
 		this.pluginSettingsFactory = pluginSettingsFactory;
 		this.ssLoginService = checkNotNull(ssLoginService);
 		this.userSearchService = userSearchService;
-<<<<<<< HEAD
-=======
 		this.replanJiraLoginService = checkNotNull(replanJiraLoginService);
 
 		loginLogic = LoginLogic.getInstance(ssLoginService);
 		loginLogic.loadConfiguration(pluginSettingsFactory.createGlobalSettings());
->>>>>>> develop
 	}
 
 	/**

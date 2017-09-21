@@ -13,6 +13,7 @@
  */
 
 AJS.$(document).ready(function() {
+	$('#page-title').text('Prioritization');
 	var self = jQuery(this);
 	jQuery.ajax({
 		type : "get",

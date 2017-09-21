@@ -29,7 +29,7 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2")
 		<div class="aui-page-header-inner">
 			<div class="aui-page-header-main">
 				<h1>
-					<img src="$baseurl/download/resources/eu.supersede.jira.plugins.supersede-jira-plugin:supersede-jira-plugin-resources/images/supersede_color.png"> Configuration
+					<img src="$baseurl/download/resources/eu.supersede.jira.plugins.supersede-jira-plugin:supersede-jira-plugin-resources/images/supersede_color.png"> Settings
 				</h1>
 				<!-- .aui-page-header-main -->
 			</div>

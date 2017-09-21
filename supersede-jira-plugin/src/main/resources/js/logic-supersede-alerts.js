@@ -15,6 +15,7 @@
 AJS.$(document).ready(function() {
 	$('#project-select-import').val($('.projectField').val()).trigger('change');
 	$('#project-select-attach').val($('.projectField').val()).trigger('change');
+	$('#page-title').text('Alerts Management');
 	onPageLoad();
 });
 

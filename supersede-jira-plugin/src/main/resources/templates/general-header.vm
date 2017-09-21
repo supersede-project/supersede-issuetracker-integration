@@ -16,9 +16,10 @@
 	<div class="aui-page-header-inner">
 		<div class="aui-page-header-main">
 			<h1>
-				<img
-					src="$baseurl/download/resources/eu.supersede.jira.plugins.supersede-jira-plugin:supersede-jira-plugin-resources/images/supersede_color.png">
-				Issues Manager
+				<img src="$baseurl/download/resources/eu.supersede.jira.plugins.supersede-jira-plugin:supersede-jira-plugin-resources/images/supersede_color.png" />
+			</h1>
+			<h1>
+				<div id="page-title">Issue Manager</div>
 			</h1>
 			<!-- .aui-page-header-main -->
 		</div>
