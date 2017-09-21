@@ -16,6 +16,8 @@ package eu.supersede.jira.plugins.logic;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
@@ -27,9 +29,11 @@ import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.atlassian.applinks.api.PropertySet;
 import com.atlassian.crowd.embedded.api.Group;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.user.ApplicationUser;
+import com.atlassian.jira.user.UserPropertyManager;
 import com.atlassian.jira.user.util.UserUtil;
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 
@@ -44,7 +48,7 @@ public class LoginLogic {
 
 	private static String authToken;
 
-	private String serverUrl, username, password, tenantOverride;
+	private String serverUrl, username, password, tenantOverride, replanHost, replanTenant;
 
 	private String currentProject; // TODO: 20170803 No longer required, if "get
 									// tenant from user group" is confirmed
@@ -92,15 +96,11 @@ public class LoginLogic {
 		username = ssLogin != null ? ssLogin.getSSUser() : SupersedeCfg.getConfigurationValue(pluginSettings, SupersedeCfg.KEY_USERNAME, SupersedeCfg.DEF_USERNAME);
 		password = ssLogin != null ? ssLogin.getSSPassword() : SupersedeCfg.getConfigurationValue(pluginSettings, SupersedeCfg.KEY_PASSWORD, SupersedeCfg.DEF_PASSWORD);
 		tenantOverride = ssLogin != null ? ssLogin.getTenant() : SupersedeCfg.getConfigurationValue(pluginSettings, SupersedeCfg.KEY_TENANT, SupersedeCfg.DEF_TENANT);
+		replanHost = SupersedeCfg.getConfigurationValue(pluginSettings, SupersedeCfg.KEY_REPLAN_HOST, SupersedeCfg.DEF_REPLAN_HOST);
+		replanTenant = SupersedeCfg.getConfigurationValue(pluginSettings, SupersedeCfg.KEY_REPLAN_TENANT, SupersedeCfg.DEF_REPLAN_TENANT);
 	}
 
 	public String getBasicAuth() {
-		// LoginLogic loginLogic = LoginLogic.getInstance();
-		// String jiraUser = loginLogic.getCurrentUser().getUsername();
-		// SupersedeLogin ssLogin = ssLoginService.getLogin(ssUser);
-		//
-		// String username = ssLogin != null
-		//
 		String userpass = getUsername() + ":" + getPassword();
 		String basicAuth = "Basic " + new String(new Base64().encode(userpass.getBytes()));
 		return basicAuth;
@@ -200,6 +200,14 @@ public class LoginLogic {
 
 	public String getPassword() {
 		return this.password;
+	}
+
+	public String getReplanHost() {
+		return this.replanHost;
+	}
+
+	public String getReplanTenant() {
+		return this.replanTenant;
 	}
 
 	public void setSessionCookie(HttpServletResponse res, String sessionId) {

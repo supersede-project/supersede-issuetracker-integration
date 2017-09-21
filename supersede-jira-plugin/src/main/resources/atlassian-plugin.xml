@@ -11,6 +11,8 @@
 		</entity>
 		<entity>eu.supersede.jira.plugins.activeobject.SupersedeLogin
 		</entity>
+		<entity>eu.supersede.jira.plugins.activeobject.ReplanJiraLogin
+		</entity>
 	</ao>
 	<!-- GD0996 TEST END -->
 	<plugin-info>
@@ -75,12 +77,27 @@
 		<context>logic-supersede-alerts.context</context>
 	</web-resource>
 
+	<!-- RESOURCES FOR PRIORITIZATION PAGE -->
+
 	<web-resource name="LogicPriority" key="LogicPriority">
 		<resource type="download" name="content-supersede-general.css"
 			location="/css/content-supersede-general.css" />
 		<resource type="download" name="logic-supersede-prioritization.js"
 			location="/js/logic-supersede-prioritization.js" />
 		<context>logic-supersede-prioritization.context</context>
+		<transformation extension="js">
+			<transformer key="jsI18n" />
+		</transformation>
+	</web-resource>
+
+	<!-- RESOURCES FOR RELEASE PLANNER PAGE -->
+
+	<web-resource name="ReleasePriority" key="ReleasePriority">
+		<resource type="download" name="content-supersede-general.css"
+			location="/css/content-supersede-general.css" />
+		<resource type="download" name="logic-supersede-release-planner.js"
+			location="/js/logic-supersede-release-planner.js" />
+		<context>logic-supersede-release-planner.context</context>
 		<transformation extension="js">
 			<transformer key="jsI18n" />
 		</transformation>
@@ -201,8 +218,25 @@
 		</description>
 		<url-pattern>/supersede-prioritization</url-pattern>
 	</servlet>
-	
-<!-- 	SUPERSEDE WEBHOOK MANAGEMENT -->
+
+	<!-- SUPERSEDE RELEASE PLANNER -->
+
+	<web-item name="supersede-release-planner" i18n-name-key="supersede-release-planner.name"
+		key="supersede-release-planner-item" section="supersede-dropdown-menu/supersede-section"
+		weight="1000">
+		<description key="supersede-release-planner.description">The supersede-prioritization Plugin
+		</description>
+		<label key="supersede-release-planner.label" />
+		<link linkId="supersede-release-planner-link">/plugins/servlet/supersede-release-planner</link>
+	</web-item>
+	<servlet name="Supersede Release Planner" i18n-name-key="supersede-release-planner.name"
+		key="supersede-release-planner" class="eu.supersede.jira.plugins.servlet.SupersedeReleasePlanner">
+		<description key="supersede-release-planner.description">The Supersede Release Planner Plugin
+		</description>
+		<url-pattern>/supersede-release-planner</url-pattern>
+	</servlet>
+
+	<!-- SUPERSEDE WEBHOOK MANAGEMENT -->
 
 	<!-- SUPERSEDE ALERTS PAGE -->
 

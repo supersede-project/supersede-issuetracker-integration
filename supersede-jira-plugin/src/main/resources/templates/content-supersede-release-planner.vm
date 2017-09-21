@@ -1,0 +1,29 @@
+<html>
+<head>$webResourceManager.requireResourcesForContext("content-supersede-alerts.context") $webResourceManager.requireResourcesForContext("content-supersede-release-planner.context")
+
+</head>
+<body>
+	<div id="buttons">
+		<form class="aui">
+			<div class="field-group">
+				<label for="filter-select">$i18n.getText("supersede-prioritization-filters.label")</label> <select class="select" id="filter-select" name="search-filters"> #foreach($filter in $filters)
+					<option value=$filter.getId()>$filter.getName()</option> #end
+				</select>
+			</div>
+		</form>
+
+		<form action="supersede-release-planner">
+			<input type="hidden" value="y" name="features"> <input type="hidden" class="procFilter" name="procFilter">
+			<button style="margin-left: 20px" id="create-features" name="action" value="Create" class="aui-button aui-button-primary">
+				<span class="glyphicon glyphicon-plus"></span> <span class="submit-text">Create Features</span>
+			</button>
+			<button style="margin-left: 20px" id="import-features" name="action" value="Import" class="aui-button aui-button-primary">
+				<span class="glyphicon glyphicon-plus"></span> <span class="submit-text">Update Issues from Features</span>
+			</button>
+		</form>
+	</div>
+
+
+	<div id="issues-table-data">#parse("/templates/issues-table-data.vm")</div>
+</body>
+</html>
