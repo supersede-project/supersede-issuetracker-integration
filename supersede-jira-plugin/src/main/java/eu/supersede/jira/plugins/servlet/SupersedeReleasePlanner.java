@@ -1,6 +1,7 @@
 package eu.supersede.jira.plugins.servlet;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -19,6 +20,8 @@ import com.atlassian.jira.bc.project.ProjectService;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.CustomFieldManager;
 import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.link.IssueLink;
+import com.atlassian.jira.issue.link.IssueLinkManager;
 import com.atlassian.jira.issue.search.SearchRequest;
 import com.atlassian.jira.sharing.SharedEntityColumn;
 import com.atlassian.jira.sharing.search.SharedEntitySearchContext;
@@ -89,8 +92,26 @@ public class SupersedeReleasePlanner extends HttpServlet {
 				if (filter != null && !filter.isEmpty()) {
 					SearchRequest sr = ComponentAccessor.getComponentOfType(SearchRequestService.class).getFilter(new JiraServiceContextImpl(user), Long.valueOf(filter));
 					List<Issue> issueList = issueLogic.getIssuesFromFilter(req, sr.getQuery());
+					boolean isCreation = "Create".equals(req.getParameter("action"));
 					for (Issue i : issueList) {
-						errors.add(featureLogic.sendFeature(req, i));
+						
+						if (isCreation) {
+							//Insert dependent features
+							IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
+							List<IssueLink> linkListO = issueLinkManager.getOutwardLinks(i.getId());
+							ArrayList<String> dependencies = new ArrayList<String>();
+							for (IssueLink il : linkListO) {
+								if (!"Dependency".equals(il.getIssueLinkType().getName())) {
+									continue;
+								}
+								Issue targetIssue = il.getDestinationObject();
+								errors.add(featureLogic.sendFeature(req, targetIssue));
+								dependencies.add(targetIssue.getId().toString());
+							}
+							errors.add(featureLogic.sendFeature(req, i, dependencies));
+						} else {
+							errors.add(featureLogic.updateIssueFromFeature(req, i));
+						}
 					}
 				}
 			}

@@ -35,7 +35,11 @@ function onPageLoad() {
 	});
 	
 	$('#create-features').click(function() {
-		alert($('#filter-select').val());
 		$('.procFilter').val($('#filter-select').val());
 	});
+	
+	$('#import-features').click(function() {
+		$('.procFilter').val($('#filter-select').val());
+	});
+	
 }
