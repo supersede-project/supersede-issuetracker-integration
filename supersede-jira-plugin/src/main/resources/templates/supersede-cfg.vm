@@ -130,7 +130,7 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2")
 									<label for="replan-tenant">Replan tenant:</label> <input type="text" id="replan-tenant" name="replan-tenant" value="$replan-tenant">
 								</p>
 									<input type="submit" class="button" value="Save">
-								</p>
+								
 							</form>
 						</div>
 
@@ -199,6 +199,7 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2")
 									<tr>
 										<th id="jira-user">JIRA Username</th>
 										<th id="replan-user">Replan username</th>
+										<th id="replan-tenant"> Replan tenant </th>
 									</tr>
 								</thead>
 								<tbody>
@@ -206,6 +207,7 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2")
 									<tr>
 										<td headers="jira-user">$replanLogin.getJiraUsername()</td>
 										<td headers="replan-user">$replanLogin.getReplanUsername()</td>
+										<td headers="replan-user">$replanLogin.getTenant()</td>
 									</tr>
 									#end
 								</tbody>
