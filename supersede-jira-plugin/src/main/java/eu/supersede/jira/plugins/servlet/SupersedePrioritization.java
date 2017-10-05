@@ -88,6 +88,7 @@ public class SupersedePrioritization extends HttpServlet {
 	private final ProcessService processService;
 
 	private static final String PARAM_ACTION = "action";
+	List<String> errors = new LinkedList<String>();
 
 	public SupersedePrioritization(IssueService issueService, ProjectService projectService, SearchService searchService, UserManager userManager, com.atlassian.jira.user.util.UserManager jiraUserManager, TemplateRenderer templateRenderer,
 			PluginSettingsFactory pluginSettingsFactory, CustomFieldManager customFieldManager, ProcessService processService, SupersedeLoginService ssLoginService) {
@@ -117,8 +118,7 @@ public class SupersedePrioritization extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		Map<String, Object> context = Maps.newHashMap();
 		// process request
-		List<String> errors = new LinkedList<String>();
-		context.put("errors", errors);
+		
 		context.put("baseurl", ComponentAccessor.getApplicationProperties().getString("jira.baseurl"));
 		List<Project> projects = ComponentAccessor.getProjectManager().getProjectObjects();
 		context.put("projects", projects);
@@ -138,8 +138,10 @@ public class SupersedePrioritization extends HttpServlet {
 			processService.updateAllProcessesStatus(processes);
 			context.put("processes", processes);
 			resp.setContentType("text/html;charset=utf-8");
+			context.put("errors", errors);
 			templateRenderer.render("/templates/logic-supersede-prioritization.vm", context, resp.getWriter());
 		}
+		context.put("errors", errors);
 	}
 
 	@Override
@@ -211,6 +213,8 @@ public class SupersedePrioritization extends HttpServlet {
 
 					// ProcessService added at last
 					processService.add(name, description, processSSID, issueRequirementsMap.toString(), sr.getQuery().getQueryString(), "In progress");
+					
+					errors.add("Supersede Process " + processSSID + " correctly added");
 
 				}
 				res.sendRedirect(req.getContextPath() + "/plugins/servlet/supersede-prioritization");
@@ -246,6 +250,9 @@ public class SupersedePrioritization extends HttpServlet {
 					mIssue.setDescription(mIssue.getDescription() + " Priority set to " + priorityValue + " on " + d.toString());
 
 					issueManager.updateIssue(loginLogic.getCurrentUser(), mIssue, EventDispatchOption.ISSUE_UPDATED, true);
+					
+					errors.add("Ranking of process  " + processId + " correctly imported");
+					
 				}
 
 				sp.setLastRankingImportDate(new Date());
@@ -259,6 +266,8 @@ public class SupersedePrioritization extends HttpServlet {
 					sp.setLastRankingImportDate(new Date());
 					sp.save();
 				}
+				
+				errors.add("Supersede Process " + processId + " correctly closed");
 			}
 			
 			else if ("removeProject".equals(req.getParameter(PARAM_ACTION))) {
@@ -279,6 +288,8 @@ public class SupersedePrioritization extends HttpServlet {
 					sp.setLastRankingImportDate(new Date());
 					sp.save();
 				}
+				
+				errors.add("Supersede Process " + sp.getID() + " correctly added");
 			}
 			doGet(req, res);
 
