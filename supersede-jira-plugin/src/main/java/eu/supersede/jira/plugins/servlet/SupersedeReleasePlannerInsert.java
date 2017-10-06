@@ -39,7 +39,7 @@ import eu.supersede.jira.plugins.logic.FeatureLogic;
 import eu.supersede.jira.plugins.logic.IssueLogic;
 import eu.supersede.jira.plugins.logic.LoginLogic;
 
-public class SupersedeReleasePlanner extends HttpServlet {
+public class SupersedeReleasePlannerInsert extends HttpServlet {
 
 	/**
 	 * 
@@ -52,7 +52,7 @@ public class SupersedeReleasePlanner extends HttpServlet {
 
 	private IssueLogic issueLogic;
 
-	public SupersedeReleasePlanner(IssueService issueService, ProjectService projectService, SearchService searchService, UserManager userManager, com.atlassian.jira.user.util.UserManager jiraUserManager, TemplateRenderer templateRenderer,
+	public SupersedeReleasePlannerInsert(IssueService issueService, ProjectService projectService, SearchService searchService, UserManager userManager, com.atlassian.jira.user.util.UserManager jiraUserManager, TemplateRenderer templateRenderer,
 			PluginSettingsFactory pluginSettingsFactory, CustomFieldManager customFieldManager, ProcessService processService, SupersedeLoginService ssLoginService) {
 		this.templateRenderer = templateRenderer;
 		loginLogic = LoginLogic.getInstance(ssLoginService);

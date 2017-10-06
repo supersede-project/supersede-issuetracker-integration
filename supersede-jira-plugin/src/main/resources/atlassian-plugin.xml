@@ -204,14 +204,30 @@
 
 	<!-- SUPERSEDE PRIORITIZATION -->
 
+	<web-section name="supersedeSectionPrio" i18n-name-key="supersede-section.name"
+		key="supersede-section-prioritization" location="supersede-dropdown-menu"
+		weight="1000">
+		<description key="supersede-section.description">SUPERSEDE Section</description>
+	</web-section>
+
 	<web-item name="supersede-prioritization" i18n-name-key="supersede-prioritization.name"
-		key="supersede-prioritization-item" section="supersede-dropdown-menu/supersede-section"
+		key="supersede-prioritization-item" section="supersede-dropdown-menu/supersede-section-prioritization"
 		weight="1000">
 		<description key="supersede-prioritization.description">The supersede-prioritization Plugin
 		</description>
 		<label key="supersede-prioritization.label" />
 		<link linkId="supersede-prioritization-link">/plugins/servlet/supersede-prioritization</link>
 	</web-item>
+
+	<web-item name="supersede-prioritization-list" i18n-name-key="supersede-prioritization-list.name"
+		key="supersede-prioritization-list-item" section="supersede-dropdown-menu/supersede-section-prioritization"
+		weight="1000">
+		<description key="supersede-prioritization-list.description">The supersede-prioritization Plugin
+		</description>
+		<label key="supersede-prioritization-list.label" />
+		<link linkId="supersede-prioritization-list-link">/plugins/servlet/supersede-prioritization-list</link>
+	</web-item>
+
 	<servlet name="Supersede Prioritization" i18n-name-key="supersede-prioritization.name"
 		key="supersede-prioritization" class="eu.supersede.jira.plugins.servlet.SupersedePrioritization">
 		<description key="supersede-prioritization.description">The Supersede Prioritization Plugin
@@ -219,21 +235,56 @@
 		<url-pattern>/supersede-prioritization</url-pattern>
 	</servlet>
 
-	<!-- SUPERSEDE RELEASE PLANNER -->
+	<servlet name="Supersede Prioritization List" i18n-name-key="supersede-prioritization-list.name"
+		key="supersede-prioritization" class="eu.supersede.jira.plugins.servlet.SupersedePrioritizationList">
+		<description key="supersede-prioritization-list.description">The Supersede Prioritization Plugin
+		</description>
+		<url-pattern>/supersede-prioritization-list</url-pattern>
+	</servlet>
 
-	<web-item name="supersede-release-planner" i18n-name-key="supersede-release-planner.name"
-		key="supersede-release-planner-item" section="supersede-dropdown-menu/supersede-section"
+	<!-- SUPERSEDE RELEASE PLANNER INSERTION -->
+
+	<web-section name="supersedeSectionReplan" i18n-name-key="supersede-section.name"
+		key="supersede-section-replan" location="supersede-dropdown-menu"
 		weight="1000">
-		<description key="supersede-release-planner.description">The supersede-prioritization Plugin
+		<description key="supersede-section.description">SUPERSEDE Section</description>
+	</web-section>
+
+	<web-item name="supersede-release-planner-insert"
+		i18n-name-key="supersede-release-planner-insert.name" key="supersede-release-planner-insert-item"
+		section="supersede-dropdown-menu/supersede-section-replan" weight="1000">
+		<description key="supersede-release-planner-insert.description">The supersede-prioritization Plugin
 		</description>
-		<label key="supersede-release-planner.label" />
-		<link linkId="supersede-release-planner-link">/plugins/servlet/supersede-release-planner</link>
+		<label key="supersede-release-planner-insert.label" />
+		<link linkId="supersede-release-planner-insert-link">/plugins/servlet/supersede-release-planner-insert
+		</link>
 	</web-item>
-	<servlet name="Supersede Release Planner" i18n-name-key="supersede-release-planner.name"
-		key="supersede-release-planner" class="eu.supersede.jira.plugins.servlet.SupersedeReleasePlanner">
-		<description key="supersede-release-planner.description">The Supersede Release Planner Plugin
+
+
+	<web-item name="supersede-release-planner-update"
+		i18n-name-key="supersede-release-planner-update.name" key="supersede-release-planner-update-item"
+		section="supersede-dropdown-menu/supersede-section-replan" weight="1000">
+		<description key="supersede-release-planner-update.description">The supersede-prioritization Plugin
 		</description>
-		<url-pattern>/supersede-release-planner</url-pattern>
+		<label key="supersede-release-planner-update.label" />
+		<link linkId="supersede-release-planner-update-link">/plugins/servlet/supersede-release-planner-update
+		</link>
+	</web-item>
+
+
+
+
+	<servlet name="Supersede Release Planner" i18n-name-key="supersede-release-planner-insert.name"
+		key="supersede-release-planner-insert" class="eu.supersede.jira.plugins.servlet.SupersedeReleasePlannerInsert">
+		<description key="supersede-release-planner-insert.description">The Supersede Release Planner Plugin
+		</description>
+		<url-pattern>/supersede-release-planner-insert</url-pattern>
+	</servlet>
+	<servlet name="Supersede Release Planner" i18n-name-key="supersede-release-planner-update.name"
+		key="supersede-release-planner-update" class="eu.supersede.jira.plugins.servlet.SupersedeReleasePlannerUpdate">
+		<description key="supersede-release-planner-update.description">The Supersede Release Planner Plugin
+		</description>
+		<url-pattern>/supersede-release-planner-update</url-pattern>
 	</servlet>
 
 	<!-- SUPERSEDE WEBHOOK MANAGEMENT -->
@@ -242,7 +293,8 @@
 
 	<servlet name="Supersede Plan" i18n-name-key="supersede-webhook.name"
 		key="supersede-webhook" class="eu.supersede.jira.plugins.servlet.WebHookManagement">
-		<description key="supersede-alerts.description">The Supersede Webhook Management</description>
+		<description key="supersede-alerts.description">The Supersede Webhook Management
+		</description>
 		<url-pattern>/webhook</url-pattern>
 	</servlet>
 
