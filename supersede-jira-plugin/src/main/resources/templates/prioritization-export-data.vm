@@ -1,3 +1,1 @@
-Ciao ciaoo
-
 <div id="issues-table-data">#parse("/templates/issues-table-data.vm")</div>

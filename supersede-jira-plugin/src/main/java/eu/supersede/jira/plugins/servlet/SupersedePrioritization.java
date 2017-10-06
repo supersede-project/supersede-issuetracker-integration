@@ -1,3 +1,17 @@
+/*
+   (C) Copyright 2015-2018 The SUPERSEDE Project Consortium
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+
 package eu.supersede.jira.plugins.servlet;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -74,6 +88,7 @@ public class SupersedePrioritization extends HttpServlet {
 	private final ProcessService processService;
 
 	private static final String PARAM_ACTION = "action";
+	List<String> errors = new LinkedList<String>();
 
 	public SupersedePrioritization(IssueService issueService, ProjectService projectService, SearchService searchService, UserManager userManager, com.atlassian.jira.user.util.UserManager jiraUserManager, TemplateRenderer templateRenderer,
 			PluginSettingsFactory pluginSettingsFactory, CustomFieldManager customFieldManager, ProcessService processService, SupersedeLoginService ssLoginService) {
@@ -103,8 +118,7 @@ public class SupersedePrioritization extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		Map<String, Object> context = Maps.newHashMap();
 		// process request
-		List<String> errors = new LinkedList<String>();
-		context.put("errors", errors);
+		
 		context.put("baseurl", ComponentAccessor.getApplicationProperties().getString("jira.baseurl"));
 		List<Project> projects = ComponentAccessor.getProjectManager().getProjectObjects();
 		context.put("projects", projects);
@@ -121,8 +135,10 @@ public class SupersedePrioritization extends HttpServlet {
 				return;
 			}
 			resp.setContentType("text/html;charset=utf-8");
+			context.put("errors", errors);
 			templateRenderer.render("/templates/logic-supersede-prioritization.vm", context, resp.getWriter());
 		}
+		context.put("errors", errors);
 	}
 
 	@Override
@@ -194,11 +210,13 @@ public class SupersedePrioritization extends HttpServlet {
 
 					// ProcessService added at last
 					processService.add(name, description, processSSID, issueRequirementsMap.toString(), sr.getQuery().getQueryString(), "In progress");
+					
+					errors.add("Supersede Process " + processSSID + " correctly added");
 
 				}
 				res.sendRedirect(req.getContextPath() + "/plugins/servlet/supersede-prioritization-list");
 			}
-			
+		
 			doGet(req, res);
 
 		} catch (JSONException e) {

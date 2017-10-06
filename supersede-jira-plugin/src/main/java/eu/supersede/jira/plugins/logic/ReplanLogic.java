@@ -52,6 +52,7 @@ public class ReplanLogic {
 				JSONObject o = jarr.getJSONObject(i);
 				try {
 					users.add(o.getString("name"));
+					System.out.println(o.getString("name"));
 				} catch (Exception e) {
 					log.error("parsing ", o);
 				}

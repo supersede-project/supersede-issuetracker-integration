@@ -1,4 +1,5 @@
 AJS.$(document).ready(function() {
+	$('#page-title').text('Release Planner');
 	var self = jQuery(this);
 	jQuery.ajax({
 		type : "get",

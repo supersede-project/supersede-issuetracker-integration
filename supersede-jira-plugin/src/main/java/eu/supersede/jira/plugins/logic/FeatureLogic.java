@@ -47,7 +47,6 @@ public class FeatureLogic {
 		String responseData = "";
 		try {
 			LoginLogic loginLogic = LoginLogic.getInstance();
-			String sessionId = loginLogic.login();
 
 			// http://platform.supersede.eu:8280/replan/projects/<ReplanTenant>/features
 			URL url = new URL(loginLogic.getReplanHost() + loginLogic.getReplanTenant() + "/features");
@@ -97,11 +96,11 @@ public class FeatureLogic {
 			while ((output = br.readLine()) != null) {
 				sb.append(output);
 			}
-			return sb.toString();
+			return "Issue " + i.getKey() + ": Feature successfully created";
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			return e.getMessage();
+			return "Error on issue " + i.getKey() + ": the related feature has been already created";
 		}
 
 	}
