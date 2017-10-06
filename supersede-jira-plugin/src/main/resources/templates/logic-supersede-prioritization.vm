@@ -16,7 +16,11 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:aui-experimental-ta
 		<div class="aui-page-panel-inner">
 			<!-- parsing project list -->
 			#parse("/templates/general-project-list.vm")
+			#if(!$processListFlag)
 			<div id="data">#parse("/templates/content-supersede-prioritization.vm")</div>
+			#else
+			<div id="data">#parse("/templates/content-supersede-prioritization-list.vm")</div>
+			#end
 		</div>
 	</div>
 

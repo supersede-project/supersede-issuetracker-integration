@@ -120,9 +120,6 @@ public class SupersedePrioritization extends HttpServlet {
 				templateRenderer.render("/templates/issues-table-data.vm", context, resp.getWriter());
 				return;
 			}
-			List<SupersedeProcess> processes = processService.getAllProcesses();
-			processService.updateAllProcessesStatus(processes);
-			context.put("processes", processes);
 			resp.setContentType("text/html;charset=utf-8");
 			templateRenderer.render("/templates/logic-supersede-prioritization.vm", context, resp.getWriter());
 		}
@@ -199,73 +196,9 @@ public class SupersedePrioritization extends HttpServlet {
 					processService.add(name, description, processSSID, issueRequirementsMap.toString(), sr.getQuery().getQueryString(), "In progress");
 
 				}
-				res.sendRedirect(req.getContextPath() + "/plugins/servlet/supersede-prioritization");
-			} else if ("rankingImport".equals(req.getParameter(PARAM_ACTION))) {
-				String processId = req.getParameter("processId");
-				SupersedeProcess sp = processService.getProcess(processId);
-				JSONArray jarr = processLogic.getRankingJSONArray(processId);
-				HashMap<String, String> irHashMap = processLogic.getIssueRequirementsHashMap(sp);
-
-				JSONObject o = jarr.getJSONObject(0);
-				JSONArray scores = o.getJSONArray("scores");
-				int l = scores.length();
-				scoresLoop: for (int i = 0; i < l; ++i) {
-					String issueKey = irHashMap.get(scores.getJSONObject(i).getString("requirementId"));
-					IssueManager issueManager = ComponentAccessor.getIssueManager();
-					MutableIssue mIssue = issueManager.getIssueByKeyIgnoreCase(issueKey);
-					if (mIssue == null) {
-						// If no issue is found, skip this one but continue with
-						// others
-						continue scoresLoop;
-					}
-					// define priority
-					// if l<5 , so priority = i (there are 5 priority levels)
-					// if l > 5, priority = i%5;
-					// Start to 1, setting priority to 0 leads to nothing
-					int priorityValue = i + 1;
-					if (l > 5) {
-						double ratio = (double) l / 5;
-						priorityValue = Math.min(5, (int) (i / ratio + 1));
-					}
-					mIssue.setPriorityId(String.valueOf(priorityValue));
-					Date d = new Date();
-					mIssue.setDescription(mIssue.getDescription() + " Priority set to " + priorityValue + " on " + d.toString());
-
-					issueManager.updateIssue(loginLogic.getCurrentUser(), mIssue, EventDispatchOption.ISSUE_UPDATED, true);
-				}
-
-				sp.setLastRankingImportDate(new Date());
-				sp.save();
-
-			} else if ("closeProject".equals(req.getParameter(PARAM_ACTION))) {
-				String processId = req.getParameter("processId");
-				SupersedeProcess sp = processService.getProcess(processId);
-				int closeResponse = processLogic.closeProcess(sp.getSSProjectId());
-				if (closeResponse == 200) {
-					sp.setLastRankingImportDate(new Date());
-					sp.save();
-				}
+				res.sendRedirect(req.getContextPath() + "/plugins/servlet/supersede-prioritization-list");
 			}
 			
-			else if ("removeProject".equals(req.getParameter(PARAM_ACTION))) {
-				String processId = req.getParameter("processId");
-				SupersedeProcess sp = processService.getProcess(processId);
-				int closeResponse = processLogic.deleteProcess(sp.getSSProjectId());
-				
-				boolean requirementResult = true;
-				for(String key : processLogic.getIssueRequirementsHashMap(sp).keySet()) {
-					requirementResult &= requirementLogic.deleteRequirement(key);
-				}
-
-				if(!requirementResult) {
-					System.out.println("Requirement deletion gave an error");
-				}
-				
-				if (closeResponse == HttpURLConnection.HTTP_OK) {
-					sp.setLastRankingImportDate(new Date());
-					sp.save();
-				}
-			}
 			doGet(req, res);
 
 		} catch (JSONException e) {
