@@ -94,30 +94,14 @@ public class SupersedeReleasePlannerUpdate extends HttpServlet {
 					List<Issue> issueList = issueLogic.getIssuesFromFilter(req, sr.getQuery());
 					boolean isCreation = "Create".equals(req.getParameter("action"));
 					for (Issue i : issueList) {
-						
-						if (isCreation) {
-							//Insert dependent features
-							IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
-							List<IssueLink> linkListO = issueLinkManager.getOutwardLinks(i.getId());
-							ArrayList<String> dependencies = new ArrayList<String>();
-							for (IssueLink il : linkListO) {
-								if (!"Dependency".equals(il.getIssueLinkType().getName())) {
-									continue;
-								}
-								Issue targetIssue = il.getDestinationObject();
-								errors.add(featureLogic.sendFeature(req, targetIssue));
-								dependencies.add(targetIssue.getId().toString());
-							}
-							errors.add(featureLogic.sendFeature(req, i, dependencies));
-						} else {
-							errors.add(featureLogic.updateIssueFromFeature(req, i));
-						}
+						errors.add(featureLogic.updateIssueFromFeature(req, i));
 					}
 				}
 			}
-			context.put("errors", errors);
-			templateRenderer.render("/templates/logic-supersede-release-planner.vm", context, resp.getWriter());
 		}
+		context.put("updateFlag", "update");
+		context.put("errors", errors);
+		templateRenderer.render("/templates/logic-supersede-release-planner.vm", context, resp.getWriter());
 	}
 
 	@Override

@@ -109,9 +109,7 @@ public class SupersedeReleasePlannerInsert extends HttpServlet {
 								dependencies.add(targetIssue.getId().toString());
 							}
 							errors.add(featureLogic.sendFeature(req, i, dependencies));
-						} else {
-							errors.add(featureLogic.updateIssueFromFeature(req, i));
-						}
+						} 
 					}
 				}
 			}
