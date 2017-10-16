@@ -17,7 +17,7 @@ AJS.$(document).ready(function() {
 	var self = jQuery(this);
 	jQuery.ajax({
 		type : "get",
-		url : "supersede-prioritization?loadIssues=y&filter=" + $('#filter-select').val(),
+		url : "supersede-consts?loadIssues=y&filter=" + $('#filter-select').val(),
 		success : function(data) {
 			$("#issues-table-data").html(data);
 		},
@@ -37,7 +37,7 @@ function onPageLoad() {
 		var self = jQuery(this);
 		jQuery.ajax({
 			type : "get",
-			url : "supersede-prioritization?loadIssues=y&filter=" + $(this).val(),
+			url : "supersede-consts?loadIssues=y&filter=" + $(this).val(),
 			success : function(data) {
 				console.log('dom', self, data);
 				$("#issues-table-data").html(data);
@@ -67,13 +67,6 @@ function onPageLoad() {
 	$("#process-start-button").click(function() {
 		alert($(this).closest("tr").find(".issueQuery").text());
 		$(this).closest("tr").find(".issueQuery").text();
-
-		var posting = $.post("http://localhost/#/supersede-dm-app/processes/new", {
-			name : 'SS test Process'
-		});
-		posting.done(function(data) {
-			alert(data);
-		})
 	});
 
 	$("#process-save-button").click(function() {

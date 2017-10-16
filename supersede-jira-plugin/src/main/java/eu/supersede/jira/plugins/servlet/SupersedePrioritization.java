@@ -126,14 +126,6 @@ public class SupersedePrioritization extends HttpServlet {
 		if (user != null) {
 			Collection<SearchRequest> sList = ComponentAccessor.getComponentOfType(SearchRequestService.class).getOwnedFilters(user);
 			context.put("filters", sList);
-			if ("y".equals(req.getParameter("loadIssues"))) {
-				String filter = req.getParameter("filter");
-				SearchRequest sr = ComponentAccessor.getComponentOfType(SearchRequestService.class).getFilter(new JiraServiceContextImpl(user), Long.valueOf(filter));
-				context.put("issues", issueLogic.getIssuesFromFilter(req, sr.getQuery()));
-				context.put("filter", sr);
-				templateRenderer.render("/templates/issues-table-data.vm", context, resp.getWriter());
-				return;
-			}
 			resp.setContentType("text/html;charset=utf-8");
 			context.put("errors", errors);
 			templateRenderer.render("/templates/logic-supersede-prioritization.vm", context, resp.getWriter());

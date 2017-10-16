@@ -15,7 +15,6 @@
 package eu.supersede.jira.plugins.servlet;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -33,27 +32,23 @@ import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.bc.project.ProjectService;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.CustomFieldManager;
-import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.issue.link.IssueLink;
-import com.atlassian.jira.issue.link.IssueLinkManager;
 import com.atlassian.jira.issue.search.SearchRequest;
 import com.atlassian.jira.sharing.SharedEntityColumn;
 import com.atlassian.jira.sharing.search.SharedEntitySearchContext;
 import com.atlassian.jira.sharing.search.SharedEntitySearchParameters;
 import com.atlassian.jira.sharing.search.SharedEntitySearchParametersBuilder;
 import com.atlassian.jira.user.ApplicationUser;
+import com.atlassian.jira.user.util.UserManager;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
-import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
 import com.google.common.collect.Maps;
 
 import eu.supersede.jira.plugins.activeobject.ProcessService;
 import eu.supersede.jira.plugins.activeobject.SupersedeLoginService;
-import eu.supersede.jira.plugins.logic.FeatureLogic;
 import eu.supersede.jira.plugins.logic.IssueLogic;
 import eu.supersede.jira.plugins.logic.LoginLogic;
 
-public class SupersedeReleasePlannerUpdate extends HttpServlet {
+public class SupersedeConstsServlet extends HttpServlet {
 
 	/**
 	 * 
@@ -66,7 +61,7 @@ public class SupersedeReleasePlannerUpdate extends HttpServlet {
 
 	private IssueLogic issueLogic;
 
-	public SupersedeReleasePlannerUpdate(IssueService issueService, ProjectService projectService, SearchService searchService, UserManager userManager, com.atlassian.jira.user.util.UserManager jiraUserManager, TemplateRenderer templateRenderer,
+	public SupersedeConstsServlet(IssueService issueService, ProjectService projectService, SearchService searchService, UserManager userManager, com.atlassian.jira.user.util.UserManager jiraUserManager, TemplateRenderer templateRenderer,
 			PluginSettingsFactory pluginSettingsFactory, CustomFieldManager customFieldManager, ProcessService processService, SupersedeLoginService ssLoginService) {
 		this.templateRenderer = templateRenderer;
 		loginLogic = LoginLogic.getInstance(ssLoginService);
@@ -91,21 +86,15 @@ public class SupersedeReleasePlannerUpdate extends HttpServlet {
 		if (user != null) {
 			Collection<SearchRequest> sList = ComponentAccessor.getComponentOfType(SearchRequestService.class).getOwnedFilters(user);
 			context.put("filters", sList);
-			if ("y".equals(req.getParameter("features"))) {
-				FeatureLogic featureLogic = FeatureLogic.getInstance();
-				String filter = req.getParameter("procFilter");
-				if (filter != null && !filter.isEmpty()) {
-					SearchRequest sr = ComponentAccessor.getComponentOfType(SearchRequestService.class).getFilter(new JiraServiceContextImpl(user), Long.valueOf(filter));
-					List<Issue> issueList = issueLogic.getIssuesFromFilter(req, sr.getQuery());
-					for (Issue i : issueList) {
-						errors.add(featureLogic.updateIssueFromFeature(req, i));
-					}
-				}
+			if ("y".equals(req.getParameter("loadIssues"))) {
+				String filter = req.getParameter("filter");
+				SearchRequest sr = ComponentAccessor.getComponentOfType(SearchRequestService.class).getFilter(new JiraServiceContextImpl(user), Long.valueOf(filter));
+				context.put("issues", issueLogic.getIssuesFromFilter(req, sr.getQuery()));
+				context.put("filter", sr);
+				templateRenderer.render("/templates/issues-table-data.vm", context, resp.getWriter());
+				return;
 			}
 		}
-		context.put("updateFlag", "update");
-		context.put("errors", errors);
-		templateRenderer.render("/templates/logic-supersede-release-planner.vm", context, resp.getWriter());
 	}
 
 	@Override

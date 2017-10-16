@@ -9,6 +9,7 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,6 +19,9 @@ import com.atlassian.jira.event.type.EventDispatchOption;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.issue.MutableIssue;
+import com.atlassian.jira.issue.link.IssueLinkManager;
+import com.atlassian.jira.issue.link.IssueLinkType;
+import com.atlassian.jira.issue.link.IssueLinkTypeManager;
 import com.atlassian.jira.issue.priority.Priority;
 import com.atlassian.jira.util.json.JSONArray;
 import com.atlassian.jira.util.json.JSONObject;
@@ -55,6 +59,7 @@ public class FeatureLogic {
 
 			JSONObject feature = new JSONObject();
 			feature.put("id", i.getId());
+			feature.put("code", i.getId());
 			feature.put("name", i.getSummary());
 			feature.put("description", i.getDescription());
 			feature.put("effort", "100");
@@ -113,7 +118,7 @@ public class FeatureLogic {
 			int response = -1;
 			String responseData = null;
 			// http://platform.supersede.eu:8280/replan/projects/<ReplanTenant>/features/<id>
-			URL url = new URL(loginLogic.getReplanHost() + loginLogic.getReplanTenant() + "/features/");
+			URL url = new URL(loginLogic.getReplanHost() + loginLogic.getReplanTenant() + "/features/code=" + i.getId().toString());
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 			conn.setConnectTimeout(LoginLogic.CONN_TIMEOUT);
 			conn.setReadTimeout(LoginLogic.CONN_TIMEOUT);
@@ -135,15 +140,8 @@ public class FeatureLogic {
 			JSONObject feature = null;
 			JSONArray array = new JSONArray(sb.toString());
 			for (int j = 0; j < array.length(); j++) {
-				// For every request, I create a custom Alert with significant
-				// fields inside
-				// It is a custom object created for JIRA, because I cannot use
-				// linked projects or libraries.
-				JSONObject f = array.getJSONObject(j);
-				if (i.getId().toString().equals(f.getString("code"))) {
-					feature = f;
-					break;
-				}
+				// now that we have the getByCode API, we can get rid of the "select-all-then-filter-by-code" pattern
+				feature = array.getJSONObject(j);
 			}
 
 			if (feature == null) {
@@ -169,6 +167,27 @@ public class FeatureLogic {
 				mIssue.setDueDate(new Timestamp(cal.getTimeInMillis()));
 			}
 			mIssue.setPriorityId(feature.getString("priority"));
+			
+			//get dependencies
+			JSONArray dependencies = feature.getJSONArray("depends_on");
+			IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
+			Long issueLinkTypeId = -1L;
+			Collection<IssueLinkType> linkTypes = ComponentAccessor.getComponentOfType(IssueLinkTypeManager.class).getIssueLinkTypes(false);
+			for(IssueLinkType ilt : linkTypes) {
+				if("Dependency".equals(ilt.getName())) {
+					issueLinkTypeId = ilt.getId();
+				}
+			}
+			
+			if(issueLinkTypeId == -1L) {
+				return "The type of the dependent issue link was not found on this system";
+			}
+			
+			for (int j = 0; j < array.length(); j++) {
+				// now that we have the getByCode API, we can get rid of the "select-all-then-filter-by-code" pattern
+				JSONObject dep = array.getJSONObject(j);
+				issueLinkManager.createIssueLink(mIssue.getId(), dep.getLong("code"), issueLinkTypeId, null, loginLogic.getCurrentUser());
+			}
 
 			issueManager.updateIssue(loginLogic.getCurrentUser(), mIssue, EventDispatchOption.ISSUE_UPDATED, true);
 			return "Issue " + i.getKey() + " successfully updated";
