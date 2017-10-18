@@ -12,16 +12,21 @@
 			</div>
 		</form>
 
-		<form action="supersede-release-planner">
-			<input type="hidden" value="y" name="features"> <input type="hidden" class="procFilter" name="procFilter"> #if(!$updateFlag)
+		#if(!$updateFlag)
+		<form action="supersede-release-planner-insert">
+			<input type="hidden" value="y" name="features"> <input type="hidden" class="procFilter" name="procFilter">
 			<button style="margin-left: 20px" id="create-features" name="action" value="Create" class="aui-button aui-button-primary">
 				<span class="glyphicon glyphicon-plus"></span> <span class="submit-text">Create Features</span>
 			</button>
-			#else
+		</form>
+		#else
+		<form action="supersede-release-planner-update">
+			<input type="hidden" value="y" name="features"><input type="hidden" class="procFilter" name="procFilter">
 			<button style="margin-left: 20px" id="import-features" name="action" value="Import" class="aui-button aui-button-primary">
 				<span class="glyphicon glyphicon-plus"></span> <span class="submit-text">Update Issues from Features</span>
 			</button>
-			#end
+		</form>
+		#end
 		</form>
 	</div>
 

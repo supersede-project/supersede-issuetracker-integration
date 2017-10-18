@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -19,6 +21,7 @@ import com.atlassian.jira.event.type.EventDispatchOption;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.issue.MutableIssue;
+import com.atlassian.jira.issue.link.IssueLink;
 import com.atlassian.jira.issue.link.IssueLinkManager;
 import com.atlassian.jira.issue.link.IssueLinkType;
 import com.atlassian.jira.issue.link.IssueLinkTypeManager;
@@ -40,7 +43,7 @@ public class FeatureLogic {
 		}
 		return logic;
 	}
-	
+
 	public String sendFeature(HttpServletRequest req, Issue i) {
 		ArrayList<String> emptyList = new ArrayList<String>();
 		return sendFeature(req, i, emptyList);
@@ -55,7 +58,7 @@ public class FeatureLogic {
 			// http://platform.supersede.eu:8280/replan/projects/<ReplanTenant>/features
 			URL url = new URL(loginLogic.getReplanHost() + loginLogic.getReplanTenant() + "/features");
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-			SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy");
+			SimpleDateFormat DUE_DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy");
 
 			JSONObject feature = new JSONObject();
 			feature.put("id", i.getId());
@@ -63,13 +66,13 @@ public class FeatureLogic {
 			feature.put("name", i.getSummary());
 			feature.put("description", i.getDescription());
 			feature.put("effort", "100");
-			feature.put("deadline", i.getDueDate() != null ? DATE_FORMAT.format(i.getDueDate()) : "");
+			feature.put("deadline", i.getDueDate() != null ? DUE_DATE_FORMAT.format(i.getDueDate()) : "");
 			feature.put("priority", i.getPriority() != null ? i.getPriority().getName() : "0");
 			feature.put("properties", new JSONArray());
 			feature.put("required_skills", new JSONArray());
 			feature.put("depends_on", new JSONArray());
 			JSONArray dependentFeature = new JSONArray();
-			for(String dep : dependencies) {
+			for (String dep : dependencies) {
 				dependentFeature.put(dep);
 			}
 			feature.put("hard_dependencies", dependentFeature);
@@ -118,7 +121,7 @@ public class FeatureLogic {
 			int response = -1;
 			String responseData = null;
 			// http://platform.supersede.eu:8280/replan/projects/<ReplanTenant>/features/<id>
-			URL url = new URL(loginLogic.getReplanHost() + loginLogic.getReplanTenant() + "/features/code=" + i.getId().toString());
+			URL url = new URL(loginLogic.getReplanHost() + loginLogic.getReplanTenant() + "/features?code=" + i.getId().toString());
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 			conn.setConnectTimeout(LoginLogic.CONN_TIMEOUT);
 			conn.setReadTimeout(LoginLogic.CONN_TIMEOUT);
@@ -136,11 +139,13 @@ public class FeatureLogic {
 			while ((output = br.readLine()) != null) {
 				sb.append(output);
 			}
-			SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy");
+			SimpleDateFormat DUE_DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy");
+			SimpleDateFormat RELEASE_DATE_FORMAT = new SimpleDateFormat("YYYY-MM-DD'T'hh:mm:ss.s'TZD'");
 			JSONObject feature = null;
 			JSONArray array = new JSONArray(sb.toString());
 			for (int j = 0; j < array.length(); j++) {
-				// now that we have the getByCode API, we can get rid of the "select-all-then-filter-by-code" pattern
+				// now that we have the getByCode API, we can get rid of the
+				// "select-all-then-filter-by-code" pattern
 				feature = array.getJSONObject(j);
 			}
 
@@ -161,31 +166,54 @@ public class FeatureLogic {
 			mIssue.setDescription(feature.getString("description"));
 			// calculate time
 			Calendar cal = Calendar.getInstance();
-			String deadline = feature.getString("deadline");
-			if (deadline != null && !deadline.equals("null")) {
-				cal.setTime(DATE_FORMAT.parse(feature.getString("deadline")));
-				mIssue.setDueDate(new Timestamp(cal.getTimeInMillis()));
+
+			// check if this feature is contained in a release
+			String releaseDeadline = null;
+
+			JSONObject release = feature.optJSONObject("release");
+			if (release != null) {
+				JSONObject assignedTo = release.getJSONObject("assigned_to");
+				if (assignedTo != null && !"null".equals(assignedTo)) {
+					cal.setTime(RELEASE_DATE_FORMAT.parse(assignedTo.getString("ends_at")));
+					mIssue.setDueDate(new Timestamp(cal.getTimeInMillis()));
+				}
+			} else {
+				String deadline = feature.getString("deadline");
+				if (deadline != null && !"null".equals(deadline)) {
+					cal.setTime(DUE_DATE_FORMAT.parse(deadline));
+					mIssue.setDueDate(new Timestamp(cal.getTimeInMillis()));
+				}
 			}
 			mIssue.setPriorityId(feature.getString("priority"));
-			
-			//get dependencies
+
+			// get dependencies block from JSON
 			JSONArray dependencies = feature.getJSONArray("depends_on");
 			IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
 			Long issueLinkTypeId = -1L;
 			Collection<IssueLinkType> linkTypes = ComponentAccessor.getComponentOfType(IssueLinkTypeManager.class).getIssueLinkTypes(false);
-			for(IssueLinkType ilt : linkTypes) {
-				if("Dependency".equals(ilt.getName())) {
+			for (IssueLinkType ilt : linkTypes) {
+				if ("Dependency".equals(ilt.getName())) {
 					issueLinkTypeId = ilt.getId();
 				}
 			}
-			
-			if(issueLinkTypeId == -1L) {
+
+			if (issueLinkTypeId == -1L) {
 				return "The type of the dependent issue link was not found on this system";
 			}
-			
-			for (int j = 0; j < array.length(); j++) {
-				// now that we have the getByCode API, we can get rid of the "select-all-then-filter-by-code" pattern
-				JSONObject dep = array.getJSONObject(j);
+
+			featureDependencyLoop: for (int j = 0; j < dependencies.length(); j++) {
+				// now that we have the getByCode API, we can get rid of the
+				// "select-all-then-filter-by-code" pattern
+				JSONObject dep = dependencies.getJSONObject(j);
+				// if the same dependency is still there, prevent insertion
+				List<IssueLink> linkListO = issueLinkManager.getOutwardLinks(mIssue.getId());
+				for (IssueLink il : linkListO /* mergedList */) {
+					if (!"Dependency".equals(il.getIssueLinkType().getName())) {
+						if (dep.getLong("code") == il.getDestinationId()) {
+							continue featureDependencyLoop;
+						}
+					}
+				}
 				issueLinkManager.createIssueLink(mIssue.getId(), dep.getLong("code"), issueLinkTypeId, null, loginLogic.getCurrentUser());
 			}
 

@@ -1,3 +1,17 @@
+/*
+   (C) Copyright 2015-2018 The SUPERSEDE Project Consortium
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+
 package eu.supersede.jira.plugins.servlet;
 
 import java.io.IOException;
@@ -77,14 +91,7 @@ public class SupersedeReleasePlannerInsert extends HttpServlet {
 		if (user != null) {
 			Collection<SearchRequest> sList = ComponentAccessor.getComponentOfType(SearchRequestService.class).getOwnedFilters(user);
 			context.put("filters", sList);
-			if ("y".equals(req.getParameter("loadIssues"))) {
-				String filter = req.getParameter("filter");
-				SearchRequest sr = ComponentAccessor.getComponentOfType(SearchRequestService.class).getFilter(new JiraServiceContextImpl(user), Long.valueOf(filter));
-				context.put("issues", issueLogic.getIssuesFromFilter(req, sr.getQuery()));
-				context.put("filter", sr);
-				templateRenderer.render("/templates/issues-table-data.vm", context, resp.getWriter());
-				return;
-			} else if ("y".equals(req.getParameter("features"))) {
+			if ("y".equals(req.getParameter("features"))) {
 				// Create Features
 				FeatureLogic featureLogic = FeatureLogic.getInstance();
 				// Get a list of issues from this query
@@ -94,9 +101,9 @@ public class SupersedeReleasePlannerInsert extends HttpServlet {
 					List<Issue> issueList = issueLogic.getIssuesFromFilter(req, sr.getQuery());
 					boolean isCreation = "Create".equals(req.getParameter("action"));
 					for (Issue i : issueList) {
-						
+
 						if (isCreation) {
-							//Insert dependent features
+							// Insert dependent features
 							IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
 							List<IssueLink> linkListO = issueLinkManager.getOutwardLinks(i.getId());
 							ArrayList<String> dependencies = new ArrayList<String>();
@@ -109,7 +116,7 @@ public class SupersedeReleasePlannerInsert extends HttpServlet {
 								dependencies.add(targetIssue.getId().toString());
 							}
 							errors.add(featureLogic.sendFeature(req, i, dependencies));
-						} 
+						}
 					}
 				}
 			}
