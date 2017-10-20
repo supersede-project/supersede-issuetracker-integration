@@ -176,6 +176,13 @@ public class FeatureLogic {
 				if (assignedTo != null && !"null".equals(assignedTo)) {
 					cal.setTime(RELEASE_DATE_FORMAT.parse(assignedTo.getString("ends_at")));
 					mIssue.setDueDate(new Timestamp(cal.getTimeInMillis()));
+
+					for (ReplanJiraLogin login : usersList) {
+						if (loginLogic.getReplanTenant().equals(login.getTenant()) && login.getReplanUsername().equals(assignedTo.getString("name"))) {
+							ApplicationUser user = ComponentAccessor.getUserManager().getUserByKey(login.getJiraUsername());
+							mIssue.setAssignee(user);
+						}
+					}
 				}
 			} else {
 				String deadline = feature.getString("deadline");
@@ -216,6 +223,9 @@ public class FeatureLogic {
 				}
 				issueLinkManager.createIssueLink(mIssue.getId(), dep.getLong("code"), issueLinkTypeId, null, loginLogic.getCurrentUser());
 			}
+
+			// set assignee
+			//
 
 			issueManager.updateIssue(loginLogic.getCurrentUser(), mIssue, EventDispatchOption.ISSUE_UPDATED, true);
 			return "Issue " + i.getKey() + " successfully updated";
