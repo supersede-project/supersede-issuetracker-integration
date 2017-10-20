@@ -30,9 +30,13 @@ import com.atlassian.jira.util.json.JSONArray;
 import com.atlassian.jira.util.json.JSONObject;
 import com.google.gson.JsonObject;
 
+import eu.supersede.jira.plugins.activeobject.ReplanJiraLogin;
+
 public class FeatureLogic {
 
 	private static FeatureLogic logic;
+	private static SimpleDateFormat DUE_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+	private static SimpleDateFormat RELEASE_DATE_FORMAT = new SimpleDateFormat("YYYY-MM-DD'T'hh:mm:ss.s'TZD'");
 
 	private FeatureLogic() {
 	}
@@ -58,7 +62,6 @@ public class FeatureLogic {
 			// http://platform.supersede.eu:8280/replan/projects/<ReplanTenant>/features
 			URL url = new URL(loginLogic.getReplanHost() + loginLogic.getReplanTenant() + "/features");
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-			SimpleDateFormat DUE_DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy");
 
 			JSONObject feature = new JSONObject();
 			feature.put("id", i.getId());
@@ -67,10 +70,11 @@ public class FeatureLogic {
 			feature.put("description", i.getDescription());
 			feature.put("effort", "100");
 			feature.put("deadline", i.getDueDate() != null ? DUE_DATE_FORMAT.format(i.getDueDate()) : "");
-			feature.put("priority", i.getPriority() != null ? i.getPriority().getName() : "0");
+			feature.put("priority", i.getPriority() != null ? i.getPriority().getId() : "0");
 			feature.put("properties", new JSONArray());
 			feature.put("required_skills", new JSONArray());
 			feature.put("depends_on", new JSONArray());
+			feature.put("jira_url", ComponentAccessor.getApplicationProperties().getString("jira.baseurl") + "/browse/" + i.getKey());
 			JSONArray dependentFeature = new JSONArray();
 			for (String dep : dependencies) {
 				dependentFeature.put(dep);
@@ -113,7 +117,7 @@ public class FeatureLogic {
 
 	}
 
-	public String updateIssueFromFeature(HttpServletRequest req, Issue i) {
+	public String updateIssueFromFeature(HttpServletRequest req, Issue i, List<ReplanJiraLogin> usersList) {
 		try {
 			LoginLogic loginLogic = LoginLogic.getInstance();
 			String sessionId = loginLogic.login();
@@ -139,8 +143,6 @@ public class FeatureLogic {
 			while ((output = br.readLine()) != null) {
 				sb.append(output);
 			}
-			SimpleDateFormat DUE_DATE_FORMAT = new SimpleDateFormat("dd-MM-yyyy");
-			SimpleDateFormat RELEASE_DATE_FORMAT = new SimpleDateFormat("YYYY-MM-DD'T'hh:mm:ss.s'TZD'");
 			JSONObject feature = null;
 			JSONArray array = new JSONArray(sb.toString());
 			for (int j = 0; j < array.length(); j++) {
@@ -163,13 +165,11 @@ public class FeatureLogic {
 			IssueManager issueManager = ComponentAccessor.getIssueManager();
 			MutableIssue mIssue = issueManager.getIssueByKeyIgnoreCase(issueKey);
 			mIssue.setSummary(feature.getString("name"));
-			mIssue.setDescription(feature.getString("description"));
 			// calculate time
 			Calendar cal = Calendar.getInstance();
 
 			// check if this feature is contained in a release
 			String releaseDeadline = null;
-
 			JSONObject release = feature.optJSONObject("release");
 			if (release != null) {
 				JSONObject assignedTo = release.getJSONObject("assigned_to");

@@ -14,6 +14,7 @@
 
 package eu.supersede.jira.plugins.servlet;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -48,6 +49,8 @@ import com.atlassian.templaterenderer.TemplateRenderer;
 import com.google.common.collect.Maps;
 
 import eu.supersede.jira.plugins.activeobject.ProcessService;
+import eu.supersede.jira.plugins.activeobject.ReplanJiraLogin;
+import eu.supersede.jira.plugins.activeobject.ReplanJiraLoginService;
 import eu.supersede.jira.plugins.activeobject.SupersedeLoginService;
 import eu.supersede.jira.plugins.logic.FeatureLogic;
 import eu.supersede.jira.plugins.logic.IssueLogic;
@@ -66,12 +69,15 @@ public class SupersedeReleasePlannerUpdate extends HttpServlet {
 
 	private IssueLogic issueLogic;
 
+	private ReplanJiraLoginService replanJiraLoginService;
+
 	public SupersedeReleasePlannerUpdate(IssueService issueService, ProjectService projectService, SearchService searchService, UserManager userManager, com.atlassian.jira.user.util.UserManager jiraUserManager, TemplateRenderer templateRenderer,
-			PluginSettingsFactory pluginSettingsFactory, CustomFieldManager customFieldManager, ProcessService processService, SupersedeLoginService ssLoginService) {
+			PluginSettingsFactory pluginSettingsFactory, CustomFieldManager customFieldManager, ProcessService processService, SupersedeLoginService ssLoginService, ReplanJiraLoginService replanJiraLoginService) {
 		this.templateRenderer = templateRenderer;
 		loginLogic = LoginLogic.getInstance(ssLoginService);
 		loginLogic.loadConfiguration(pluginSettingsFactory.createGlobalSettings());
 		issueLogic = IssueLogic.getInstance(issueService, projectService, searchService);
+		replanJiraLoginService = checkNotNull(replanJiraLoginService);
 	}
 
 	public void getResult(HttpServletRequest req) {
@@ -97,8 +103,10 @@ public class SupersedeReleasePlannerUpdate extends HttpServlet {
 				if (filter != null && !filter.isEmpty()) {
 					SearchRequest sr = ComponentAccessor.getComponentOfType(SearchRequestService.class).getFilter(new JiraServiceContextImpl(user), Long.valueOf(filter));
 					List<Issue> issueList = issueLogic.getIssuesFromFilter(req, sr.getQuery());
+					List<ReplanJiraLogin> usersList = replanJiraLoginService.getAllLogins();
 					for (Issue i : issueList) {
-						errors.add(featureLogic.updateIssueFromFeature(req, i));
+						errors.add(featureLogic.updateIssueFromFeature(req, i, usersList));
+
 					}
 				}
 			}
