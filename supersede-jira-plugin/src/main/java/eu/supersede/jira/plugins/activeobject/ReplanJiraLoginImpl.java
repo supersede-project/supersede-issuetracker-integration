@@ -41,11 +41,11 @@ public class ReplanJiraLoginImpl implements ReplanJiraLoginService {
 
 		final ReplanJiraLogin login = ao.create(ReplanJiraLogin.class);
 		login.setJiraUsername(jiraUsername);
-		login.setReplanUsername(replanUsername);
+		login.setReplanUsername((replanUsername.replace(' ', '_')));
 		login.save();
 		return login;
 	}
-	
+
 	@Override
 	public ReplanJiraLogin add(String replanUsername, String jiraUsername, String tenant) {
 
@@ -59,20 +59,20 @@ public class ReplanJiraLoginImpl implements ReplanJiraLoginService {
 	public List<ReplanJiraLogin> getAllLogins() {
 		return newArrayList(ao.find(ReplanJiraLogin.class));
 	}
-	
+
 	@Override
 	public ReplanJiraLogin getLoginByJiraUsername(String jiraUsername, String tenant) {
 		ReplanJiraLogin[] result = ao.find(ReplanJiraLogin.class, Query.select().where("JIRA_USERNAME LIKE ? AND TENANT LIKE ?", jiraUsername, tenant));
-		if(result != null && result.length > 0) {
+		if (result != null && result.length > 0) {
 			return result[0];
 		}
 		return null;
 	}
-	
+
 	@Override
 	public ReplanJiraLogin getLoginByReplanUsername(String replanUsername, String tenant) {
 		ReplanJiraLogin[] result = ao.find(ReplanJiraLogin.class, Query.select().where("REPLAN_USERNAME LIKE ? AND TENANT LIKE ?", replanUsername, tenant));
-		if(result != null && result.length > 0) {
+		if (result != null && result.length > 0) {
 			return result[0];
 		}
 		return null;

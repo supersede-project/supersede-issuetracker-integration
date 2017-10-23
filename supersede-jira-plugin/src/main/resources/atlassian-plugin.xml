@@ -286,7 +286,7 @@
 		</description>
 		<url-pattern>/supersede-release-planner-insert</url-pattern>
 	</servlet>
-	<servlet name="Supersede Release Planner" i18n-name-key="supersede-release-planner-update.name"
+	<servlet name="Supersede Release Planner Update" i18n-name-key="supersede-release-planner-update.name"
 		key="supersede-release-planner-update" class="eu.supersede.jira.plugins.servlet.SupersedeReleasePlannerUpdate">
 		<description key="supersede-release-planner-update.description">The Supersede Release Planner Plugin
 		</description>

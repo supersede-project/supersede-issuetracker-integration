@@ -77,7 +77,7 @@ public class SupersedeReleasePlannerUpdate extends HttpServlet {
 		loginLogic = LoginLogic.getInstance(ssLoginService);
 		loginLogic.loadConfiguration(pluginSettingsFactory.createGlobalSettings());
 		issueLogic = IssueLogic.getInstance(issueService, projectService, searchService);
-		replanJiraLoginService = checkNotNull(replanJiraLoginService);
+		this.replanJiraLoginService = checkNotNull(replanJiraLoginService);
 	}
 
 	public void getResult(HttpServletRequest req) {

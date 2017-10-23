@@ -183,7 +183,7 @@ public class SupersedeCfg extends HttpServlet {
 
 			if (login != null) {
 				login.setJiraUsername(jiraUsername);
-				login.setReplanUsername(replanUsername);
+				login.setReplanUsername(replanUsername.replace(' ', '_'));
 				login.save();
 			} else {
 				replanJiraLoginService.add(replanUsername, jiraUsername, loginLogic.getReplanTenant());
@@ -215,7 +215,7 @@ public class SupersedeCfg extends HttpServlet {
 		String tenantSetting = getConfigurationValue(pluginSettings, KEY_TENANT, DEF_TENANT);
 		String replanSetting = getConfigurationValue(pluginSettings, KEY_REPLAN_HOST, DEF_REPLAN_HOST);
 		String replanTenantSetting = getConfigurationValue(pluginSettings, KEY_REPLAN_TENANT, DEF_REPLAN_TENANT);
-		
+
 		loginLogic.loadConfiguration(pluginSettingsFactory.createGlobalSettings());
 
 		Map<String, Object> context = Maps.newHashMap();

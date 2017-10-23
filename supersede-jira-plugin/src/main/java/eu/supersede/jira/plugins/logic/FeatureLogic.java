@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -26,6 +27,7 @@ import com.atlassian.jira.issue.link.IssueLinkManager;
 import com.atlassian.jira.issue.link.IssueLinkType;
 import com.atlassian.jira.issue.link.IssueLinkTypeManager;
 import com.atlassian.jira.issue.priority.Priority;
+import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.util.json.JSONArray;
 import com.atlassian.jira.util.json.JSONObject;
 import com.google.gson.JsonObject;
@@ -36,7 +38,7 @@ public class FeatureLogic {
 
 	private static FeatureLogic logic;
 	private static SimpleDateFormat DUE_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
-	private static SimpleDateFormat RELEASE_DATE_FORMAT = new SimpleDateFormat("YYYY-MM-DD'T'hh:mm:ss.s'TZD'");
+	private static SimpleDateFormat RELEASE_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
 	private FeatureLogic() {
 	}
@@ -166,8 +168,10 @@ public class FeatureLogic {
 			MutableIssue mIssue = issueManager.getIssueByKeyIgnoreCase(issueKey);
 			mIssue.setSummary(feature.getString("name"));
 			// calculate time
-			Calendar cal = Calendar.getInstance();
 
+			TimeZone tz = TimeZone.getTimeZone("Europe/Rome");
+			Calendar cal = Calendar.getInstance(tz);
+			
 			// check if this feature is contained in a release
 			String releaseDeadline = null;
 			JSONObject release = feature.optJSONObject("release");
@@ -178,7 +182,8 @@ public class FeatureLogic {
 					mIssue.setDueDate(new Timestamp(cal.getTimeInMillis()));
 
 					for (ReplanJiraLogin login : usersList) {
-						if (loginLogic.getReplanTenant().equals(login.getTenant()) && login.getReplanUsername().equals(assignedTo.getString("name"))) {
+						System.out.println(login.getReplanUsername().replace('_', ' ') + " AND " + assignedTo.getString("resource_name"));
+						if (loginLogic.getReplanTenant().equals(login.getTenant()) && (login.getReplanUsername().replace('_', ' ')).equals(assignedTo.getString("resource_name"))) {
 							ApplicationUser user = ComponentAccessor.getUserManager().getUserByKey(login.getJiraUsername());
 							mIssue.setAssignee(user);
 						}

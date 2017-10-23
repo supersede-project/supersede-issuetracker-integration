@@ -65,15 +65,21 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2")
 
 					<div class="mod-content" id="connection-params">
 						<form method="post" action="supersede-cfg" class="aui dont-default-focus">
+						<p>
+						Insert Supersede host, username and password. 
+						This will be used as login for every action that requires it (such as alerts retrieval, process creation and replan usage) <br/>
+						This is <strong>mandatory</strong>, and can be overwritten with user-specific settings below.<br/>
+						It is recommended to set an user with high permissions here, and narrow them by specifying another user below.<br/>
+						</p>
 							<input type="hidden" name="config" value="y">
 							<p>
-								<label for="hostname-input">Hostname URL:</label> <input type="text" id="hostname-input" name="hostname" value="$hostname">
+								<label for="hostname-input">Hostname URL:</label> <input type="text" id="hostname-input" name="hostname" value="$hostname" required>
 							</p>
 							<p>
-								<label for="username-input">Username:</label> <input type="text" id="username-input" name="username" value="$username">
+								<label for="username-input">Username:</label> <input type="text" id="username-input" name="username" value="$username" required>
 							</p>
 							<p>
-								<label for="password-input">Password:</label> <input type="password" id="password-input" name="password" value="">
+								<label for="password-input">Password:</label> <input type="password" id="password-input" name="password" value="" required>
 							</p>
 							<p>
 								<input type="submit" class="button" value="Save">
@@ -85,7 +91,7 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2")
 				<div class="module">
 					<div class="mod-header" id="interface-options-head">
 						<div>
-							<h2>Default Interface options</h2>
+							<h2>Default Connection options</h2>
 						</div>
 					</div>
 
@@ -94,7 +100,10 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2")
 							<input type="hidden" name="options" value="y">
 							<p>
 							<p>
-								If specified, will use this tenant when fetching or creating requirements/features in SUPERSEDE.<br /> If not specified, the project name will be used as the tenant.
+								If specified, will use this tenant when fetching or creating requirements/features in SUPERSEDE.<br /> 
+								If not specified, the tenant will be retrieved from the project where issues will be saved.<br/>
+								It is <strong>highly recommended</strong> to specify a tenant here, in order to prevent errors due to wrong project names.<br/>
+								This value can be edited at any time. Please make sure the tenant is an existing one, otherwise the plugin will not work!
 							</p>
 							<p>
 								<label for="tenant-input">Force tenant:</label> <input type="text" id="tenant-input" name="tenant" value="$tenant">
@@ -121,9 +130,12 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2")
 							<form method="post" action="supersede-cfg" class="aui dont-default-focus">
 								<input type="hidden" name="replan" value="y">
 								<p>
-								<p>This will be the replan's main host for SUPERSEDE</p>
+								This will be the replan's main host for SUPERSEDE
+								it is <strong>mandatory</strong> since Replan is independent from Supersede and JIRA instance.
+								Tenant is <strong>mandatory</strong> too
+								</p>
 								<p>
-									<label for="replan-host">Replan host:</label> <input type="text" id="replan-host" name="replan-host" value="$replan-host">
+									<label for="replan-host">Replan host:</label> <input type="text" id="replan-host" name="replan-host" value="$replan-host" required>
 								</p>
 								<p>
 								<p>
@@ -145,8 +157,12 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2")
 							</div>
 						</div>
 						<form method="post" action="supersede-cfg" class="aui dont-default-focus">
-							Insert the Supersede username and password. This will be used when performing tasks instead of above general login. This will be saved and will be available only to you. If user below is filled, there is an entry saved for your user. Every save of
-							this data overwrites the data already in tables. <input type="hidden" name="SSlogin" value="y">
+							Insert the Supersede username and password. This will be used when performing tasks instead of above general login.<br/>
+							It is <strong>optional</strong>, since a login is still available above.<br/>
+							This will be saved and will be available only to you. <br/>
+							If user below is filled, there is an entry saved for your user. <br/>
+							Every update of this data overwrites the data already in tables. <br/>
+							<input type="hidden" name="SSlogin" value="y">
 							<p>
 								<label for="ss-username-input">SS Username:</label> <input type="text" id="ss-username-input" name="SSusername" value="$ssUser">
 							</p>
@@ -172,7 +188,12 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2")
 									<h2>Replan Login Table</h2>
 								</div>
 							</div>
-
+							<p>
+							Since Replan users may be different from JIRA ones, it is required to pair them.
+							It is <strong>mandatory</strong> in order to fill issue assignees, and is <strong>highly recommended</strong> to have every user involved in just one pair.
+							A JIRA user could be paired with more than one Replan user, but not viceversa, since the plugin pairs issues with the first match it finds.
+							
+							</p>
 							<div class="mod-content" id="interface-options">
 								<form method="post" action="supersede-cfg" class="aui dont-default-focus">
 									<input type="hidden" name="replan-login-table" value="y">
@@ -185,11 +206,11 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2")
 									</p>
 									<p>
 										<label for="replan-user">Replan user:</label> <select id="replan-user" name="replan-user"> #foreach($replanUser in $replanUsers)
-											<option value=$replanUser>$replanUser</option> #end
+											<option value='$replanUser'>$replanUser</option> #end
 										</select>
 									</p>
 									<p>
-										<input type="submit" class="button" value="Insert">
+										<input type="submit" class="button replanJiraUser" value="Insert">
 									</p>
 								</form>
 							</div>
