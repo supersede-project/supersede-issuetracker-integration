@@ -191,7 +191,7 @@ public class LoginLogic {
 	}
 
 	public String getUrl() {
-		return this.serverUrl;
+		return "/".equals(this.serverUrl.substring(this.serverUrl.length() - 1)) ? this.serverUrl : this.serverUrl + "/";
 	}
 
 	public String getUsername() {
@@ -203,7 +203,7 @@ public class LoginLogic {
 	}
 
 	public String getReplanHost() {
-		return this.replanHost;
+		return "/".equals(this.replanHost.substring(this.replanHost.length() - 1)) ? this.replanHost : this.replanHost + "/";
 	}
 
 	public String getReplanTenant() {
