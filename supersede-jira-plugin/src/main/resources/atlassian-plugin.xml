@@ -157,21 +157,6 @@
 			location="/templates/customfields/supersede-field-searcher/search.vm" />
 	</customfield-searcher>
 
-	<!-- SUPERSEDE CONFIG PAGE -->
-
-	<web-item name="supersedeAdminItem" i18n-name-key="supersede-admin-item.name"
-		key="supersede-admin-item" section="supersede-dropdown-menu/supersede-section"
-		weight="1000">
-		<description key="supersede-admin-item.description">Configuration</description>
-		<label key="supersede-admin-item.label" />
-		<link linkId="supersede-admin-item-link">/plugins/servlet/supersede-cfg</link>
-	</web-item>
-	<servlet name="Supersede Cfg" i18n-name-key="supersede-cfg.name"
-		key="supersede-cfg" class="eu.supersede.jira.plugins.servlet.SupersedeCfg">
-		<description key="supersede-cfg.description">SUPERSEDE Configuration</description>
-		<url-pattern>/supersede-cfg</url-pattern>
-	</servlet>
-
 	<!-- <!-- SUPERSEDE PLAN PAGE ----- DEPRECATED ----- -->
 
 	<!-- <web-item name="supersede-plan" i18n-name-key="supersede-plan.name" -->
@@ -191,7 +176,7 @@
 
 	<web-section name="supersedeSectionAlerts" i18n-name-key="supersede-section.name"
 		key="supersede-section-alerts" location="supersede-dropdown-menu"
-		weight="1000">
+		weight="1">
 		<description key="supersede-section.description">SUPERSEDE Section</description>
 	</web-section>
 
@@ -212,7 +197,7 @@
 
 	<web-section name="supersedeSectionPrio" i18n-name-key="supersede-section.name"
 		key="supersede-section-prioritization" location="supersede-dropdown-menu"
-		weight="1000">
+		weight="2">
 		<description key="supersede-section.description">SUPERSEDE Section</description>
 	</web-section>
 
@@ -252,7 +237,7 @@
 
 	<web-section name="supersedeSectionReplan" i18n-name-key="supersede-section.name"
 		key="supersede-section-replan" location="supersede-dropdown-menu"
-		weight="1000">
+		weight="3">
 		<description key="supersede-section.description">SUPERSEDE Section</description>
 	</web-section>
 
@@ -309,6 +294,21 @@
 		<description key="supersede-alerts.description">The Supersede Webhook Management
 		</description>
 		<url-pattern>/webhook</url-pattern>
+	</servlet>
+	
+		<!-- SUPERSEDE CONFIG PAGE -->
+
+	<web-item name="supersedeAdminItem" i18n-name-key="supersede-admin-item.name"
+		key="supersede-admin-item" section="supersede-dropdown-menu/supersede-section"
+		weight="3">
+		<description key="supersede-admin-item.description">Settings</description>
+		<label key="supersede-admin-item.label" />
+		<link linkId="supersede-admin-item-link">/plugins/servlet/supersede-cfg</link>
+	</web-item>
+	<servlet name="Supersede Cfg" i18n-name-key="supersede-cfg.name"
+		key="supersede-cfg" class="eu.supersede.jira.plugins.servlet.SupersedeCfg">
+		<description key="supersede-cfg.description">SUPERSEDE Configuration</description>
+		<url-pattern>/supersede-cfg</url-pattern>
 	</servlet>
 
 

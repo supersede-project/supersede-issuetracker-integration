@@ -174,6 +174,18 @@ function onPageLoad() {
 	});
 
 	AJS.$("#dialog-delete-button").click(function() {
+		var alerts = selectionString;
+		alert(alerts);
+		var splitAlerts = alerts.split(':::');
+		alert(splitAlerts);
+		var deleteList = '<ul>';
+		for (var i = 0; i < splitAlerts.length; i++) {
+			deleteList += '<li><a href="supersede-alerts?xmlAlert=y&xmlAlertId=' + splitAlerts[i] + '" target="_blank">' + splitAlerts[i] +'</a><br/></li>';
+			alert(deleteList);
+		}
+		deleteList += '</ul>';
+		alert(deleteList);
+		$('.dialogDataView').html(deleteList);
 		AJS.dialog2("#delete-dialog").show();
 	});
 
@@ -239,9 +251,9 @@ function onPageLoad() {
 		});
 		// alert("load!");
 	});
-	
+
 	function issueTypeSelectorChange() {
 		$('.issueType').val($(this).val());
-	};
+	}
+	;
 }
-

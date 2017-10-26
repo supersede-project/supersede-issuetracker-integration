@@ -189,8 +189,8 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2")
 								</div>
 							</div>
 							<p>
-							Since Replan users may be different from JIRA ones, it is required to pair them.
-							It is <strong>mandatory</strong> in order to fill issue assignees, and is <strong>highly recommended</strong> to have every user involved in just one pair.
+							Since Replan users may be different from JIRA ones, it is required to pair them. <br>
+							It is <strong>mandatory</strong> in order to fill issue assignees, and is <strong>highly recommended</strong> to have every user involved in just one pair.<br>
 							A JIRA user could be paired with more than one Replan user, but not viceversa, since the plugin pairs issues with the first match it finds.
 							
 							</p>

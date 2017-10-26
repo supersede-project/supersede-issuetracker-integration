@@ -21,7 +21,7 @@
 		<h2>Alerts</h2>
 		<!-- 		CHECK SUPERSEDE BUTTON -->
 		<div class="refreshPane">
-			<button class="aui-button aui-button-secondary check-alerts">
+			<button class="aui-button aui-button-secondary check-alerts simple-tooltip" title="Check supersede for new alerts added after you opened this application">
 				<span class="glyphicon glyphicon-repeat"></span> $i18n.getText("supersede-alerts-check-supersede.label")
 			</button>
 		</div>
@@ -165,7 +165,9 @@
 					</a>
 				</header>
 				<!-- Main dialog content -->
-				<div class="aui-dialog2-content dialogDataView"></div>
+				<div class="aui-dialog2-content dialogDataView">
+					Tes
+				</div>
 				<!-- Dialog footer -->
 				<footer class="aui-dialog2-footer">
 					<!-- Actions to render on the right of the footer -->
