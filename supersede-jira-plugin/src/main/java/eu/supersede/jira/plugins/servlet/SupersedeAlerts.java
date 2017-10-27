@@ -195,6 +195,7 @@ public class SupersedeAlerts extends HttpServlet {
 						firstLoop = true;
 					}
 					issueLogic.attachToIssue(a, issueLogic.getIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issueID).get(0));
+					context.put("newIssue", "true");
 				} else {
 					// attach to an existing issue
 					String[] issuesList = req.getParameter(PARAM_ISSUES_SELECTION_LIST).split(SEPARATOR);
@@ -205,6 +206,7 @@ public class SupersedeAlerts extends HttpServlet {
 							firstLoop = true;
 						}
 						issueLogic.attachToIssue(a, issue);
+						context.put("attachedIssue", "true");
 					}
 				}
 				if (req.getParameter("chkDeleteStatus") != null && "true".equals(req.getParameter("chkDeleteStatus"))) {

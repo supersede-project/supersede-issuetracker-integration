@@ -93,11 +93,10 @@ public class SupersedePrioritizationList extends HttpServlet {
 	public SupersedePrioritizationList(IssueService issueService, ProjectService projectService, SearchService searchService, UserManager userManager, com.atlassian.jira.user.util.UserManager jiraUserManager, TemplateRenderer templateRenderer,
 			PluginSettingsFactory pluginSettingsFactory, CustomFieldManager customFieldManager, ProcessService processService, SupersedeLoginService ssLoginService) {
 		this.templateRenderer = templateRenderer;
-		
-		
+
 		loginLogic = LoginLogic.getInstance(ssLoginService);
 		loginLogic.loadConfiguration(pluginSettingsFactory.createGlobalSettings());
-		
+
 		processLogic = ProcessLogic.getInstance();
 		requirementLogic = RequirementLogic.getInstance(issueService, projectService, searchService);
 		issueLogic = IssueLogic.getInstance(issueService, projectService, searchService);
@@ -118,6 +117,7 @@ public class SupersedePrioritizationList extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		Map<String, Object> context = Maps.newHashMap();
 		// process request
+
 		context.put("processListFlag", "list");
 		context.put("baseurl", ComponentAccessor.getApplicationProperties().getString("jira.baseurl"));
 		List<Project> projects = ComponentAccessor.getProjectManager().getProjectObjects();
@@ -128,11 +128,11 @@ public class SupersedePrioritizationList extends HttpServlet {
 			processService.updateAllProcessesStatus(processes);
 			context.put("processes", processes);
 			resp.setContentType("text/html;charset=utf-8");
-			context.put("errors", errors);
-			templateRenderer.render("/templates/logic-supersede-prioritization.vm", context, resp.getWriter());
 		}
-		
+
 		context.put("errors", errors);
+		templateRenderer.render("/templates/logic-supersede-prioritization.vm", context, resp.getWriter());
+		return;
 	}
 
 	@Override
@@ -140,6 +140,8 @@ public class SupersedePrioritizationList extends HttpServlet {
 		try {
 			// This must create a process on SS and "on JIRA" at the same time
 			if ("rankingImport".equals(req.getParameter(PARAM_ACTION))) {
+				// Clear errors, otherwise results will remain in memory
+				errors = new LinkedList<String>();
 				String processId = req.getParameter("processId");
 				SupersedeProcess sp = processService.getProcess(processId);
 				JSONArray jarr = processLogic.getRankingJSONArray(processId);
@@ -168,12 +170,15 @@ public class SupersedePrioritizationList extends HttpServlet {
 					}
 					mIssue.setPriorityId(String.valueOf(priorityValue));
 					Date d = new Date();
-					mIssue.setDescription(mIssue.getDescription() + " Priority set to " + priorityValue + " on " + d.toString());
+					String description = mIssue.getDescription();
+					int priorityIndex = description.indexOf("Priority set to");
 
+					description = priorityIndex != -1 ? description.substring(0, priorityIndex - 1) : description;
+					mIssue.setDescription(description + "\n Priority set to " + priorityValue + " on " + d.toString() + " \n Issue absolute ranking is " + (i + 1));
 					issueManager.updateIssue(loginLogic.getCurrentUser(), mIssue, EventDispatchOption.ISSUE_UPDATED, true);
-					
-					errors.add("Ranking of process  " + processId + " correctly imported");
-					
+
+					errors.add("Ranking " + (i+1) + " of process " + processId + " correctly imported");
+
 				}
 
 				sp.setLastRankingImportDate(new Date());
@@ -187,29 +192,29 @@ public class SupersedePrioritizationList extends HttpServlet {
 					sp.setLastRankingImportDate(new Date());
 					sp.save();
 				}
-				
+
 				errors.add("Supersede Process " + processId + " correctly closed");
 			}
-			
+
 			else if ("removeProject".equals(req.getParameter(PARAM_ACTION))) {
 				String processId = req.getParameter("processId");
 				SupersedeProcess sp = processService.getProcess(processId);
 				int closeResponse = processLogic.deleteProcess(sp.getSSProjectId());
-				
+
 				boolean requirementResult = true;
-				for(String key : processLogic.getIssueRequirementsHashMap(sp).keySet()) {
+				for (String key : processLogic.getIssueRequirementsHashMap(sp).keySet()) {
 					requirementResult &= requirementLogic.deleteRequirement(key);
 				}
 
-				if(!requirementResult) {
+				if (!requirementResult) {
 					System.out.println("Requirement deletion gave an error");
 				}
-				
+
 				if (closeResponse == HttpURLConnection.HTTP_OK) {
 					sp.setLastRankingImportDate(new Date());
 					sp.save();
 				}
-				
+
 				errors.add("Supersede Process " + sp.getID() + " correctly added");
 			}
 			doGet(req, res);

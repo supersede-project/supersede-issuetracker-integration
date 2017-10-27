@@ -33,9 +33,11 @@
 		<div class="aui-message aui-message-info shadowed">
 			#foreach($error in $errors)
 			<p class="title">
-				<span class="glyphicon glyphicon-ok"></span> <strong>Done: <a href="$baseurl/browse/$error">$error</a></strong>
+				#if($newIssue) <span class="glyphicon glyphicon-ok"></span> <strong>The issue <a href="$baseurl/browse/$error">$error</a> was correctly created
+				</strong> #elseif($attachedIssue) <span class="glyphicon glyphicon-ok"></span> <strong>The issue <a href="$baseurl/browse/$error">$error</a> was correctly updated
+				</strong> #else <strong>$error </strong> #end
 			</p>
-			#end
+#end
 		</div>
 		<!-- .aui-message -->
 	</div>

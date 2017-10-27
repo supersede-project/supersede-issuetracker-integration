@@ -12,13 +12,12 @@
    limitations under the License.
 -->
 
-<table class="aui table-truncate aui-table-sortable sortableDialogTable ">
+<table class="aui table-truncate aui-table-sortable sortableDialogTable " style="margin-top: 20px;">
 	<thead>
 		<tr>
 			<th class="td-tiny"></th>
-			<th>$i18n.getText("supersede-alerts-table-id.label")</th>
-			<th>$i18n.getText("supersede-alerts-table-app-id.label")</th>
-			<th>$i18n.getText("supersede-alerts-table-description.label")</th>
+			<th class="td-med">$i18n.getText("supersede-alerts-table-id.label")</th>
+			<th class="td-max">$i18n.getText("supersede-alerts-table-description.label")</th>
 		</tr>
 	</thead>
 	<tbody class="issues-list">
@@ -26,7 +25,6 @@
 		<tr>
 			<td class="td-truncate"><input class="dialogChkSelected checkbox" type="checkbox" id=$issue.getCustomFieldValue($customFieldManager.getCustomFieldObject($customFieldId))></td>
 			<td class="td-truncate">$issue.getKey()</td>
-			<td class="td-truncate">$issue.getCustomFieldValue($customFieldManager.getCustomFieldObject($customFieldId))</td>
 			<td class="td-truncate">$issue.getSummary()</td>
 		</tr>
 		#end

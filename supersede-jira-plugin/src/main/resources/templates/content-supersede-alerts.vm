@@ -120,24 +120,29 @@
 					<!-- The dialog's title -->
 					<h2 class="aui-dialog2-header-main">$i18n.getText("supersede-alerts-issue.title")</h2>
 					<!-- Actions to render on the right of the header -->
-					<div class="aui-dialog2-header-secondary searchPaneDialog">
-						<input name="searchIssuesDialogInput" id="searchIssuesDialogInput" placeholder='$i18n.getText("supersede-alerts-issue-search.placeholder")'>
-						<button class="aui-button aui-button-primary searchBtnDialog">
-							<span class="glyphicon glyphicon-search"></span>
-						</button>
-					</div>
 					<!-- Close icon -->
 					<a class="aui-dialog2-header-close"> <span class="aui-icon aui-icon-small aui-iconfont-close-dialog">$i18n.getText("supersede-alerts-close.btn.label")</span>
 					</a>
 				</header>
 				<!-- Main dialog content -->
 				<div class="aui-dialog2-content">
+				
+				<div>
+				Select the project containing the target issue where this alert will be attached. <br>
+				You can use the search box in order to filter results.
+				</div>
+				
 					<form class="aui">
-						<aui-label for="project-select-attach">$i18n.getText("supersede-alerts-project-import.label")</aui-label>
-						<select id="project-select-attach"> #foreach($project in $projects)
+						<select id="project-select-attach" style="float:left; width:200px;"> #foreach($project in $projects)
 							<option value=$project.getKey()>$project.getKey()</option> #end
 						</select>
 					</form>
+					<div class="searchPaneDialog" style="float:right;">
+						<input name="searchIssuesDialogInput" id="searchIssuesDialogInput" placeholder='$i18n.getText("supersede-alerts-issue-search.placeholder")'>
+						<button class="aui-button aui-button-primary searchBtnDialog">
+							<span class="glyphicon glyphicon-search"></span>
+						</button>
+					</div>
 					<div id='attach-dialog-data'>#parse("/templates/attach-dialog-data.vm")</div>
 				</div>
 				<!-- Dialog footer -->
@@ -165,9 +170,7 @@
 					</a>
 				</header>
 				<!-- Main dialog content -->
-				<div class="aui-dialog2-content dialogDataView">
-					Tes
-				</div>
+				<div class="aui-dialog2-content dialogDataView"></div>
 				<!-- Dialog footer -->
 				<footer class="aui-dialog2-footer">
 					<!-- Actions to render on the right of the footer -->
@@ -187,11 +190,11 @@
 					<button style="margin-left: 20px" id="import-dialog-show-button" name="action" value="Import" class="aui-button aui-button-primary alertManagement toEnable simple-tooltip" title="Create new issue from selected alert(s)">
 						<span class="glyphicon glyphicon-plus"></span> <span class="submit-text">$i18n.getText("supersede-alerts-create-btn.label")</span>
 					</button>
-					<button style="margin-left: 20px" id="attach-dialog-show-button" class="aui-button aui-button-secondary alertManagement toEnable simple-tooltip" title="Attach selected alert to existing issue(s)">
+					<button style="margin-left: 20px" id="attach-dialog-show-button" class="aui-button aui-button-primary alertManagement toEnable simple-tooltip" title="Attach selected alert to existing issue(s)">
 						<span class="glyphicon glyphicon-paperclip"></span> $i18n.getText("supersede-alerts-attach-btn.label")
 					</button>
 					<input style="margin-left: 20px" type="checkbox" id="chkDeleteOnClick" class="toEnable" name="chkDeleteOnClick" value="" />$i18n.getText("supersede-alerts-delete-chekbox.label")
-					<button id="dialog-delete-button" class="aui-button aui-button-primary alertManagement toEnable simple-tooltip" title='$i18n.getText("supersede-alerts-delete-btn.tooltip")'>
+					<button id="dialog-delete-button" class="aui-button aui-button-secondary alertManagement toEnable simple-tooltip" title='$i18n.getText("supersede-alerts-delete-btn.tooltip")'>
 						<span class="glyphicon glyphicon-trash"></span> $i18n.getText("supersede-alerts-delete-btn.label")
 					</button>
 				</div>
