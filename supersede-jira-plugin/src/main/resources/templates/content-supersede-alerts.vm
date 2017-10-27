@@ -90,12 +90,14 @@
 				</header>
 				<!-- Main dialog content -->
 				<div class="aui-dialog2-content">
+					Select the project where the selected alert(s) will be added as issue(s), and the type the issue will get. <br> <br>
 					<form class="aui">
 						<aui-label for="project-select-import">$i18n.getText("supersede-alerts-project-import.label")</aui-label>
 						<select id="project-select-import"> #foreach($project in $projects)
 							<option value=$project.getKey()>$project.getKey()</option> #end
 						</select>
 					</form>
+					<br>
 					<div id='issue-type'>#parse("/templates/content-supersede-alerts-issue-type.vm")</div>
 				</div>
 				<!-- Dialog footer -->
@@ -126,18 +128,17 @@
 				</header>
 				<!-- Main dialog content -->
 				<div class="aui-dialog2-content">
-				
-				<div>
-				Select the project containing the target issue where this alert will be attached. <br>
-				You can use the search box in order to filter results.
-				</div>
-				
+
+					<div>
+						Select the project containing the target issue where this alert will be attached. <br> You can use the search box in order to filter results.
+					</div>
+
 					<form class="aui">
-						<select id="project-select-attach" style="float:left; width:200px;"> #foreach($project in $projects)
+						<select id="project-select-attach" style="float: left; width: 200px;"> #foreach($project in $projects)
 							<option value=$project.getKey()>$project.getKey()</option> #end
 						</select>
 					</form>
-					<div class="searchPaneDialog" style="float:right;">
+					<div class="searchPaneDialog" style="float: right;">
 						<input name="searchIssuesDialogInput" id="searchIssuesDialogInput" placeholder='$i18n.getText("supersede-alerts-issue-search.placeholder")'>
 						<button class="aui-button aui-button-primary searchBtnDialog">
 							<span class="glyphicon glyphicon-search"></span>
