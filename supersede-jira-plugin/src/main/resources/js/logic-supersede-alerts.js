@@ -139,14 +139,6 @@ function onPageLoad() {
 		}
 	});
 
-	jQuery('#chkDeleteOnClick').click(function() {
-		if ($(this).prop('checked')) {
-			$(".chkDeleteStatus").val("true");
-		} else {
-			$(".chkDeleteStatus").val("true");
-		}
-	});
-
 	var opt = {
 		autoOpen : false,
 		modal : true,
