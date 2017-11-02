@@ -32,7 +32,7 @@
 				</form> #end
 			</td>
 			<td class="td-truncate">$process.getID()</td>
-			<td class="td-truncate">$process.getDescription()</td>
+			<td class="td-truncate">$process.getName()</td>
 			<td class="td-truncate issueQuery">$process.getQuery()</td>
 			<td class="td-truncate" style="display: none">
 				<button id="process-start-button" class="aui-button">

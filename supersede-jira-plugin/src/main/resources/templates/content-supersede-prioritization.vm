@@ -13,7 +13,8 @@
 -->
 
 <html>
-<head>$webResourceManager.requireResourcesForContext("content-supersede-alerts.context") $webResourceManager.requireResourcesForContext("content-supersede-prioritization.context")
+<head>$webResourceManager.requireResource("com.atlassian.auiplugin:aui-experimental-tooltips") $webResourceManager.requireResourcesForContext("content-supersede-alerts.context")
+$webResourceManager.requireResourcesForContext("content-supersede-prioritization.context")
 </head>
 <body>
 	<div id="buttons">
@@ -27,6 +28,9 @@
 
 		<button style="margin-left: 20px" id="create-process-button" name="action" value="Create" class="aui-button aui-button-primary">
 			<span class="glyphicon glyphicon-plus"></span> <span class="submit-text">$i18n.getText("supersede-prioritization-create-process-btn.label")</span>
+		</button>
+		<button id="prioritization-help" style="margin-left: 20px" class="aui-button aui-button-primary simple-tooltip" title='$i18n.getText("supersede-prioritization-process-help.label")'>
+			<span class="glyphicon glyphicon-question-sign"></span> Help
 		</button>
 	</div>
 
@@ -43,7 +47,7 @@
 		<!-- Main dialog content -->
 		<div class="aui-dialog2-content">
 			<aui-label for="processId">$i18n.getText("supersede-prioritization-process-id.label")</aui-label>
-			<input name="processId" id="processId">
+			<input name="processId" id="processId"><br> <br>
 			<aui-label for="description">$i18n.getText("supersede-prioritization-process-description.label")</aui-label>
 			<input name="description" id="description">
 

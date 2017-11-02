@@ -105,9 +105,8 @@
 					<!-- Actions to render on the right of the footer -->
 					<div class="aui-dialog2-footer-actions">
 						<form action="supersede-alerts" method="get">
-							<input type="hidden" class="selectionList" name="selectionList">
-							<input type="checkbox" id="chkDeleteStatus" class="toEnable" class="chkDeleteStatus" name="chkDeleteStatus" value="true" />$i18n.getText("supersede-alerts-delete-chekbox.label") 
-							<input type="hidden" class="projectField" value=$projectField name="projectField">
+							<input type="hidden" class="selectionList" name="selectionList"> <input type="checkbox" id="chkDeleteStatus" class="toEnable" class="chkDeleteStatus" name="chkDeleteStatus" value="true" />Delete alerts from SUPERSEDE after insertion <input
+								type="hidden" class="projectField" value=$projectField name="projectField">
 							<button id="dialog-submit-button" class="aui-button aui-button-primary dialogButton" name="action" value="Import">$i18n.getText("supersede-alerts-create-btn.label")</button>
 						</form>
 					</div>
@@ -152,8 +151,8 @@
 					<!-- Actions to render on the right of the footer -->
 					<div class="aui-dialog2-footer-actions">
 						<form action="supersede-alerts" method="get">
-							<input type="hidden" class="projectField" value=$projectField name="projectField"> <input type="hidden" class="selectionList" name="selectionList"> <input type="hidden" id="issuesSelectionList" name="issuesSelectionList"> 
-							<input type="checkbox" id="chkDeleteStatus" class="toEnable" class="chkDeleteStatus" name="chkDeleteStatus" value="true" />$i18n.getText("supersede-alerts-delete-chekbox.label")
+							<input type="hidden" class="projectField" value=$projectField name="projectField"> <input type="hidden" class="selectionList" name="selectionList"> <input type="hidden" id="issuesSelectionList" name="issuesSelectionList"> <input
+								type="checkbox" id="chkDeleteStatus" class="toEnable" class="chkDeleteStatus" name="chkDeleteStatus" value="true" />Delete alerts from SUPERSEDE after attachment
 							<button id="dialog-submit-button" class="aui-button aui-button-primary dialogButton toEnableDialog" name="action" value="Attach">$i18n.getText("supersede-alerts-attach-dialog-btn.label")</button>
 						</form>
 						<button id="dialog-close-button" class="aui-button aui-button-link">$i18n.getText("supersede-alerts-close.btn.label")</button>
