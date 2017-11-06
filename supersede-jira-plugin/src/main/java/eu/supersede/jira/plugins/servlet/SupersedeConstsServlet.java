@@ -88,7 +88,13 @@ public class SupersedeConstsServlet extends HttpServlet {
 			context.put("filters", sList);
 			if ("y".equals(req.getParameter("loadIssues"))) {
 				String filter = req.getParameter("filter");
-				SearchRequest sr = ComponentAccessor.getComponentOfType(SearchRequestService.class).getFilter(new JiraServiceContextImpl(user), Long.valueOf(filter));
+				Long filterNumber = 0L;
+				try {
+					filterNumber = Long.parseLong(filter);
+				} catch (NumberFormatException e) {
+					filterNumber = 0L;
+				}
+				SearchRequest sr = ComponentAccessor.getComponentOfType(SearchRequestService.class).getFilter(new JiraServiceContextImpl(user), filterNumber);
 				context.put("issues", issueLogic.getIssuesFromFilter(req, sr.getQuery()));
 				context.put("filter", sr);
 				templateRenderer.render("/templates/issues-table-data.vm", context, resp.getWriter());

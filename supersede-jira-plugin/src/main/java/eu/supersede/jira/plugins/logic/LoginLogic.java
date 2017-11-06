@@ -176,13 +176,13 @@ public class LoginLogic {
 	public String getCurrentProject() {
 		// this should be set in the query: otherwise a project should be picked
 		// up by the user
-		UserUtil util = ComponentAccessor.getUserUtil();
-		SortedSet<Group> groups = util.getGroupsForUser(getCurrentUser().getName());
-		for (Group g : groups) {
-			if (g.getName().startsWith(GROUP_TENANT_PREFIX)) {
-				return g.getName().split("-")[2];
-			}
-		}
+//		UserUtil util = ComponentAccessor.getUserUtil();
+//		SortedSet<Group> groups = util.getGroupsForUser(getCurrentUser().getName());
+//		for (Group g : groups) {
+//			if (g.getName().startsWith(GROUP_TENANT_PREFIX)) {
+//				return g.getName().split("-")[2];
+//			}
+//		}
 
 		// TODO: Provisional check in order to return the default cfg tenant
 		// until extensive test
@@ -191,7 +191,7 @@ public class LoginLogic {
 	}
 
 	public String getUrl() {
-		return "/".equals(this.serverUrl.substring(this.serverUrl.length() - 1)) ? this.serverUrl : this.serverUrl + "/";
+		return "/".equals(serverUrl.substring(serverUrl.length() - 1)) ? serverUrl : serverUrl + "/";
 	}
 
 	public String getUsername() {
@@ -203,7 +203,7 @@ public class LoginLogic {
 	}
 
 	public String getReplanHost() {
-		return "/".equals(this.replanHost.substring(this.replanHost.length() - 1)) ? this.replanHost : this.replanHost + "/";
+		return "/".equals(replanHost.substring(replanHost.length() - 1)) ? replanHost : replanHost + "/";
 	}
 
 	public String getReplanTenant() {

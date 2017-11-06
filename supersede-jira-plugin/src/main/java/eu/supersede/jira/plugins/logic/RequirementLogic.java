@@ -145,9 +145,9 @@ public class RequirementLogic {
 		}
 	}
 
-	private Requirement fetchRequirement(String sessionId, String id) {
+	private Requirement fetchRequirement(String id) {
 		try {
-
+			String sessionId = loginLogic.login();
 			URL url = new URL(loginLogic.getUrl() + "/supersede-dm-app/requirement/" + id);
 			// URL url = new URL("http://supersede.es.atos.net:8080/login");
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -178,16 +178,17 @@ public class RequirementLogic {
 			return r;
 		} catch (Exception e) {
 			log.error(e.getMessage());
+			e.printStackTrace();
 			return null;
 		}
 	}
 
-	private Requirement getRequirement(String id) {
+	public Requirement getRequirement(String id) {
 		try {
-			String sessionId = loginLogic.login();
-			return fetchRequirement(sessionId, id);
+			return fetchRequirement(id);
 		} catch (Exception e) {
 			log.error("login error : " + e);
+			e.printStackTrace();
 			return null;
 		}
 	}
@@ -307,6 +308,53 @@ public class RequirementLogic {
 			log.error(e.getMessage());
 		}
 		return response == HttpURLConnection.HTTP_OK;
+	}
+
+	public String editRequirement(Requirement r, String key) {
+		int response = -1;
+		String responseData = "";
+		try {
+			String sessionId = loginLogic.login();
+			URL url = new URL(loginLogic.getUrl() + "/supersede-dm-app/requirement/edit");
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			String jiraIssueUrl = " " + ComponentAccessor.getApplicationProperties().getString("jira.baseurl") + "/browse/";
+			StringBuilder params = new StringBuilder("id=").append(r.getId());
+			params.append("&name=").append(r.getName());
+			params.append("&description=").append(r.getDescription() + jiraIssueUrl + key);
+
+			conn.setConnectTimeout(LoginLogic.CONN_TIMEOUT);
+			conn.setReadTimeout(LoginLogic.CONN_TIMEOUT);
+			conn.setDoOutput(true);
+			conn.setRequestMethod("POST");
+			conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+			conn.setRequestProperty("Content-Length", String.valueOf(params.length()));
+			conn.setRequestProperty("TenantId", loginLogic.getCurrentProject());
+			conn.setRequestProperty("Cookie", "SESSION=" + sessionId + ";");
+			conn.setRequestProperty("X-XSRF-TOKEN", loginLogic.authenticate(sessionId));
+			conn.setDoOutput(true);
+			OutputStreamWriter outputStreamWriter = new OutputStreamWriter(conn.getOutputStream());
+			outputStreamWriter.write(params.toString());
+			outputStreamWriter.flush();
+
+			response = conn.getResponseCode();
+			responseData = conn.getResponseMessage();
+
+			BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
+			StringBuilder sb = new StringBuilder();
+			String output;
+			while ((output = br.readLine()) != null) {
+				sb.append(output);
+			}
+
+			log.debug("requirement " + r + "edited");
+
+			conn.disconnect();
+			return sb.toString();
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			e.printStackTrace();
+		}
+		return "fail";
 	}
 
 }
