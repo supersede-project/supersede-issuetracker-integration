@@ -168,6 +168,7 @@ public class SupersedeAlerts extends HttpServlet {
 		Collection<IssueType> issueTypes = issueLogic.getIssueTypesByProject(req.getParameter("projectField") != null && !"".equals(req.getParameter("projectField")) ? req.getParameter("projectField") : projects.get(0).getKey());
 		context.put("types", issueTypes);
 		context.put("defaultType", issueTypes.iterator().next().getId());
+		context.put("date", new Date().toString());
 
 		List<String> errors = new LinkedList<String>();
 		if (!"".equals(req.getParameter(PARAM_ACTION)) && req.getParameter(PARAM_ACTION) != null) {
@@ -221,27 +222,23 @@ public class SupersedeAlerts extends HttpServlet {
 			context.put("alerts", alerts);
 
 		} else if ("y".equals(req.getParameter("refreshAlerts"))) {
-			context.put("date", new Date().toString());
 			templateRenderer.render("/templates/content-supersede-alerts.vm", context, resp.getWriter());
 			return;
 		} else if ("y".equals(req.getParameter("searchAlerts"))) {
 			String searchAlerts = req.getParameter(PARAM_SEARCH_ALERTS);
 			alerts = alertLogic.fetchAlerts(req, resp, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic, "", searchAlerts);
 			context.put("alerts", alerts);
-			context.put("date", new Date().toString());
 			templateRenderer.render("/templates/content-supersede-alerts.vm", context, resp.getWriter());
 			return;
 		} else if ("y".equals(req.getParameter("refreshCompare"))) {
 			// Reload just the alerts table template
 			List<Difference> differences = issueLogic.compareIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId(), supersedeCustomFieldLogic.getSupersedeCustomField());
 			context.put("differences", differences);
-			context.put("date", new Date().toString());
 			templateRenderer.render("/templates/content-supersede-man-compare-table.vm", context, resp.getWriter());
 			return;
 		} else if ("y".equals(req.getParameter("searchIssues"))) {
 			issues = issueLogic.getIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId(), req.getParameter(PARAM_SEARCH_ISSUES));
 			context.put("issues", issues);
-			context.put("date", new Date().toString());
 			templateRenderer.render("/templates/attach-dialog-data.vm", context, resp.getWriter());
 			return;
 		} else if ("y".equals(req.getParameter("xmlAlert"))) {

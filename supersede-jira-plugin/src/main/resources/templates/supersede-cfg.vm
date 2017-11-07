@@ -59,7 +59,7 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2")
 				<div class="module">
 					<div class="mod-header" id="connect-params-head">
 						<div>
-							<h2>Default Connection parameters</h2>
+							<h2>Default Connection parameters</h2> <i>(mandatory)</i>
 						</div>
 					</div>
 
@@ -91,7 +91,7 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2")
 				<div class="module">
 					<div class="mod-header" id="interface-options-head">
 						<div>
-							<h2>Default Connection options</h2>
+							<h2>Default Connection options</h2> <i>(highly recommended)</i>
 						</div>
 					</div>
 
@@ -122,7 +122,7 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2")
 					<div class="module">
 						<div class="mod-header" id="interface-options-head">
 							<div>
-								<h2>Replan options</h2>
+								<h2>Replan options</h2> <i>(mandatory)</i>
 							</div>
 						</div>
 
@@ -153,7 +153,7 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2")
 					<div class="module">
 						<div class="mod-header" id="interface-options-head">
 							<div>
-								<h2>User-specific Supersede login options</h2>
+								<h2>User-specific Supersede login options</h2> <i>(optional)</i>
 							</div>
 						</div>
 						<form method="post" action="supersede-cfg" class="aui dont-default-focus">
@@ -185,7 +185,7 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2")
 						<div class="module">
 							<div class="mod-header" id="interface-options-head">
 								<div>
-									<h2>Replan Login Table</h2>
+									<h2>Replan Login Table</h2> <i>(mandatory)</i>
 								</div>
 							</div>
 							<p>
