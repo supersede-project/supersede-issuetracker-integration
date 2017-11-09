@@ -86,6 +86,8 @@ public class SupersedeAlerts extends HttpServlet {
 
 	private SupersedeCustomFieldLogic supersedeCustomFieldLogic;
 
+	List<String> errors = new LinkedList<String>();
+
 	public SupersedeAlerts(IssueService issueService, ProjectService projectService, SearchService searchService, UserManager userManager, com.atlassian.jira.user.util.UserManager jiraUserManager, TemplateRenderer templateRenderer,
 			PluginSettingsFactory pluginSettingsFactory, CustomFieldManager customFieldManager, SupersedeLoginService ssLoginService) {
 		this.templateRenderer = templateRenderer;
@@ -101,25 +103,32 @@ public class SupersedeAlerts extends HttpServlet {
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		List<String> errors = new LinkedList<String>();
+		errors = new LinkedList<String>();
 		if (!"".equals(req.getParameter("deleteAction")) && req.getParameter("deleteAction") != null) {
 			String[] list = req.getParameter(PARAM_SELECTION_LIST).split(SEPARATOR);
 			for (int i = 0; i < list.length; i++) {
 				String alertId = list[i];
 				boolean deleted = alertLogic.discardAlert(req, alertId);
 				if (deleted) {
-					errors.add("alertId " + alertId + " deleted");
+					errors.add("Alert with ID " + alertId + "was successfully deleted");
+					req.setAttribute("fromPost", true);
 				}
 				// int count = alertLogic.getAlertCount(req,
 				// supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic,
 				// alertId);
+
 			}
+
 			doGet(req, resp);
 		}
 	}
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		if (req.getAttribute("fromPost") == null) {
+			errors = new LinkedList<String>();
+			req.removeAttribute("fromPost");
+		}
 		if ("y".equals(req.getParameter("webhook"))) {
 			String issueKey = "test";
 			String issueId = "prova";
@@ -170,7 +179,6 @@ public class SupersedeAlerts extends HttpServlet {
 		context.put("defaultType", issueTypes.iterator().next().getId());
 		context.put("date", new Date().toString());
 
-		List<String> errors = new LinkedList<String>();
 		if (!"".equals(req.getParameter(PARAM_ACTION)) && req.getParameter(PARAM_ACTION) != null) {
 			// true = import clicked - false = attach clicked
 			boolean isImport = "Import".equals(req.getParameter(PARAM_ACTION));
@@ -212,7 +220,7 @@ public class SupersedeAlerts extends HttpServlet {
 				}
 				if (req.getParameter("chkDeleteStatus") != null && "true".equals(req.getParameter("chkDeleteStatus"))) {
 					if (alertLogic.discardAlert(req, a.getId())) {
-						errors.add("alertId " + a.getId() + " deleted");
+						errors.add("Alert ID " + a.getId() + "was successfully deleted");
 					}
 				}
 			}
@@ -229,12 +237,6 @@ public class SupersedeAlerts extends HttpServlet {
 			alerts = alertLogic.fetchAlerts(req, resp, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic, "", searchAlerts);
 			context.put("alerts", alerts);
 			templateRenderer.render("/templates/content-supersede-alerts.vm", context, resp.getWriter());
-			return;
-		} else if ("y".equals(req.getParameter("refreshCompare"))) {
-			// Reload just the alerts table template
-			List<Difference> differences = issueLogic.compareIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId(), supersedeCustomFieldLogic.getSupersedeCustomField());
-			context.put("differences", differences);
-			templateRenderer.render("/templates/content-supersede-man-compare-table.vm", context, resp.getWriter());
 			return;
 		} else if ("y".equals(req.getParameter("searchIssues"))) {
 			issues = issueLogic.getIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId(), req.getParameter(PARAM_SEARCH_ISSUES));

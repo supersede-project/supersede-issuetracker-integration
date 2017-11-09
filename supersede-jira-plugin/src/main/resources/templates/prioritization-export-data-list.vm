@@ -1,3 +1,19 @@
+<script>
+	$('#page-title').text('Prioritization List');
+</script>
+
+This table shows the started processes in SUPERSEDE. Process statuses are updated on every startup.
+<br>
+In order to retrieve the most recent changes, you need to
+<strong>refresh</strong>
+this page.
+<br>
+<br>
+
+If a ranking is available, it is possible to import it in JIRA, updating issues reflecting SUPERSEDE prioritization game.
+<br>
+If there is no ranking and a warning sign is visible, that process has been created with different connection settings from the active ones. If there
+
 
 <table class="aui table-truncate aui-table-sortable sortableTableProcesses">
 	<thead>
@@ -49,11 +65,11 @@
 
 			<td class="td-truncate">
 				<div id="ranking">
-					<div id="rankingNumber">#if($process.getRankings()>= 1) $process.getRankings() #else - #end</div>
-					#if($process.getRankings() == 1)
+					<div id="rankingNumber">#if($process.getStatus() == 'InProgress' && $process.getRankings()>= 1) $process.getRankings() #else - #end</div>
+					#if($process.getStatus() == 'InProgress' && $process.getRankings() == 1)
 					<form action="supersede-prioritization-list" method="POST">
 						<input type="hidden" name="processId" id="ranking-process-id" value=$process.getSSProjectId()>
-						<button class="aui-button aui-button-secondary rankingButton" id=$process.getSSProjectId() name="action" value="rankingImport">$i18n.getText("supersede-prioritization-process-result-import.label")</button>
+						<button class="aui-button aui-button-primary rankingButton" id=$process.getSSProjectId() name="action" value="rankingImport" title="Update issues with this process' ranking. This will update issues' priority reflecting game results">$i18n.getText("supersede-prioritization-process-result-import.label")</button>
 					</form>
 					#end
 				</div>

@@ -32,6 +32,7 @@ AJS.$(document).ready(function() {
 function onPageLoad() {
 	AJS.$(".icon-tooltip").tooltip();
 	AJS.$("#prioritization-help").tooltip();
+	AJS.$(".rankingButton").tooltip();
 
 	$('#filter-select').change(function() {
 		$('#filter-select').val($(this).val());

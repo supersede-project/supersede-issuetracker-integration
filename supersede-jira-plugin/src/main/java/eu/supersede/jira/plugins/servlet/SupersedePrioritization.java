@@ -86,6 +86,8 @@ public class SupersedePrioritization extends HttpServlet {
 	private RequirementLogic requirementLogic;
 
 	private final ProcessService processService;
+	
+	Map<String, Object> context = Maps.newHashMap();
 
 	private static final String PARAM_ACTION = "action";
 	List<String> errors = new LinkedList<String>();
@@ -116,7 +118,6 @@ public class SupersedePrioritization extends HttpServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		Map<String, Object> context = Maps.newHashMap();
 		// process request
 		
 		context.put("baseurl", ComponentAccessor.getApplicationProperties().getString("jira.baseurl"));
@@ -206,6 +207,7 @@ public class SupersedePrioritization extends HttpServlet {
 					errors.add("Supersede Process " + processSSID + " correctly added");
 
 				}
+				context.put("errors", errors);
 				res.sendRedirect(req.getContextPath() + "/plugins/servlet/supersede-prioritization-list");
 			}
 		

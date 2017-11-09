@@ -28,9 +28,10 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2")
 	<header class="aui-page-header">
 		<div class="aui-page-header-inner">
 			<div class="aui-page-header-main">
-				<h1>
-					<img src="$baseurl/download/resources/eu.supersede.jira.plugins.supersede-jira-plugin:supersede-jira-plugin-resources/images/supersede_color.png"> Settings
-				</h1>
+
+				<img src="$baseurl/download/resources/eu.supersede.jira.plugins.supersede-jira-plugin:supersede-jira-plugin-resources/images/supersede_color.png"> <br>
+				<h1>Settings</h1>
+
 				<!-- .aui-page-header-main -->
 			</div>
 		</div>
@@ -59,18 +60,17 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2")
 				<div class="module">
 					<div class="mod-header" id="connect-params-head">
 						<div>
-							<h2>Default Connection parameters</h2> <i>(mandatory)</i>
+							<h2>Default Connection parameters</h2>
+							<i>(mandatory)</i>
 						</div>
 					</div>
 
 					<div class="mod-content" id="connection-params">
 						<form method="post" action="supersede-cfg" class="aui dont-default-focus">
-						<p>
-						Insert Supersede host, username and password. 
-						This will be used as login for every action that requires it (such as alerts retrieval, process creation and replan usage) <br/>
-						This is <strong>mandatory</strong>, and can be overwritten with user-specific settings below.<br/>
-						It is recommended to set an user with high permissions here, and narrow them by specifying another user below.<br/>
-						</p>
+							<p>
+								Insert Supersede host, username and password. This will be used as login for every action that requires it (such as alerts retrieval, process creation and replan usage) <br /> This is <strong>mandatory</strong>, and can be overwritten with
+								user-specific settings below.<br /> It is recommended to set an user with high permissions here, and narrow them by specifying another user below.<br />
+							</p>
 							<input type="hidden" name="config" value="y">
 							<p>
 								<label for="hostname-input">Hostname URL:</label> <input type="text" id="hostname-input" name="hostname" value="$hostname" required>
@@ -91,7 +91,8 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2")
 				<div class="module">
 					<div class="mod-header" id="interface-options-head">
 						<div>
-							<h2>Default Connection options</h2> <i>(highly recommended)</i>
+							<h2>Default Connection options</h2>
+							<i>(highly recommended)</i>
 						</div>
 					</div>
 
@@ -100,10 +101,8 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2")
 							<input type="hidden" name="options" value="y">
 							<p>
 							<p>
-								If specified, will use this tenant when fetching or creating requirements/features in SUPERSEDE.<br /> 
-								If not specified, the tenant will be retrieved from the project where issues will be saved.<br/>
-								It is <strong>highly recommended</strong> to specify a tenant here, in order to prevent errors due to wrong project names.<br/>
-								This value can be edited at any time. Please make sure the tenant is an existing one, otherwise the plugin will not work!
+								If specified, will use this tenant when fetching or creating requirements/features in SUPERSEDE.<br /> If not specified, the tenant will be retrieved from the project where issues will be saved.<br /> It is <strong>highly recommended</strong> to
+								specify a tenant here, in order to prevent errors due to wrong project names.<br /> This value can be edited at any time. Please make sure the tenant is an existing one, otherwise the plugin will not work!
 							</p>
 							<p>
 								<label for="tenant-input">Force tenant:</label> <input type="text" id="tenant-input" name="tenant" value="$tenant">
@@ -113,16 +112,16 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2")
 							</p>
 						</form>
 					</div>
-					
-					<br>
-					<br>
+
+					<br> <br>
 					<hr>
 					<br>
 
 					<div class="module">
 						<div class="mod-header" id="interface-options-head">
 							<div>
-								<h2>Replan options</h2> <i>(mandatory)</i>
+								<h2>Replan options</h2>
+								<i>(mandatory)</i>
 							</div>
 						</div>
 
@@ -130,9 +129,7 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2")
 							<form method="post" action="supersede-cfg" class="aui dont-default-focus">
 								<input type="hidden" name="replan" value="y">
 								<p>
-								This will be the replan's main host for SUPERSEDE
-								it is <strong>mandatory</strong> since Replan is independent from Supersede and JIRA instance.
-								Tenant is <strong>mandatory</strong> too
+									This will be the replan's main host for SUPERSEDE it is <strong>mandatory</strong> since Replan is independent from Supersede and JIRA instance. Tenant is <strong>mandatory</strong> too
 								</p>
 								<p>
 									<label for="replan-host">Replan host:</label> <input type="text" id="replan-host" name="replan-host" value="$replan-host" required>
@@ -141,8 +138,8 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2")
 								<p>
 									<label for="replan-tenant">Replan tenant:</label> <input type="text" id="replan-tenant" name="replan-tenant" value="$replan-tenant">
 								</p>
-									<input type="submit" class="button" value="Save">
-								
+								<input type="submit" class="button" value="Save">
+
 							</form>
 						</div>
 
@@ -153,16 +150,13 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2")
 					<div class="module">
 						<div class="mod-header" id="interface-options-head">
 							<div>
-								<h2>User-specific Supersede login options</h2> <i>(optional)</i>
+								<h2>User-specific Supersede login options</h2>
+								<i>(optional)</i>
 							</div>
 						</div>
 						<form method="post" action="supersede-cfg" class="aui dont-default-focus">
-							Insert the Supersede username and password. This will be used when performing tasks instead of above general login.<br/>
-							It is <strong>optional</strong>, since a login is still available above.<br/>
-							This will be saved and will be available only to you. <br/>
-							If user below is filled, there is an entry saved for your user. <br/>
-							Every update of this data overwrites the data already in tables. <br/>
-							<input type="hidden" name="SSlogin" value="y">
+							Insert the Supersede username and password. This will be used when performing tasks instead of above general login.<br /> It is <strong>optional</strong>, since a login is still available above.<br /> This will be saved and will be available only
+							to you. <br /> If user below is filled, there is an entry saved for your user. <br /> Every update of this data overwrites the data already in tables. <br /> <input type="hidden" name="SSlogin" value="y">
 							<p>
 								<label for="ss-username-input">SS Username:</label> <input type="text" id="ss-username-input" name="SSusername" value="$ssUser">
 							</p>
@@ -185,14 +179,14 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2")
 						<div class="module">
 							<div class="mod-header" id="interface-options-head">
 								<div>
-									<h2>Replan Login Table</h2> <i>(mandatory)</i>
+									<h2>Replan Login Table</h2>
+									<i>(mandatory)</i>
 								</div>
 							</div>
 							<p>
-							Since Replan users may be different from JIRA ones, it is required to pair them. <br>
-							It is <strong>mandatory</strong> in order to fill issue assignees, and is <strong>highly recommended</strong> to have every user involved in just one pair.<br>
-							A JIRA user could be paired with more than one Replan user, but not viceversa, since the plugin pairs issues with the first match it finds.
-							
+								Since Replan users may be different from JIRA ones, it is required to pair them. <br> It is <strong>mandatory</strong> in order to fill issue assignees, and is <strong>highly recommended</strong> to have every user involved in just one pair.<br>
+								A JIRA user could be paired with more than one Replan user, but not viceversa, since the plugin pairs issues with the first match it finds.
+
 							</p>
 							<div class="mod-content" id="interface-options">
 								<form method="post" action="supersede-cfg" class="aui dont-default-focus">
@@ -220,7 +214,7 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2")
 									<tr>
 										<th id="jira-user">JIRA Username</th>
 										<th id="replan-user">Replan username</th>
-										<th id="replan-tenant"> Replan tenant </th>
+										<th id="replan-tenant">Replan tenant</th>
 									</tr>
 								</thead>
 								<tbody>
