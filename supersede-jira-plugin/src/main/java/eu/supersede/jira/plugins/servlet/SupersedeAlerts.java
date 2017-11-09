@@ -129,6 +129,7 @@ public class SupersedeAlerts extends HttpServlet {
 			errors = new LinkedList<String>();
 			req.removeAttribute("fromPost");
 		}
+		
 		if ("y".equals(req.getParameter("webhook"))) {
 			String issueKey = "test";
 			String issueId = "prova";
