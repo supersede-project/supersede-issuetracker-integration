@@ -1,5 +1,12 @@
 <html>
-<head>$webResourceManager.requireResourcesForContext("content-supersede-alerts.context") $webResourceManager.requireResourcesForContext("content-supersede-prioritization.context")
+<head>
+$webResourceManager.requireResourcesForContext("content-supersede-alerts.context") $webResourceManager.requireResourcesForContext("content-supersede-prioritization.context")
+<script>
+	AJS.$(document).ready(function() {
+		AJS.$('#page-title').text("Process List");
+	});
+</script>
+
 </head>
 <body>
 	<div id='export-data'>#parse("/templates/prioritization-export-data-list.vm")</div>

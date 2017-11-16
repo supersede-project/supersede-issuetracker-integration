@@ -19,39 +19,16 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2")
 	AJS.$(document).ready(function() {
 		AJS.$('#jira-user').auiSelect2();
 		AJS.$('#replan-user').auiSelect2();
+
+		AJS.$('#page-title').text("Settings");
 	});
 </script>
 <title>SUPERSEDE - Configuration</title>
 <meta name="decorator" content="atl.general">
 </head>
 <body class="page-type-admin">
-	<header class="aui-page-header">
-		<div class="aui-page-header-inner">
-			<div class="aui-page-header-main">
-
-				<img src="$baseurl/download/resources/eu.supersede.jira.plugins.supersede-jira-plugin:supersede-jira-plugin-resources/images/supersede_color.png"> <br>
-				<h1>Settings</h1>
-
-				<!-- .aui-page-header-main -->
-			</div>
-		</div>
-		<!-- .aui-page-header-inner -->
-	</header>
-
-	#if ($errors && $errors.size()>0)
-	<div class="content-container">
-		<div class="content-body">
-			<div class="aui-message error shadowed">
-				#foreach($error in $errors)
-				<p class="title">
-					<span class="aui-icon icon-error"></span> <strong>$error</strong>
-				</p>
-				#end
-			</div>
-			<!-- .aui-message -->
-		</div>
-	</div>
-	#end
+	<!--  parsing header -->
+	#parse("/templates/general-header.vm")
 
 	<div class="aui-page-panel" id="browse-issues-page">
 		<div class="aui-page-panel-inner">
@@ -227,6 +204,20 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2")
 									#end
 								</tbody>
 							</table>
+						</div>
+
+						<hr>
+						<div class="module">
+							<div class="mod-header" id="interface-options-head">
+								<div>
+									<h2>Delete all data from processes</h2>
+									<i>(optional)</i> <br> Use this command only if you <strong>really need</strong> to delete all processes from JIRA. <br> This <strong>will not</strong> delete them from SUPERSEDE, but it is not possible to retrieve them again.
+								</div>
+							</div>
+
+							<form action="supersede-cfg" method="get">
+								<button class="aui-button aui-button-primary" name="delete" value="delete">Delete all JIRA Processes</button>
+							</form>
 						</div>
 					</div>
 			</section>

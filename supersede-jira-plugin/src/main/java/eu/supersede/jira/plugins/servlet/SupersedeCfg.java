@@ -43,10 +43,12 @@ import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
 import com.google.common.collect.Maps;
 
+import eu.supersede.jira.plugins.activeobject.ProcessService;
 import eu.supersede.jira.plugins.activeobject.ReplanJiraLogin;
 import eu.supersede.jira.plugins.activeobject.ReplanJiraLoginService;
 import eu.supersede.jira.plugins.activeobject.SupersedeLogin;
 import eu.supersede.jira.plugins.activeobject.SupersedeLoginService;
+import eu.supersede.jira.plugins.activeobject.SupersedeProcess;
 import eu.supersede.jira.plugins.logic.LoginLogic;
 import eu.supersede.jira.plugins.logic.ReplanLogic;
 import net.java.ao.EntityManager;
@@ -82,10 +84,12 @@ public class SupersedeCfg extends HttpServlet {
 	private final SupersedeLoginService ssLoginService;
 	private final UserSearchService userSearchService;
 	private final ReplanJiraLoginService replanJiraLoginService;
+	private final SupersedeLoginService supersedeLoginService;
+	private final ProcessService processService;
 	private final LoginLogic loginLogic;
 
 	public SupersedeCfg(UserManager userManager, com.atlassian.jira.user.util.UserManager jiraUserManager, TemplateRenderer templateRenderer, PluginSettingsFactory pluginSettingsFactory, SupersedeLoginService ssLoginService,
-			UserSearchService userSearchService, ReplanJiraLoginService replanJiraLoginService) {
+			UserSearchService userSearchService, ReplanJiraLoginService replanJiraLoginService, SupersedeLoginService supersedeLoginService, ProcessService processService) {
 		this.userManager = userManager;
 		this.templateRenderer = templateRenderer;
 		this.jiraUserManager = jiraUserManager;
@@ -93,6 +97,8 @@ public class SupersedeCfg extends HttpServlet {
 		this.ssLoginService = checkNotNull(ssLoginService);
 		this.userSearchService = userSearchService;
 		this.replanJiraLoginService = checkNotNull(replanJiraLoginService);
+		this.supersedeLoginService = checkNotNull(supersedeLoginService);
+		this.processService = checkNotNull(processService);
 
 		loginLogic = LoginLogic.getInstance(ssLoginService);
 		loginLogic.loadConfiguration(pluginSettingsFactory.createGlobalSettings());
@@ -247,6 +253,10 @@ public class SupersedeCfg extends HttpServlet {
 		resp.setContentType("text/html;charset=utf-8");
 		// Pass in the list of issues as the context
 		templateRenderer.render(CONFIG_BROWSER_TEMPLATE, context, resp.getWriter());
+
+		if (req.getParameter("delete") != null) {
+			processService.delete();
+		}
 	}
 
 }

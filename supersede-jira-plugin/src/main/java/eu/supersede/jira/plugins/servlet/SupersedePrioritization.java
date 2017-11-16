@@ -17,9 +17,7 @@ package eu.supersede.jira.plugins.servlet;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -30,19 +28,18 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.jfree.util.Log;
-
 import com.atlassian.jira.bc.JiraServiceContextImpl;
 import com.atlassian.jira.bc.filter.SearchRequestService;
 import com.atlassian.jira.bc.issue.IssueService;
 import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.bc.project.ProjectService;
 import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.event.type.EventDispatchOption;
 import com.atlassian.jira.issue.CustomFieldManager;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.issue.MutableIssue;
+import com.atlassian.jira.issue.label.Label;
+import com.atlassian.jira.issue.label.LabelManager;
 import com.atlassian.jira.issue.link.IssueLink;
 import com.atlassian.jira.issue.link.IssueLinkManager;
 import com.atlassian.jira.issue.search.SearchRequest;
@@ -52,7 +49,6 @@ import com.atlassian.jira.sharing.search.SharedEntitySearchContext;
 import com.atlassian.jira.sharing.search.SharedEntitySearchParameters;
 import com.atlassian.jira.sharing.search.SharedEntitySearchParametersBuilder;
 import com.atlassian.jira.user.ApplicationUser;
-import com.atlassian.jira.util.json.JSONArray;
 import com.atlassian.jira.util.json.JSONException;
 import com.atlassian.jira.util.json.JSONObject;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
@@ -62,7 +58,6 @@ import com.google.common.collect.Maps;
 
 import eu.supersede.jira.plugins.activeobject.ProcessService;
 import eu.supersede.jira.plugins.activeobject.SupersedeLoginService;
-import eu.supersede.jira.plugins.activeobject.SupersedeProcess;
 import eu.supersede.jira.plugins.logic.IssueLogic;
 import eu.supersede.jira.plugins.logic.LoginLogic;
 import eu.supersede.jira.plugins.logic.ProcessLogic;
@@ -86,7 +81,7 @@ public class SupersedePrioritization extends HttpServlet {
 	private RequirementLogic requirementLogic;
 
 	private final ProcessService processService;
-	
+
 	Map<String, Object> context = Maps.newHashMap();
 
 	private static final String PARAM_ACTION = "action";
@@ -95,11 +90,10 @@ public class SupersedePrioritization extends HttpServlet {
 	public SupersedePrioritization(IssueService issueService, ProjectService projectService, SearchService searchService, UserManager userManager, com.atlassian.jira.user.util.UserManager jiraUserManager, TemplateRenderer templateRenderer,
 			PluginSettingsFactory pluginSettingsFactory, CustomFieldManager customFieldManager, ProcessService processService, SupersedeLoginService ssLoginService) {
 		this.templateRenderer = templateRenderer;
-		
-		
+
 		loginLogic = LoginLogic.getInstance(ssLoginService);
 		loginLogic.loadConfiguration(pluginSettingsFactory.createGlobalSettings());
-		
+
 		processLogic = ProcessLogic.getInstance();
 		requirementLogic = RequirementLogic.getInstance(issueService, projectService, searchService);
 		issueLogic = IssueLogic.getInstance(issueService, projectService, searchService);
@@ -119,7 +113,6 @@ public class SupersedePrioritization extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		// process request
-		
 		context.put("baseurl", ComponentAccessor.getApplicationProperties().getString("jira.baseurl"));
 		List<Project> projects = ComponentAccessor.getProjectManager().getProjectObjects();
 		context.put("projects", projects);
@@ -137,7 +130,9 @@ public class SupersedePrioritization extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 		try {
+			errors = new LinkedList<String>();
 			// This must create a process on SS and "on JIRA" at the same time
+			String processSSID = "";
 			if ("CreateProc".equals(req.getParameter(PARAM_ACTION))) {
 				String name = req.getParameter("procId");
 				String description = req.getParameter("procDesc");
@@ -146,7 +141,7 @@ public class SupersedePrioritization extends HttpServlet {
 					ApplicationUser user = loginLogic.getCurrentUser();
 					SearchRequest sr = ComponentAccessor.getComponentOfType(SearchRequestService.class).getFilter(new JiraServiceContextImpl(user), Long.valueOf(filter));
 
-					String processSSID = processLogic.createProcess(req, name);
+					processSSID = processLogic.createProcess(req, name);
 
 					// Get a list of issues from this query
 					List<Issue> issueList = issueLogic.getIssuesFromFilter(req, sr.getQuery());
@@ -199,23 +194,37 @@ public class SupersedePrioritization extends HttpServlet {
 							requirementLogic.setRequirementLinks(processSSID, requirementId, requirementsToLink);
 						}
 
+						// If everything went OK, I add a label into the issue
+						setLabelToIssue(i.getKey(), processSSID);
+
 					}
 
 					// ProcessService added at last
-					processService.add(name, description, processSSID, issueRequirementsMap.toString(), sr.getQuery().getQueryString(), "In progress");
-					
+					String SSProcessLink = loginLogic.getUrl() + "#/supersede-dm-app/process?processId=" + processSSID;
+					processService.add(name, description, processSSID, issueRequirementsMap.toString(), sr.getQuery().getQueryString(), "In progress", SSProcessLink);
+
 					errors.add("Supersede Process " + processSSID + " correctly added");
+					req.setAttribute("fromCreate", processSSID);
 
 				}
 				context.put("errors", errors);
-				res.sendRedirect(req.getContextPath() + "/plugins/servlet/supersede-prioritization-list");
+				res.sendRedirect(req.getContextPath() + "/plugins/servlet/supersede-prioritization-list?fromCreate=" + processSSID);
+				return;
 			}
-		
+
 			doGet(req, res);
 
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
+	}
+
+	private void setLabelToIssue(String key, String processSSID) {
+		IssueManager issueManager = ComponentAccessor.getIssueManager();
+		MutableIssue mIssue = issueManager.getIssueByKeyIgnoreCase(key);
+
+		LabelManager labelManager = ComponentAccessor.getComponent(LabelManager.class);
+		labelManager.addLabel(loginLogic.getCurrentUser(), mIssue.getId(), "Process-" + processSSID, false);
 	}
 
 }

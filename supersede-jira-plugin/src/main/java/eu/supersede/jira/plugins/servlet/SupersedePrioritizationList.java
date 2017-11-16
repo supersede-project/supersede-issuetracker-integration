@@ -30,9 +30,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.jfree.util.Log;
-
-import com.atlassian.jira.bc.JiraServiceContextImpl;
 import com.atlassian.jira.bc.filter.SearchRequestService;
 import com.atlassian.jira.bc.issue.IssueService;
 import com.atlassian.jira.bc.issue.search.SearchService;
@@ -40,11 +37,8 @@ import com.atlassian.jira.bc.project.ProjectService;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.event.type.EventDispatchOption;
 import com.atlassian.jira.issue.CustomFieldManager;
-import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.issue.MutableIssue;
-import com.atlassian.jira.issue.link.IssueLink;
-import com.atlassian.jira.issue.link.IssueLinkManager;
 import com.atlassian.jira.issue.search.SearchRequest;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.sharing.SharedEntityColumn;
@@ -118,6 +112,10 @@ public class SupersedePrioritizationList extends HttpServlet {
 		Map<String, Object> context = Maps.newHashMap();
 		// process request
 
+		if (req.getParameter("fromCreate") != null && !"".equals(req.getParameter("fromCreate"))) {
+			errors.add(req.getParameter("fromCreate").toString());
+		}
+
 		context.put("processListFlag", "list");
 		context.put("baseurl", ComponentAccessor.getApplicationProperties().getString("jira.baseurl"));
 		List<Project> projects = ComponentAccessor.getProjectManager().getProjectObjects();
@@ -137,8 +135,13 @@ public class SupersedePrioritizationList extends HttpServlet {
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+		// process request
+
+		if (req.getAttribute("fromCreate") != null) {
+			errors.add("Process " + req.getAttribute("fromCreate").toString() + " successfully created!");
+		}
+
 		try {
-			// This must create a process on SS and "on JIRA" at the same time
 			if ("rankingImport".equals(req.getParameter(PARAM_ACTION))) {
 				// Clear errors, otherwise results will remain in memory
 				errors = new LinkedList<String>();
@@ -177,7 +180,7 @@ public class SupersedePrioritizationList extends HttpServlet {
 					mIssue.setDescription(description + "\n Priority set to " + priorityValue + " on " + d.toString() + " \n Issue absolute ranking is " + (i + 1));
 					issueManager.updateIssue(loginLogic.getCurrentUser(), mIssue, EventDispatchOption.ISSUE_UPDATED, true);
 
-					errors.add("Ranking " + (i+1) + " of process " + processId + " correctly imported");
+					errors.add("Ranking " + (i + 1) + " of process " + processId + " correctly imported");
 
 				}
 
@@ -199,7 +202,8 @@ public class SupersedePrioritizationList extends HttpServlet {
 			else if ("removeProject".equals(req.getParameter(PARAM_ACTION))) {
 				String processId = req.getParameter("processId");
 				SupersedeProcess sp = processService.getProcess(processId);
-				int closeResponse = processLogic.deleteProcess(sp.getSSProjectId());
+				String SSprocessId = sp.getSSProjectId();
+				int closeResponse = processLogic.deleteProcess(SSprocessId);
 
 				boolean requirementResult = true;
 				for (String key : processLogic.getIssueRequirementsHashMap(sp).keySet()) {
@@ -215,7 +219,8 @@ public class SupersedePrioritizationList extends HttpServlet {
 					sp.save();
 				}
 
-				errors.add("Supersede Process " + sp.getID() + " correctly added");
+				processService.deleteJIRAProcess(SSprocessId);
+				errors.add("Supersede Process " + SSprocessId + " successfully deleted");
 			}
 			doGet(req, res);
 

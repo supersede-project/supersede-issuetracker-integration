@@ -78,6 +78,17 @@ public class ProcessServiceImpl implements ProcessService {
 		process.save();
 		return process;
 	}
+	
+	@Override
+	public SupersedeProcess add(String name, String desc, String processID, String issueRequirementsMap, String query, String status, String SSProcessLink) {
+		SupersedeProcess process = add(name, desc, query);
+		process.setSSProjectId(processID);
+		process.setIssuesRequirementsMap(issueRequirementsMap);
+		process.setStatus(status);
+		process.setSSLink(SSProcessLink);
+		process.save();
+		return process;
+	}
 
 	@Override
 	public List<SupersedeProcess> getAllProcesses() {
@@ -87,7 +98,7 @@ public class ProcessServiceImpl implements ProcessService {
 	@Override
 	public SupersedeProcess getProcess(String processId) {
 		SupersedeProcess[] result = ao.find(SupersedeProcess.class, Query.select().where("SSPROJECT_ID LIKE ?", processId));
-		if(result != null && result.length > 0) {
+		if (result != null && result.length > 0) {
 			return result[0];
 		}
 		return null;
@@ -117,6 +128,22 @@ public class ProcessServiceImpl implements ProcessService {
 
 			process.save();
 
+		}
+	}
+
+	// DELETE ALL ROWS
+
+	public void delete() {
+		SupersedeProcess[] entities = ao.find(SupersedeProcess.class);
+		if (entities != null) {
+			ao.delete(entities);
+		}
+	}
+
+	public void deleteJIRAProcess(String processId) {
+		SupersedeProcess[] result = ao.find(SupersedeProcess.class, Query.select().where("SSPROJECT_ID LIKE ?", processId));
+		if (result != null && result[0] != null) {
+			ao.delete(result[0]);
 		}
 	}
 

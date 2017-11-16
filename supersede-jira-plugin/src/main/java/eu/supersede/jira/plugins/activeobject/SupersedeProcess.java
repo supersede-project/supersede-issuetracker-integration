@@ -77,4 +77,8 @@ public interface SupersedeProcess extends Entity {
 
 	void setRankings(int rankings);
 
+	String getSSLink();
+
+	void setSSLink(String link);
+
 }

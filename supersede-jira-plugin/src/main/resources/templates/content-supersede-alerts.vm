@@ -18,7 +18,6 @@
 </head>
 <body>
 	<div>
-		<h2>Alerts</h2>
 		<!-- 		CHECK SUPERSEDE BUTTON -->
 		<div class="refreshPane">
 			<button class="aui-button aui-button-secondary check-alerts simple-tooltip" title="$i18n.getText('supersede-alerts-check.supersede.tooltip')">

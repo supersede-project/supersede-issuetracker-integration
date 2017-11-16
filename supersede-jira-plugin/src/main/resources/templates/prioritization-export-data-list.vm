@@ -1,8 +1,4 @@
-<script>
-	$('#page-title').text('Prioritization List');
-</script>
-
-This table shows the started processes in SUPERSEDE. Process statuses are updated on every startup.
+ This table shows the started processes in SUPERSEDE. Process statuses are updated on every startup.
 <br>
 In order to retrieve the most recent changes, you need to
 <strong>refresh</strong>
@@ -18,13 +14,13 @@ If there is no ranking and a warning sign is visible, that process has been crea
 <table class="aui table-truncate aui-table-sortable sortableTableProcesses">
 	<thead>
 		<tr>
-			<th class="td-med">Status</th>
-			<th class="td-small">$i18n.getText("supersede-prioritization-process-id.label")</th>
+			<th class="td-small">Status</th>
+			<th class="td-small">Name</th>
 			<th class="td-small">$i18n.getText("supersede-prioritization-process-description.label")</th>
-			<th class="td-max">$i18n.getText("supersede-prioritization-process-query.label")</th>
-			<th class="td-small">$i18n.getText("supersede-prioritization-process-ss-id.label")</th>
+			<th class="td-tiny">$i18n.getText("supersede-prioritization-process-ss-id.label")</th>
 			<th class="td-small">Rankings</th>
 			<th class="td-med">Last Import Date</th>
+			<th class="td-tiny">SS Link</th>
 		</tr>
 	</thead>
 	<tbody class="process-list">
@@ -47,9 +43,8 @@ If there is no ranking and a warning sign is visible, that process has been crea
 					<button class="aui-button aui-button-error actionProjectButton removeProjectButton" id=$process.getSSProjectId() name="action" value="removeProject">$i18n.getText("supersede-prioritization-process-result-remove.label")</button>
 				</form> #end
 			</td>
-			<td class="td-truncate">$process.getID()</td>
 			<td class="td-truncate">$process.getName()</td>
-			<td class="td-truncate issueQuery">$process.getQuery()</td>
+			<td class="td-truncate">$process.getDescription()</td>
 			<td class="td-truncate" style="display: none">
 				<button id="process-start-button" class="aui-button">
 					<span class="aui-icon aui-icon-small aui-iconfont-deploy">Start</span> Start
@@ -76,6 +71,7 @@ If there is no ranking and a warning sign is visible, that process has been crea
 			</td>
 
 			<td class="td-truncate">#if($process.getLastRankingImportDate()) $process.getLastRankingImportDate() #else - #end</td>
+			<td class="td-truncate"><a href=$process.getSSLink()>SS Link</a></td>
 
 		</tr>
 		#end

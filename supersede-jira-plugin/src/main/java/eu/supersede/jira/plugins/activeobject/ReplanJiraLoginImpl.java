@@ -77,5 +77,14 @@ public class ReplanJiraLoginImpl implements ReplanJiraLoginService {
 		}
 		return null;
 	}
+	
+	// DELETE ALL ROWS
+
+	public void delete() {
+		ReplanJiraLogin[] entities = ao.find(ReplanJiraLogin.class);
+		if (entities != null) {
+			ao.delete(entities);
+		}
+	}
 
 }
