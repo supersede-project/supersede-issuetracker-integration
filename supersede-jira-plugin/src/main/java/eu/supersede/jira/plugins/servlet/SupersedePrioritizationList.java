@@ -82,7 +82,6 @@ public class SupersedePrioritizationList extends HttpServlet {
 	private final ProcessService processService;
 
 	private static final String PARAM_ACTION = "action";
-	List<String> errors = new LinkedList<String>();
 
 	public SupersedePrioritizationList(IssueService issueService, ProjectService projectService, SearchService searchService, UserManager userManager, com.atlassian.jira.user.util.UserManager jiraUserManager, TemplateRenderer templateRenderer,
 			PluginSettingsFactory pluginSettingsFactory, CustomFieldManager customFieldManager, ProcessService processService, SupersedeLoginService ssLoginService) {
@@ -109,11 +108,12 @@ public class SupersedePrioritizationList extends HttpServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		List<String> errors = new LinkedList<String>();
 		Map<String, Object> context = Maps.newHashMap();
 		// process request
 
 		if (req.getParameter("fromCreate") != null && !"".equals(req.getParameter("fromCreate"))) {
-			errors.add(req.getParameter("fromCreate").toString());
+			errors.add("Process " + req.getParameter("fromCreate").toString() + " successfully created!");
 		}
 
 		context.put("processListFlag", "list");
@@ -136,7 +136,7 @@ public class SupersedePrioritizationList extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 		// process request
-
+		List<String> errors = new LinkedList<String>();
 		if (req.getAttribute("fromCreate") != null) {
 			errors.add("Process " + req.getAttribute("fromCreate").toString() + " successfully created!");
 		}

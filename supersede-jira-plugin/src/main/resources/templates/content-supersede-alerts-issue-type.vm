@@ -13,7 +13,7 @@
 -->
 <form class="aui">
 	<aui-label for="issue-type">$i18n.getText("supersede-alerts-project-issue-type.label")</aui-label>
-	<select id="issue-type-selector"> #foreach($type in $types)
+	<select name="issueType" id="issue-type-selector"> #foreach($type in $types)
 		<option value=$type.getId()>$type.getName()</option> #end
 	</select>
 </form>

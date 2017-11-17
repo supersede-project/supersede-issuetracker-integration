@@ -114,6 +114,7 @@
 						<form action="supersede-alerts" method="get">
 							<input type="hidden" class="selectionList" name="selectionList"> <input type="checkbox" id="chkDeleteStatus" class="toEnable" class="chkDeleteStatus" name="chkDeleteStatus" value="true" />$i18n.getText("supersede-alerts-attach-dialog-check.label")
 							<input type="hidden" class="projectField" value=$projectField name="projectField">
+							<input type="hidden" class="issueType" name="issueType">
 							<button id="dialog-submit-button" class="aui-button aui-button-primary dialogButton" name="action" value="Import">$i18n.getText("supersede-alerts-create-btn.label")</button>
 						</form>
 					</div>
