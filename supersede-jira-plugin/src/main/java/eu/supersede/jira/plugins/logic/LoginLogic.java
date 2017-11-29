@@ -48,7 +48,7 @@ public class LoginLogic {
 
 	private static String authToken;
 
-	private String serverUrl, username, password, tenantOverride, replanHost, replanTenant;
+	private String serverUrl, username, password, tenantOverride, replanHost, replanTenant, similarity;
 
 	private String currentProject; // TODO: 20170803 No longer required, if "get
 									// tenant from user group" is confirmed
@@ -98,6 +98,8 @@ public class LoginLogic {
 		tenantOverride = ssLogin != null ? ssLogin.getTenant() : SupersedeCfg.getConfigurationValue(pluginSettings, SupersedeCfg.KEY_TENANT, SupersedeCfg.DEF_TENANT);
 		replanHost = SupersedeCfg.getConfigurationValue(pluginSettings, SupersedeCfg.KEY_REPLAN_HOST, SupersedeCfg.DEF_REPLAN_HOST);
 		replanTenant = SupersedeCfg.getConfigurationValue(pluginSettings, SupersedeCfg.KEY_REPLAN_TENANT, SupersedeCfg.DEF_REPLAN_TENANT);
+		setSimilarity(SupersedeCfg.getConfigurationValue(pluginSettings, SupersedeCfg.KEY_SIMILARITY, SupersedeCfg.DEF_SIMILARITY));
+
 	}
 
 	public String getBasicAuth() {
@@ -176,13 +178,14 @@ public class LoginLogic {
 	public String getCurrentProject() {
 		// this should be set in the query: otherwise a project should be picked
 		// up by the user
-//		UserUtil util = ComponentAccessor.getUserUtil();
-//		SortedSet<Group> groups = util.getGroupsForUser(getCurrentUser().getName());
-//		for (Group g : groups) {
-//			if (g.getName().startsWith(GROUP_TENANT_PREFIX)) {
-//				return g.getName().split("-")[2];
-//			}
-//		}
+		// UserUtil util = ComponentAccessor.getUserUtil();
+		// SortedSet<Group> groups =
+		// util.getGroupsForUser(getCurrentUser().getName());
+		// for (Group g : groups) {
+		// if (g.getName().startsWith(GROUP_TENANT_PREFIX)) {
+		// return g.getName().split("-")[2];
+		// }
+		// }
 
 		// TODO: Provisional check in order to return the default cfg tenant
 		// until extensive test
@@ -222,6 +225,14 @@ public class LoginLogic {
 		cookie.setPath("/");
 		cookie.setMaxAge(60 * 60 * 24 * 365);
 		res.addCookie(cookie);
+	}
+
+	public String getSimilarity() {
+		return similarity;
+	}
+
+	public void setSimilarity(String similarity) {
+		this.similarity = similarity;
 	}
 
 }

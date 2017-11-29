@@ -93,6 +93,33 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2")
 					<br> <br>
 					<hr>
 					<br>
+					
+					<div class="module">
+						<div class="mod-header" id="interface-options-head">
+							<div>
+								<h2>Similarity options</h2>
+								<i>(highly recommended)</i>
+							</div>
+						</div>
+
+						<div class="mod-content" id="interface-options">
+							<form method="post" action="supersede-cfg" class="aui dont-default-focus">
+								<input type="hidden" name="similarity-flag" value="y">
+								<p>
+									This is the host of the similarity application. It is <strong>highly recommended</strong> in order to ensure a smooth Supersede and JIRA experience
+								</p>
+								<p>
+									<label for="similarity">Similarity host:</label> <input type="text" id="similarity" name="similarity" value="$similarity" required>
+								</p>
+								<input type="submit" class="button" value="Save">
+
+							</form>
+						</div>
+
+
+
+					</div>
+					
 
 					<div class="module">
 						<div class="mod-header" id="interface-options-head">

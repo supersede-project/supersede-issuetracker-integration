@@ -14,7 +14,12 @@
 
 package eu.supersede.jira.plugins.logic;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -47,6 +52,8 @@ import com.atlassian.jira.jql.builder.JqlQueryBuilder;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.project.version.Version;
 import com.atlassian.jira.user.ApplicationUser;
+import com.atlassian.jira.util.json.JSONArray;
+import com.atlassian.jira.util.json.JSONObject;
 import com.atlassian.jira.web.bean.PagerFilter;
 import com.atlassian.jira.web.util.AttachmentException;
 import com.atlassian.query.Query;
@@ -357,17 +364,80 @@ public class IssueLogic {
 		Project proj = ComponentAccessor.getProjectManager().getProjectByCurrentKey(projectKey);
 		Collection<IssueType> issueTypes = ComponentAccessor.getIssueTypeSchemeManager().getIssueTypesForProject(proj);
 		ArrayList<IssueType> filteredIssueTypes = new ArrayList<IssueType>();
-		
-		//Remove subtypes from list (you cannot create a subtask from outside an issue, so it doesn't make sense to include it
+
+		// Remove subtypes from list (you cannot create a subtask from outside
+		// an issue, so it doesn't make sense to include it
 		Iterator<IssueType> iter = issueTypes.iterator();
 		while (iter.hasNext()) {
 			IssueType it = iter.next();
-			if(!it.isSubTask()) {
+			if (!it.isSubTask()) {
 				filteredIssueTypes.add(it);
 			}
 		}
-		
+
 		return filteredIssueTypes;
 	}
 
+	public ArrayList<String> checkSimilarity(Alert a, List<Issue> issues) {
+		try {
+			int response = -1;
+			String responseData = "";
+
+			URL url = new URL(loginLogic.getSimilarity());
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+			JSONObject similarity = new JSONObject();
+			JSONObject feedback = new JSONObject();
+			feedback.put("text", a.getDescription());
+			similarity.put("k", 2);
+			similarity.put("feedback", feedback);
+
+			JSONArray requirements = new JSONArray();
+			for (Issue i : issues) {
+				JSONObject requirement = new JSONObject();
+				requirement.put("_id", i.getId());
+				requirement.put("title", i.getSummary());
+				requirement.put("description", i.getDescription());
+
+				requirements.put(requirement);
+			}
+
+			similarity.put("requirements", requirements);
+
+			conn.setConnectTimeout(LoginLogic.CONN_TIMEOUT);
+			conn.setReadTimeout(LoginLogic.CONN_TIMEOUT);
+			conn.setDoOutput(true);
+			conn.setDoInput(true);
+			conn.setRequestMethod("POST");
+			conn.setRequestProperty("Accept", "application/json");
+			conn.setRequestProperty("Content-Type", "application/json");
+			OutputStreamWriter outputStreamWriter = new OutputStreamWriter(conn.getOutputStream());
+			outputStreamWriter.write(similarity.toString());
+			outputStreamWriter.flush();
+
+			response = conn.getResponseCode();
+			responseData = conn.getResponseMessage();
+
+			BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
+			StringBuilder sb = new StringBuilder();
+			String output;
+			while ((output = br.readLine()) != null) {
+				sb.append(output);
+			}
+			JSONArray result = new JSONArray(sb.toString());
+			ArrayList<String> similarityList = new ArrayList<String>();
+			int l = result.length();
+			for (int i = 0; i < l; ++i) {
+				JSONObject o = result.getJSONObject(i);
+				similarityList.add(o.getString("id") + " - " + o.getString("rank"));
+			}
+
+			return similarityList;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+
+	}
 }

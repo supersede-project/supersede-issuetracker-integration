@@ -113,8 +113,7 @@
 					<div class="aui-dialog2-footer-actions">
 						<form action="supersede-alerts" method="get">
 							<input type="hidden" class="selectionList" name="selectionList"> <input type="checkbox" id="chkDeleteStatus" class="toEnable" class="chkDeleteStatus" name="chkDeleteStatus" value="true" />$i18n.getText("supersede-alerts-attach-dialog-check.label")
-							<input type="hidden" class="projectField" value=$projectField name="projectField">
-							<input type="hidden" class="issueType" name="issueType">
+							<input type="hidden" class="projectField" value=$projectField name="projectField"> <input type="hidden" class="issueType" name="issueType">
 							<button id="dialog-submit-button" class="aui-button aui-button-primary dialogButton" name="action" value="Import">$i18n.getText("supersede-alerts-create-btn.label")</button>
 						</form>
 					</div>
@@ -201,6 +200,12 @@
 					<button style="margin-left: 20px" id="attach-dialog-show-button" class="aui-button aui-button-primary alertManagement toEnable simple-tooltip" title="Attach selected alert to existing issue(s)">
 						<span class="glyphicon glyphicon-paperclip"></span> $i18n.getText("supersede-alerts-attach-btn.label")
 					</button>
+					<form action="supersede-alerts" method="get">
+						<input type="hidden" class="similarity" value="y" name="similarity"> <input type="hidden" class="projectField" value=$projectField name="projectField"> <input type="hidden" class="selectionList" name="selectionList">
+						<button style="margin-left: 20px" id="check-similarity" class="aui-button aui-button-secondary alertManagement toEnable simple-tooltip" title="Check similarity for this alert">
+							<span class="glyphicon glyphicon-list-alt"></span> Check similar issues
+						</button>
+					</form>
 					<button id="dialog-delete-button" class="aui-button aui-button-secondary alertManagement toEnable simple-tooltip" title='$i18n.getText("supersede-alerts-delete-btn.tooltip")'>
 						<span class="glyphicon glyphicon-trash"></span> $i18n.getText("supersede-alerts-delete-btn.label")
 					</button>

@@ -129,7 +129,7 @@ public class SupersedeAlerts extends HttpServlet {
 			errors = new LinkedList<String>();
 			req.removeAttribute("fromPost");
 		}
-		
+
 		if ("y".equals(req.getParameter("webhook"))) {
 			String issueKey = "test";
 			String issueId = "prova";
@@ -257,6 +257,21 @@ public class SupersedeAlerts extends HttpServlet {
 			context.put("defaultType", issueTypes.iterator().next().getId());
 			templateRenderer.render("/templates/content-supersede-alerts-issue-type.vm", context, resp.getWriter());
 			return;
+		} else if ("y".equals(req.getParameter("similarity"))) {
+			String[] list = req.getParameter(PARAM_SELECTION_LIST).split(SEPARATOR);
+			for (int i = 0; i < list.length; i++) {
+				Alert a = alertLogic.fetchAlerts(req, resp, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic, list[i], "").get(0);
+				List<Issue> issuesList = issueLogic.getIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId());
+				ArrayList<String> similarity = issueLogic.checkSimilarity(a, issuesList);
+
+				String message = "Similarity for alert " + a.getId() + ": ";
+				for (String s : similarity) {
+					message += s + " ";
+				}
+
+				errors.add(message);
+			}
+			errors.add("Fatto!");
 		}
 
 		issues = issueLogic.getIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId());
