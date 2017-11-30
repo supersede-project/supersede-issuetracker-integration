@@ -165,11 +165,15 @@ function onPageLoad() {
 		AJS.dialog2("#import-dialog").show();
 	});
 
+	AJS.$("#check-similarity").click(function() {
+		AJS.dialog2("#similarity-dialog").show();
+	});
+
 	AJS.$("#dialog-delete-button").click(function() {
 		var alerts = selectionString;
 		var splitAlerts = alerts.split(':::');
 		var deleteList = '<ul>';
-		for (var i = 0; i < splitAlerts.length-1; i++) {
+		for (var i = 0; i < splitAlerts.length - 1; i++) {
 			deleteList += '<li><a href="supersede-alerts?xmlAlert=y&xmlAlertId=' + splitAlerts[i] + '" target="_blank">' + splitAlerts[i] + '</a><br/></li>';
 		}
 		deleteList += '</ul>';
@@ -238,6 +242,10 @@ function onPageLoad() {
 			}
 		});
 		// alert("load!");
+	});
+	
+	AJS.$("#similarity-button").click(function() {
+		$('.issueFilter').val($('#search-similarity-filters').val());
 	});
 
 	function issueTypeSelectorChange() {

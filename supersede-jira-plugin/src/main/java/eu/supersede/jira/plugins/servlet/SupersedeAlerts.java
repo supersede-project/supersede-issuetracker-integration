@@ -33,6 +33,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.avatar.Avatar;
+import com.atlassian.jira.bc.JiraServiceContextImpl;
+import com.atlassian.jira.bc.filter.SearchRequestService;
 import com.atlassian.jira.bc.issue.IssueService;
 import com.atlassian.jira.bc.issue.IssueService.IssueResult;
 import com.atlassian.jira.bc.issue.search.SearchService;
@@ -41,7 +43,9 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.CustomFieldManager;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.issuetype.IssueType;
+import com.atlassian.jira.issue.search.SearchRequest;
 import com.atlassian.jira.project.Project;
+import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.util.I18nHelper;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.user.UserManager;
@@ -180,6 +184,13 @@ public class SupersedeAlerts extends HttpServlet {
 		context.put("defaultType", issueTypes.iterator().next().getId());
 		context.put("date", new Date().toString());
 
+		// select filters for similarity
+		ApplicationUser user = loginLogic.getCurrentUser();
+		if (user != null) {
+			Collection<SearchRequest> sList = ComponentAccessor.getComponentOfType(SearchRequestService.class).getOwnedFilters(user);
+			context.put("filters", sList);
+		}
+
 		if (!"".equals(req.getParameter(PARAM_ACTION)) && req.getParameter(PARAM_ACTION) != null) {
 			// true = import clicked - false = attach clicked
 			boolean isImport = "Import".equals(req.getParameter(PARAM_ACTION));
@@ -258,10 +269,19 @@ public class SupersedeAlerts extends HttpServlet {
 			templateRenderer.render("/templates/content-supersede-alerts-issue-type.vm", context, resp.getWriter());
 			return;
 		} else if ("y".equals(req.getParameter("similarity"))) {
+			String issueFilter = req.getParameter("issueFilter");
+			System.out.println(issueFilter);
 			String[] list = req.getParameter(PARAM_SELECTION_LIST).split(SEPARATOR);
+			List<Issue> issuesList = null;
+			if ("empty".equals(issueFilter)) {
+				issuesList = issueLogic.getIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId());
+			} else {
+				SearchRequest sr = ComponentAccessor.getComponentOfType(SearchRequestService.class).getFilter(new JiraServiceContextImpl(user), Long.valueOf(issueFilter));
+				// Get a list of issues from this query
+				issuesList = issueLogic.getIssuesFromFilter(req, sr.getQuery());
+			}
 			for (int i = 0; i < list.length; i++) {
 				Alert a = alertLogic.fetchAlerts(req, resp, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic, list[i], "").get(0);
-				List<Issue> issuesList = issueLogic.getIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId());
 				ArrayList<String> similarity = issueLogic.checkSimilarity(a, issuesList);
 
 				String message = "Similarity for alert " + a.getId() + ": ";

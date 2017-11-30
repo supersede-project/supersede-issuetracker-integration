@@ -177,18 +177,57 @@
 					</a>
 				</header>
 				<!-- Main dialog content -->
-				<div class="aui-dialog2-content dialogDataView"></div>
-				<!-- Dialog footer -->
-				<footer class="aui-dialog2-footer">
-					<!-- Actions to render on the right of the footer -->
-					<div class="aui-dialog2-footer-actions">
-						<form action="supersede-alerts" method="post">
-							<input type="hidden" class="selectionList" name="selectionList"> <input type="submit" id="dialog-submit-button" class="aui-button aui-button-primary dialogButton" name="deleteAction" value="Delete">
-						</form>
-						<button id="dialog-close-button" class="aui-button aui-button-link">Close</button>
-					</div>
-					<!-- HINT TEXT -->
-				</footer>
+				<div class="aui-dialog2-content dialogDataView">
+					c
+					<!-- Dialog footer -->
+					<footer class="aui-dialog2-footer">
+						<!-- Actions to render on the right of the footer -->
+						<div class="aui-dialog2-footer-actions">
+							<form action="supersede-alerts" method="post">
+								<input type="hidden" class="selectionList" name="selectionList"> <input type="submit" id="dialog-submit-button" class="aui-button aui-button-primary dialogButton" name="deleteAction" value="Delete">
+							</form>
+							<button id="dialog-close-button" class="aui-button aui-button-link">Close</button>
+						</div>
+						<!-- HINT TEXT -->
+					</footer>
+			</section>
+
+			<!-- SIMILARITY DIALOG -->
+			<section role="dialog" id="similarity-dialog" class="aui-layer aui-dialog2 aui-dialog2-medium" aria-hidden="true">
+				<!-- Dialog header -->
+				<header class="aui-dialog2-header">
+					<h2 class="aui-dialog2-header-main">Similarity check</h2>
+					<!-- Close icon -->
+					<a class="aui-dialog2-header-close"> <span class="aui-icon aui-icon-small aui-iconfont-close-dialog">Close</span>
+					</a>
+				</header>
+				<!-- Main dialog content -->
+				<div class="aui-dialog2-content dialogDataView">
+					Select the desired search in order to restrict the similarity check
+					<form class="aui">
+						<div class="field-group">
+							<label for="filter-select">$i18n.getText("supersede-prioritization-filters.label")</label> <select class="select" id="search-similarity-filters" name="search-similarity-filters">
+								<option value="empty">All issues in JIRA</option> #foreach($filter in $filters)
+								<option value=$filter.getId()>$filter.getName()</option> #end
+							</select>
+						</div>
+					</form>
+					<div>
+						<!-- Dialog footer -->
+						<footer class="aui-dialog2-footer">
+							<!-- Actions to render on the right of the footer -->
+							<div class="aui-dialog2-footer-actions">
+								<form action="supersede-alerts" method="get">
+									<input type="hidden" class="issueFilter" name="issueFilter"> <input type="hidden" class="similarity" value="y" name="similarity"> <input type="hidden" class="projectField" value=$projectField name="projectField"> <input
+										type="hidden" class="selectionList" name="selectionList">
+									<button id="similarity-button" style="margin-left: 20px" class="aui-button aui-button-secondary alertManagement toEnable simple-tooltip" title="Check similarity for this alert">
+										<span class="glyphicon glyphicon-list-alt"></span> Check similar issues
+									</button>
+								</form>
+								<button id="dialog-close-button" class="aui-button aui-button-link">Close</button>
+							</div>
+							<!-- HINT TEXT -->
+						</footer>
 			</section>
 
 			<!-- 			IMPORT - ATTACH - DELETE BUTTONS  -->
@@ -200,12 +239,9 @@
 					<button style="margin-left: 20px" id="attach-dialog-show-button" class="aui-button aui-button-primary alertManagement toEnable simple-tooltip" title="Attach selected alert to existing issue(s)">
 						<span class="glyphicon glyphicon-paperclip"></span> $i18n.getText("supersede-alerts-attach-btn.label")
 					</button>
-					<form action="supersede-alerts" method="get">
-						<input type="hidden" class="similarity" value="y" name="similarity"> <input type="hidden" class="projectField" value=$projectField name="projectField"> <input type="hidden" class="selectionList" name="selectionList">
-						<button style="margin-left: 20px" id="check-similarity" class="aui-button aui-button-secondary alertManagement toEnable simple-tooltip" title="Check similarity for this alert">
-							<span class="glyphicon glyphicon-list-alt"></span> Check similar issues
-						</button>
-					</form>
+					<button style="margin-left: 20px" id="check-similarity" class="aui-button aui-button-secondary alertManagement toEnable simple-tooltip" title="Check similarity for this alert">
+						<span class="glyphicon glyphicon-list-alt"></span> Check similar issues
+					</button>
 					<button id="dialog-delete-button" class="aui-button aui-button-secondary alertManagement toEnable simple-tooltip" title='$i18n.getText("supersede-alerts-delete-btn.tooltip")'>
 						<span class="glyphicon glyphicon-trash"></span> $i18n.getText("supersede-alerts-delete-btn.label")
 					</button>
