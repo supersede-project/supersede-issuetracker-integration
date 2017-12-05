@@ -291,7 +291,6 @@ public class SupersedeAlerts extends HttpServlet {
 
 				errors.add(message);
 			}
-			errors.add("Fatto!");
 		}
 
 		issues = issueLogic.getIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId());

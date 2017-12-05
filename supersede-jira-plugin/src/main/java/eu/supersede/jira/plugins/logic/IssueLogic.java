@@ -141,6 +141,24 @@ public class IssueLogic {
 		return list.size() == 1 ? list.get(0) : null;
 	}
 
+	public Issue getIssueById(String issueId) {
+		ApplicationUser user = loginLogic.getCurrentUser();
+		JqlClauseBuilder jqlClauseBuilder = JqlQueryBuilder.newClauseBuilder();
+		jqlClauseBuilder.field("id").eq(issueId);
+		Query query = jqlClauseBuilder.buildQuery();
+		PagerFilter pagerFilter = PagerFilter.getUnlimitedFilter();
+		com.atlassian.jira.issue.search.SearchResults searchResults = null;
+		try {
+			searchResults = searchService.search(user, query, pagerFilter);
+		} catch (SearchException e) {
+			e.printStackTrace();
+		}
+		// It must be 0 or 1
+		List<Issue> list = searchResults.getIssues();
+
+		return list.size() == 1 ? list.get(0) : null;
+	}
+
 	/**
 	 * Retrieve the issues with a valid supersede field set
 	 * 
@@ -429,7 +447,11 @@ public class IssueLogic {
 			int l = result.length();
 			for (int i = 0; i < l; ++i) {
 				JSONObject o = result.getJSONObject(i);
-				similarityList.add(o.getString("id") + " - " + o.getString("rank"));
+
+				IssueManager im = ComponentAccessor.getIssueManager();
+				Long id = Long.parseLong(o.getString("id"));
+				Issue sim = im.getIssueObject(id);
+				similarityList.add(sim.getKey());
 			}
 
 			return similarityList;
