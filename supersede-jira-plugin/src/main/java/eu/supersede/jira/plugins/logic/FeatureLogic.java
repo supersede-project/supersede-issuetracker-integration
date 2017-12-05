@@ -123,7 +123,7 @@ public class FeatureLogic {
 			int response = -1;
 			String responseData = null;
 			// http://platform.supersede.eu:8280/replan/projects/<ReplanTenant>/features/<id>
-			URL url = new URL(loginLogic.getReplanHost() + loginLogic.getReplanTenant() + "/features?code=" + i.getId().toString());
+			URL url = new URL(loginLogic.getReplanHost() + loginLogic.getReplanTenant() + "/features?id=" + i.getId().toString());
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 			conn.setConnectTimeout(LoginLogic.CONN_TIMEOUT);
 			conn.setReadTimeout(LoginLogic.CONN_TIMEOUT);
