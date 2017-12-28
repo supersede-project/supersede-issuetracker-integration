@@ -27,7 +27,7 @@
 	<!-- .aui-page-header-inner -->
 </header>
 
-#if ($errors && $errors.size()>0)
+#if (($errors && $errors.size()>0) || ($similarities && $similarities.size()>0))
 <div class="content-container">
 	<div class="content-body">
 		<div class="aui-message aui-message-info shadowed">
@@ -37,7 +37,13 @@
 				</strong> #elseif($attachedIssue) <span class="glyphicon glyphicon-ok"></span> <strong>The issue <a href="$baseurl/browse/$error">$error</a> was correctly updated
 				</strong> #else <strong>$error </strong> #end
 			</p>
-#end
+			#end #foreach($similarity in $similarities) #if($similarity.toString().contains("Similarity for alert"))
+			<p class="title">$similarity</p>
+			#else
+			<p class="title">
+				- <a href="$baseurl/browse/$similarity">$similarity</a>
+			</p>
+			#end #end
 		</div>
 		<!-- .aui-message -->
 	</div>

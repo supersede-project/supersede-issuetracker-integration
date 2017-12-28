@@ -252,10 +252,6 @@ public class IssueLogic {
 		return issues.get(0);
 	}
 
-	private void newIssue(HttpServletRequest req, Collection<String> errors, CustomField supersedeField) {
-		newIssue(req, req.getParameter("name"), req.getParameter("description"), req.getParameter("id"), errors, supersedeField, loginLogic.getCurrentProject().toUpperCase(), "");
-	}
-
 	public IssueResult newIssue(HttpServletRequest req, String name, String description, String id, Collection<String> errors, CustomField supersedeField, String projectId, String typeId) {
 		IssueResult issue = null;
 		ApplicationUser user = loginLogic.getCurrentUser();
@@ -396,7 +392,7 @@ public class IssueLogic {
 		return filteredIssueTypes;
 	}
 
-	public ArrayList<String> checkSimilarity(Alert a, List<Issue> issues) {
+	public List<String> checkSimilarity(Alert a, List<Issue> issues) {
 		try {
 			int response = -1;
 			String responseData = "";
@@ -443,7 +439,7 @@ public class IssueLogic {
 				sb.append(output);
 			}
 			JSONArray result = new JSONArray(sb.toString());
-			ArrayList<String> similarityList = new ArrayList<String>();
+			List<String> similarityList = new ArrayList<String>();
 			int l = result.length();
 			for (int i = 0; i < l; ++i) {
 				JSONObject o = result.getJSONObject(i);

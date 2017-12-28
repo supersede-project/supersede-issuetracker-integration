@@ -116,6 +116,7 @@ public class SupersedePrioritization extends HttpServlet {
 		context.put("baseurl", ComponentAccessor.getApplicationProperties().getString("jira.baseurl"));
 		List<Project> projects = ComponentAccessor.getProjectManager().getProjectObjects();
 		context.put("projects", projects);
+		errors = new LinkedList<String>();
 		ApplicationUser user = loginLogic.getCurrentUser();
 		if (user != null) {
 			Collection<SearchRequest> sList = ComponentAccessor.getComponentOfType(SearchRequestService.class).getOwnedFilters(user);
@@ -130,10 +131,16 @@ public class SupersedePrioritization extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 		try {
-			errors = new LinkedList<String>();
 			// This must create a process on SS and "on JIRA" at the same time
 			String processSSID = "";
+			if (req.getParameter("procFilter") == null || req.getParameter("procFilter").isEmpty()) {
+				errors.add("Cannot create a process without an issue filter");
+				context.put("errors", errors);
+				templateRenderer.render("/templates/logic-supersede-prioritization.vm", context, res.getWriter());
+				return;
+			}
 			if ("CreateProc".equals(req.getParameter(PARAM_ACTION))) {
+				errors = new LinkedList<String>();
 				String name = req.getParameter("procId");
 				String description = req.getParameter("procDesc");
 				String filter = req.getParameter("procFilter");

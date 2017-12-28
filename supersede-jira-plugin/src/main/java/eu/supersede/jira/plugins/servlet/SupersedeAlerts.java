@@ -205,6 +205,12 @@ public class SupersedeAlerts extends HttpServlet {
 				issueID = a.getId() + System.currentTimeMillis();
 				newIssue = issueLogic.newIssue(req, "Issue " + a.getId(), a.getDescription(), issueID, errors, supersedeCustomFieldLogic.getSupersedeCustomField(), project, type);
 			}
+			if (newIssue == null) {
+				errors.add("Cannot add issue");
+				context.put("errors", errors);
+				templateRenderer.render("/templates/content-supersede-alerts.vm", context, resp.getWriter());
+				return;
+			}
 			Alert a = null;
 			boolean firstLoop = false;
 			for (int i = 0; i < list.length; i++) {
@@ -280,17 +286,19 @@ public class SupersedeAlerts extends HttpServlet {
 				// Get a list of issues from this query
 				issuesList = issueLogic.getIssuesFromFilter(req, sr.getQuery());
 			}
+			ArrayList<String> similarities = new ArrayList<String>();
 			for (int i = 0; i < list.length; i++) {
 				Alert a = alertLogic.fetchAlerts(req, resp, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic, list[i], "").get(0);
-				ArrayList<String> similarity = issueLogic.checkSimilarity(a, issuesList);
+				List<String> similarity = issueLogic.checkSimilarity(a, issuesList);
 
-				String message = "Similarity for alert " + a.getId() + ": ";
+				similarities.add("Similarity for alert " + a.getId() + ": ");
+
 				for (String s : similarity) {
-					message += s + " ";
+					similarities.add(s);
 				}
-
-				errors.add(message);
 			}
+			context.put("similarities", similarities);
+			System.out.println("DONE");
 		}
 
 		issues = issueLogic.getIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId());
