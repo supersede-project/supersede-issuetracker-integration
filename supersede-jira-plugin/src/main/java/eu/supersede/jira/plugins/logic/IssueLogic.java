@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,7 +88,8 @@ public class IssueLogic {
 		this.searchService = searchService;
 	}
 
-	public static IssueLogic getInstance(IssueService issueService, ProjectService projectService, SearchService searchService) {
+	public static IssueLogic getInstance(IssueService issueService, ProjectService projectService,
+			SearchService searchService) {
 		if (logic == null) {
 			logic = new IssueLogic(issueService, projectService, searchService);
 		}
@@ -179,12 +181,14 @@ public class IssueLogic {
 
 		// Build the basic Jql query
 		List<Project> projects = ComponentAccessor.getProjectManager().getProjectObjects();
-		jqlClauseBuilder.customField(supersedeFieldId).isNotEmpty().and().project(req.getParameter("projectField") != null ? req.getParameter("projectField") : projects.get(0).getKey());
+		jqlClauseBuilder.customField(supersedeFieldId).isNotEmpty().and().project(
+				req.getParameter("projectField") != null ? req.getParameter("projectField") : projects.get(0).getKey());
 		if (id != null && !"".equals(id) && !" ".equals(id)) {
 			// if an ID is provided, use in in filter
 			// ID MUST BE the beginnning of the string. You cannot put a
 			// wildcard at the beginning of the search
-			jqlClauseBuilder.and().sub().customField(supersedeFieldId).like(id + "*").or().field("key").eq(id).or().field("summary").like(id + "*").endsub();
+			jqlClauseBuilder.and().sub().customField(supersedeFieldId).like(id + "*").or().field("key").eq(id).or()
+					.field("summary").like(id + "*").endsub();
 		}
 		Query query = jqlClauseBuilder.buildQuery();
 		// A page filter is used to provide pagination. Let's use an unlimited
@@ -226,7 +230,8 @@ public class IssueLogic {
 		// Our JQL clause is simple project="TUTORIAL"
 		// com.atlassian.query.Query query =
 		// jqlClauseBuilder.project("TEST").buildQuery();
-		Query query = jqlClauseBuilder.customField(supersedeFieldId).like(requirementId).and().project(loginLogic.getCurrentProject()).buildQuery();
+		Query query = jqlClauseBuilder.customField(supersedeFieldId).like(requirementId).and()
+				.project(loginLogic.getCurrentProject()).buildQuery();
 		log.debug(query.getQueryString());
 		log.debug(query.getWhereClause().toString());
 		// A page filter is used to provide pagination. Let's use an unlimited
@@ -252,7 +257,8 @@ public class IssueLogic {
 		return issues.get(0);
 	}
 
-	public IssueResult newIssue(HttpServletRequest req, String name, String description, String id, Collection<String> errors, CustomField supersedeField, String projectId, String typeId) {
+	public IssueResult newIssue(HttpServletRequest req, String name, String description, String id,
+			Collection<String> errors, CustomField supersedeField, String projectId, String typeId) {
 		IssueResult issue = null;
 		ApplicationUser user = loginLogic.getCurrentUser();
 		// Perform creation if the "new" param is passed in
@@ -270,14 +276,16 @@ public class IssueLogic {
 		// issueInputParameters.setAssigneeId(user.getName());
 		issueInputParameters.setReporterId(user.getName());
 		// We hard-code the project name to be the project with the TUTORIAL key
-		Project project = projectService.getProjectByKey(user,
-				/* loginLogic.getCurrentProject().toUpperCase() */ projectId).getProject();
+		Project project = projectService
+				.getProjectByKey(user, /* loginLogic.getCurrentProject().toUpperCase() */ projectId).getProject();
 		if (null == project) {
-			errors.add("Cannot add issue for requirement " + id + ": no such project " + loginLogic.getCurrentProject());
+			errors.add(
+					"Cannot add issue for requirement " + id + ": no such project " + loginLogic.getCurrentProject());
 		} else {
 			issueInputParameters.setProjectId(project.getId());
 			// We also hard-code the issueType to be a "bug" == 1
-			issueInputParameters.setIssueTypeId(typeId != null && !typeId.isEmpty() ? typeId : project.getIssueTypes().iterator().next().getId());
+			issueInputParameters.setIssueTypeId(
+					typeId != null && !typeId.isEmpty() ? typeId : project.getIssueTypes().iterator().next().getId());
 			// Perform the validation
 			issueInputParameters.setSkipScreenCheck(true);
 			IssueService.CreateValidationResult result = issueService.validateCreate(user, issueInputParameters);
@@ -296,7 +304,8 @@ public class IssueLogic {
 		return issue;
 	}
 
-	public void updateIssue(MutableIssue issue, ApplicationUser user, String requirementId, Collection<String> errors, CustomField supersedeField) {
+	public void updateIssue(MutableIssue issue, ApplicationUser user, String requirementId, Collection<String> errors,
+			CustomField supersedeField) {
 
 		issue.setCustomFieldValue(supersedeField, requirementId);
 		Object customField = issue.getCustomFieldValue(supersedeField);
@@ -304,7 +313,8 @@ public class IssueLogic {
 
 		IssueInputParameters issueInputParameters = issueService.newIssueInputParameters();
 		issueInputParameters.addCustomFieldValue(supersedeField.getId(), requirementId);
-		IssueService.UpdateValidationResult updateRes = issueService.validateUpdate(user, issue.getId(), issueInputParameters);
+		IssueService.UpdateValidationResult updateRes = issueService.validateUpdate(user, issue.getId(),
+				issueInputParameters);
 
 		if (updateRes.getErrorCollection().hasAnyErrors()) {
 			Map<String, String> errorsMap = updateRes.getErrorCollection().getErrors();
@@ -329,7 +339,8 @@ public class IssueLogic {
 			return;
 		}
 
-		CreateAttachmentParamsBean capb = new CreateAttachmentParamsBean.Builder(tmpFile, source.getId() + ".xml", "application/xml", null, target).build();
+		CreateAttachmentParamsBean capb = new CreateAttachmentParamsBean.Builder(tmpFile, source.getId() + ".xml",
+				"application/xml", null, target).build();
 		try {
 			ComponentAccessor.getAttachmentManager().createAttachment(capb);
 		} catch (AttachmentException e) {
@@ -392,13 +403,27 @@ public class IssueLogic {
 		return filteredIssueTypes;
 	}
 
-	public List<String> checkSimilarity(Alert a, List<Issue> issues) {
+	public List<String> checkSimilarity(Alert a, List<Issue> issues, HttpServletRequest req) {
 		try {
 			int response = -1;
 			String responseData = "";
 
-			URL url = new URL(loginLogic.getSimilarity());
+			String sessionId = loginLogic.login();
+			String xsrf = loginLogic.authenticate(sessionId);
+			HttpSession session = req.getSession();
+			session.setAttribute("Cookie", "SESSION=" + sessionId + ";");
+			URL url = new URL(loginLogic.getUrl() + "/supersede-dm-app/similarity");
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			conn.setConnectTimeout(LoginLogic.CONN_TIMEOUT);
+			conn.setReadTimeout(LoginLogic.CONN_TIMEOUT);
+			conn.setRequestProperty("Authorization", loginLogic.getBasicAuth());
+			conn.setRequestProperty("TenantId", loginLogic.getCurrentProject());
+			conn.setRequestProperty("Cookie", "SESSION=" + sessionId + ";");
+			conn.setDoOutput(true);
+			conn.setDoInput(true);
+			conn.setRequestMethod("POST");
+			conn.setRequestProperty("Content-Type", "application/json");
+			conn.setRequestProperty("X-XSRF-TOKEN", xsrf);
 
 			JSONObject similarity = new JSONObject();
 			JSONObject feedback = new JSONObject();
@@ -418,18 +443,12 @@ public class IssueLogic {
 
 			similarity.put("requirements", requirements);
 
-			conn.setConnectTimeout(LoginLogic.CONN_TIMEOUT);
-			conn.setReadTimeout(LoginLogic.CONN_TIMEOUT);
-			conn.setDoOutput(true);
-			conn.setDoInput(true);
-			conn.setRequestMethod("POST");
-			conn.setRequestProperty("Accept", "application/json");
-			conn.setRequestProperty("Content-Type", "application/json");
 			OutputStreamWriter outputStreamWriter = new OutputStreamWriter(conn.getOutputStream());
 			outputStreamWriter.write(similarity.toString());
 			outputStreamWriter.flush();
 
 			response = conn.getResponseCode();
+			System.out.println(response);
 			responseData = conn.getResponseMessage();
 
 			BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));

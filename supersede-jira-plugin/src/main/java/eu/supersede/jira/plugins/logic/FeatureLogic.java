@@ -141,6 +141,7 @@ public class FeatureLogic {
 			while ((output = br.readLine()) != null) {
 				sb.append(output);
 			}
+			System.out.println(sb.toString());
 			JSONObject feature = null;
 			JSONArray array = new JSONArray(sb.toString());
 			for (int j = 0; j < array.length(); j++) {
@@ -199,13 +200,15 @@ public class FeatureLogic {
 			IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
 			Long issueLinkTypeId = -1L;
 			Collection<IssueLinkType> linkTypes = ComponentAccessor.getComponentOfType(IssueLinkTypeManager.class).getIssueLinkTypes(false);
+			boolean dependencyFound = false;
 			for (IssueLinkType ilt : linkTypes) {
 				if ("Dependency".equals(ilt.getName())) {
 					issueLinkTypeId = ilt.getId();
+					dependencyFound = true;
 				}
 			}
 
-			if (issueLinkTypeId == -1L) {
+			if (issueLinkTypeId == -1L && dependencyFound) {
 				return "The type of the dependent issue link was not found on this system";
 			}
 

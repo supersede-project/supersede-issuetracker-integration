@@ -129,7 +129,7 @@ public class SupersedeAlerts extends HttpServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		if (req.getAttribute("fromPost") == null) {
+		if (req.getAttribute("fromPost") != null) {
 			errors = new LinkedList<String>();
 			req.removeAttribute("fromPost");
 		}
@@ -205,7 +205,7 @@ public class SupersedeAlerts extends HttpServlet {
 				issueID = a.getId() + System.currentTimeMillis();
 				newIssue = issueLogic.newIssue(req, "Issue " + a.getId(), a.getDescription(), issueID, errors, supersedeCustomFieldLogic.getSupersedeCustomField(), project, type);
 			}
-			if (newIssue == null) {
+			if (isImport && newIssue == null) {
 				errors.add("Cannot add issue");
 				context.put("errors", errors);
 				templateRenderer.render("/templates/content-supersede-alerts.vm", context, resp.getWriter());
@@ -289,8 +289,7 @@ public class SupersedeAlerts extends HttpServlet {
 			ArrayList<String> similarities = new ArrayList<String>();
 			for (int i = 0; i < list.length; i++) {
 				Alert a = alertLogic.fetchAlerts(req, resp, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic, list[i], "").get(0);
-				List<String> similarity = issueLogic.checkSimilarity(a, issuesList);
-
+				List<String> similarity = issueLogic.checkSimilarity(a, issuesList, req);
 				similarities.add("Similarity for alert " + a.getId() + ": ");
 
 				for (String s : similarity) {
