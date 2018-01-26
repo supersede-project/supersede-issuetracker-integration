@@ -108,7 +108,6 @@ public class SupersedePrioritizationList extends HttpServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		List<String> errors = new LinkedList<String>();
 		Map<String, Object> context = Maps.newHashMap();
 		// process request
 

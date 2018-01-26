@@ -129,6 +129,7 @@ public class SupersedeAlerts extends HttpServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		errors = new LinkedList<String>();
 		if (req.getAttribute("fromPost") != null) {
 			errors = new LinkedList<String>();
 			req.removeAttribute("fromPost");

@@ -276,8 +276,8 @@ public class IssueLogic {
 		// issueInputParameters.setAssigneeId(user.getName());
 		issueInputParameters.setReporterId(user.getName());
 		// We hard-code the project name to be the project with the TUTORIAL key
-		Project project = projectService
-				.getProjectByKey(user, /* loginLogic.getCurrentProject().toUpperCase() */ projectId).getProject();
+		Project project = projectService.getProjectByKey(user,
+				/* loginLogic.getCurrentProject().toUpperCase() */ projectId).getProject();
 		if (null == project) {
 			errors.add(
 					"Cannot add issue for requirement " + id + ": no such project " + loginLogic.getCurrentProject());
@@ -412,7 +412,7 @@ public class IssueLogic {
 			String xsrf = loginLogic.authenticate(sessionId);
 			HttpSession session = req.getSession();
 			session.setAttribute("Cookie", "SESSION=" + sessionId + ";");
-			URL url = new URL(loginLogic.getUrl() + "/supersede-dm-app/similarity");
+			URL url = new URL(loginLogic.getSimilarity());
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 			conn.setConnectTimeout(LoginLogic.CONN_TIMEOUT);
 			conn.setReadTimeout(LoginLogic.CONN_TIMEOUT);
@@ -428,7 +428,7 @@ public class IssueLogic {
 			JSONObject similarity = new JSONObject();
 			JSONObject feedback = new JSONObject();
 			feedback.put("text", a.getDescription());
-			similarity.put("k", 2);
+			similarity.put("k", 5);
 			similarity.put("feedback", feedback);
 
 			JSONArray requirements = new JSONArray();
@@ -444,6 +444,8 @@ public class IssueLogic {
 			similarity.put("requirements", requirements);
 
 			OutputStreamWriter outputStreamWriter = new OutputStreamWriter(conn.getOutputStream());
+			String txt = "";
+			System.out.println(txt);
 			outputStreamWriter.write(similarity.toString());
 			outputStreamWriter.flush();
 
@@ -466,7 +468,7 @@ public class IssueLogic {
 				IssueManager im = ComponentAccessor.getIssueManager();
 				Long id = Long.parseLong(o.getString("id"));
 				Issue sim = im.getIssueObject(id);
-				similarityList.add(sim.getKey());
+				similarityList.add(sim.getKey() + " - " + sim.getSummary());
 			}
 
 			return similarityList;
