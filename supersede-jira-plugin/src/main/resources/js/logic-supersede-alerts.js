@@ -246,6 +246,8 @@ function onPageLoad() {
 	
 	AJS.$("#similarity-button").click(function() {
 		$('.issueFilter').val($('#search-similarity-filters').val());
+		$('.similarity-number').val($('#select-similarity-number').val());
+		
 	});
 
 	function issueTypeSelectorChange() {

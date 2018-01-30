@@ -281,7 +281,7 @@ public class SupersedeAlerts extends HttpServlet {
 			String[] list = req.getParameter(PARAM_SELECTION_LIST).split(SEPARATOR);
 			List<Issue> issuesList = null;
 			if ("empty".equals(issueFilter)) {
-				issuesList = issueLogic.getIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId());
+				issuesList = issueLogic.getAllIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId());
 			} else {
 				SearchRequest sr = ComponentAccessor.getComponentOfType(SearchRequestService.class).getFilter(new JiraServiceContextImpl(user), Long.valueOf(issueFilter));
 				// Get a list of issues from this query

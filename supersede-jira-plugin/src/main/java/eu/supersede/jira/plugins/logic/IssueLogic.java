@@ -428,7 +428,7 @@ public class IssueLogic {
 			JSONObject similarity = new JSONObject();
 			JSONObject feedback = new JSONObject();
 			feedback.put("text", a.getDescription());
-			similarity.put("k", 5);
+			similarity.put("k", Math.min(Integer.parseInt(req.getParameter("similarity-number")), issues.size()));
 			similarity.put("feedback", feedback);
 
 			JSONArray requirements = new JSONArray();
