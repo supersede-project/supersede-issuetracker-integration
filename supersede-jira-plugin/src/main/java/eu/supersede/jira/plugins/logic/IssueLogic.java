@@ -459,6 +459,7 @@ public class IssueLogic {
 			while ((output = br.readLine()) != null) {
 				sb.append(output);
 			}
+			System.out.println(sb.toString());
 			JSONArray result = new JSONArray(sb.toString());
 			List<String> similarityList = new ArrayList<String>();
 			int l = result.length();

@@ -123,7 +123,7 @@ public class FeatureLogic {
 			int response = -1;
 			String responseData = null;
 			// http://platform.supersede.eu:8280/replan/projects/<ReplanTenant>/features/<id>
-			URL url = new URL(loginLogic.getReplanHost() + loginLogic.getReplanTenant() + "/features?id=" + i.getId().toString());
+			URL url = new URL(loginLogic.getReplanHost() + loginLogic.getReplanTenant() + "/features?code=" + i.getId().toString());
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 			conn.setConnectTimeout(LoginLogic.CONN_TIMEOUT);
 			conn.setReadTimeout(LoginLogic.CONN_TIMEOUT);
@@ -163,7 +163,6 @@ public class FeatureLogic {
 			String issueKey = i.getKey();
 			IssueManager issueManager = ComponentAccessor.getIssueManager();
 			MutableIssue mIssue = issueManager.getIssueByKeyIgnoreCase(issueKey);
-			mIssue.setSummary(feature.getString("name"));
 			// calculate time
 
 			TimeZone tz = TimeZone.getTimeZone("Europe/Rome");

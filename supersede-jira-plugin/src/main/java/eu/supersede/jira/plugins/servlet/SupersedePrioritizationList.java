@@ -115,6 +115,18 @@ public class SupersedePrioritizationList extends HttpServlet {
 		if (req.getParameter("fromCreate") != null && !"".equals(req.getParameter("fromCreate"))) {
 			errors.add("Process " + req.getParameter("fromCreate").toString() + " successfully created!");
 		}
+		
+		if (req.getAttribute("fromRanking") != null) {
+			errors.add("Ranking of process " + req.getAttribute("fromRanking").toString() + " successfully imported!");
+		}
+		
+		if (req.getAttribute("fromDelete") != null) {
+			errors.add("Process " + req.getAttribute("fromDelete").toString() + " successfully deleted!");
+		}
+		
+		if (req.getAttribute("fromClose") != null) {
+			errors.add("Process " + req.getAttribute("fromClose").toString() + " successfully closed!");
+		}
 
 		context.put("processListFlag", "list");
 		context.put("baseurl", ComponentAccessor.getApplicationProperties().getString("jira.baseurl"));
@@ -140,7 +152,11 @@ public class SupersedePrioritizationList extends HttpServlet {
 		if (req.getAttribute("fromCreate") != null) {
 			errors.add("Process " + req.getAttribute("fromCreate").toString() + " successfully created!");
 		}
-
+		
+		if (req.getAttribute("fromRanking") != null) {
+			errors.add("Ranking of process " + req.getAttribute("fromRanking").toString() + " successfully imported!");
+		}
+		
 		try {
 			if ("rankingImport".equals(req.getParameter(PARAM_ACTION))) {
 				// Clear errors, otherwise results will remain in memory
@@ -180,8 +196,7 @@ public class SupersedePrioritizationList extends HttpServlet {
 					mIssue.setDescription(description + "\n Priority set to " + priorityValue + " on " + d.toString() + " \n Issue absolute ranking is " + (i + 1));
 					issueManager.updateIssue(loginLogic.getCurrentUser(), mIssue, EventDispatchOption.ISSUE_UPDATED, true);
 
-					errors.add("Ranking " + (i + 1) + " of process " + processId + " correctly imported");
-
+					req.setAttribute("fromRanking", processId);
 				}
 
 				sp.setLastRankingImportDate(new Date());
@@ -196,7 +211,7 @@ public class SupersedePrioritizationList extends HttpServlet {
 					sp.save();
 				}
 
-				errors.add("Supersede Process " + processId + " correctly closed");
+				req.setAttribute("fromClose", processId);
 			}
 
 			else if ("removeProject".equals(req.getParameter(PARAM_ACTION))) {
@@ -220,7 +235,7 @@ public class SupersedePrioritizationList extends HttpServlet {
 				}
 
 				processService.deleteJIRAProcess(SSprocessId);
-				errors.add("Supersede Process " + SSprocessId + " successfully deleted");
+				req.setAttribute("fromDelete", processId);
 			}
 			doGet(req, res);
 

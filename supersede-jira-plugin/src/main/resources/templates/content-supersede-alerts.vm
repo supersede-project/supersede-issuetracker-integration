@@ -178,7 +178,8 @@
 				</header>
 				<!-- Main dialog content -->
 				<div class="aui-dialog2-content dialogDataView">
-					c
+					<div class="listToDelete">
+					</div>
 					<!-- Dialog footer -->
 					<footer class="aui-dialog2-footer">
 						<!-- Actions to render on the right of the footer -->
@@ -190,6 +191,7 @@
 						</div>
 						<!-- HINT TEXT -->
 					</footer>
+				</div>
 			</section>
 
 			<!-- SIMILARITY DIALOG -->
