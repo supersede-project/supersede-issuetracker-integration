@@ -181,7 +181,8 @@ public class IssueLogic {
 
 		// Build the basic Jql query
 		List<Project> projects = ComponentAccessor.getProjectManager().getProjectObjects();
-		jqlClauseBuilder.customField(supersedeFieldId).isNotEmpty().and().project(
+		//jqlClauseBuilder.customField(supersedeFieldId).isNotEmpty().and().project(
+		jqlClauseBuilder.project(
 				req.getParameter("projectField") != null ? req.getParameter("projectField") : projects.get(0).getKey());
 		if (id != null && !"".equals(id) && !" ".equals(id)) {
 			// if an ID is provided, use in in filter

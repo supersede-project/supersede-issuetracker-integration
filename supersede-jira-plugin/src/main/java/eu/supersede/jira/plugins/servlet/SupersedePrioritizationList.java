@@ -189,7 +189,7 @@ public class SupersedePrioritizationList extends HttpServlet {
 					}
 					mIssue.setPriorityId(String.valueOf(priorityValue));
 					Date d = new Date();
-					String description = mIssue.getDescription();
+					String description = mIssue.getDescription() != null ? mIssue.getDescription() : "";
 					int priorityIndex = description.indexOf("Priority set to");
 
 					description = priorityIndex != -1 ? description.substring(0, priorityIndex - 1) : description;
