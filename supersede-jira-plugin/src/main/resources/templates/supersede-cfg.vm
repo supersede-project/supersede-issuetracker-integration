@@ -35,6 +35,10 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2")
 
 			<section class="aui-page-panel-content">
 				<div class="module">
+				
+				Last update (version number): 20180215
+				<br>
+				<br>
 					<div class="mod-header" id="connect-params-head">
 						<div>
 							<h2>Default Connection parameters</h2>
