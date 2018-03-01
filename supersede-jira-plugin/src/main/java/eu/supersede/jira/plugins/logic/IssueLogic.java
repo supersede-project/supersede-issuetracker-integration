@@ -181,14 +181,14 @@ public class IssueLogic {
 
 		// Build the basic Jql query
 		List<Project> projects = ComponentAccessor.getProjectManager().getProjectObjects();
-		//jqlClauseBuilder.customField(supersedeFieldId).isNotEmpty().and().project(
-        jqlClauseBuilder.project(
+		// jqlClauseBuilder.customField(supersedeFieldId).isNotEmpty().and().project(
+		jqlClauseBuilder.project(
 				req.getParameter("projectField") != null ? req.getParameter("projectField") : projects.get(0).getKey());
 		if (id != null && !"".equals(id) && !" ".equals(id)) {
 			// if an ID is provided, use in in filter
 			// ID MUST BE the beginnning of the string. You cannot put a
 			// wildcard at the beginning of the search
-			jqlClauseBuilder.and().sub().customField(supersedeFieldId).like(id + "*").or().field("key").eq(id).or()
+			jqlClauseBuilder.and().sub().customField(supersedeFieldId).like(id).or().field("key").eq(id).or()
 					.field("summary").like(id + "*").endsub();
 		}
 		Query query = jqlClauseBuilder.buildQuery();
@@ -262,21 +262,10 @@ public class IssueLogic {
 			Collection<String> errors, CustomField supersedeField, String projectId, String typeId) {
 		IssueResult issue = null;
 		ApplicationUser user = loginLogic.getCurrentUser();
-		// Perform creation if the "new" param is passed in
-		// First we need to validate the new issue being created
 		IssueInputParameters issueInputParameters = issueService.newIssueInputParameters();
-		// We're only going to set the summary and description. The rest are
-		// hard-coded to
-		// simplify this tutorial.
-		issueInputParameters.setSummary(name);
 		issueInputParameters.setDescription(description);
 		issueInputParameters.addCustomFieldValue(supersedeField.getId(), id);
-
-		// We need to set the assignee, reporter, project, and issueType...
-		// For assignee and reporter, we'll just use the currentUser
-		// issueInputParameters.setAssigneeId(user.getName());
 		issueInputParameters.setReporterId(user.getName());
-		// We hard-code the project name to be the project with the TUTORIAL key
 		Project project = projectService.getProjectByKey(user,
 				/* loginLogic.getCurrentProject().toUpperCase() */ projectId).getProject();
 		if (null == project) {
@@ -284,9 +273,21 @@ public class IssueLogic {
 					"Cannot add issue for requirement " + id + ": no such project " + loginLogic.getCurrentProject());
 		} else {
 			issueInputParameters.setProjectId(project.getId());
-			// We also hard-code the issueType to be a "bug" == 1
-			issueInputParameters.setIssueTypeId(
-					typeId != null && !typeId.isEmpty() ? typeId : project.getIssueTypes().iterator().next().getId());
+			String checkedType = typeId != null && !typeId.isEmpty() ? typeId
+					: project.getIssueTypes().iterator().next().getId();
+			issueInputParameters.setIssueTypeId(checkedType);
+
+			Iterator<IssueType> typeIterator = project.getIssueTypes().iterator();
+			while (typeIterator.hasNext()) {
+				IssueType t = typeIterator.next();
+				if (!t.getId().equals(checkedType)) {
+					continue;
+				}
+				issueInputParameters.setSummary("[" + t.getName() + "] " + name);
+
+				break;
+			}
+
 			// Perform the validation
 			issueInputParameters.setSkipScreenCheck(true);
 			IssueService.CreateValidationResult result = issueService.validateCreate(user, issueInputParameters);

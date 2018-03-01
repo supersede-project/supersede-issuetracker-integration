@@ -92,8 +92,10 @@ public class SupersedeAlerts extends HttpServlet {
 
 	List<String> errors = new LinkedList<String>();
 
-	public SupersedeAlerts(IssueService issueService, ProjectService projectService, SearchService searchService, UserManager userManager, com.atlassian.jira.user.util.UserManager jiraUserManager, TemplateRenderer templateRenderer,
-			PluginSettingsFactory pluginSettingsFactory, CustomFieldManager customFieldManager, SupersedeLoginService ssLoginService) {
+	public SupersedeAlerts(IssueService issueService, ProjectService projectService, SearchService searchService,
+			UserManager userManager, com.atlassian.jira.user.util.UserManager jiraUserManager,
+			TemplateRenderer templateRenderer, PluginSettingsFactory pluginSettingsFactory,
+			CustomFieldManager customFieldManager, SupersedeLoginService ssLoginService) {
 		this.templateRenderer = templateRenderer;
 		this.customFieldManager = customFieldManager;
 
@@ -171,16 +173,21 @@ public class SupersedeAlerts extends HttpServlet {
 		// Project Field
 		// If no project is specified (e.g. at first start), insert first
 		// project in list
-		context.put("projectField", req.getParameter("projectField") != null && !"".equals(req.getParameter("projectField")) ? req.getParameter("projectField") : projects.get(0).getKey());
+		context.put("projectField",
+				req.getParameter("projectField") != null && !"".equals(req.getParameter("projectField"))
+						? req.getParameter("projectField") : projects.get(0).getKey());
 
 		// process request
 		List<Issue> issues = issueLogic.getIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId());
-		List<Alert> alerts = alertLogic.fetchAlerts(req, resp, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic);
+		List<Alert> alerts = alertLogic.fetchAlerts(req, resp, supersedeCustomFieldLogic.getSupersedeFieldId(),
+				issueLogic);
 
 		context.put("alerts", alerts);
 		context.put("issues", issues);
 
-		Collection<IssueType> issueTypes = issueLogic.getIssueTypesByProject(req.getParameter("projectField") != null && !"".equals(req.getParameter("projectField")) ? req.getParameter("projectField") : projects.get(0).getKey());
+		Collection<IssueType> issueTypes = issueLogic.getIssueTypesByProject(
+				req.getParameter("projectField") != null && !"".equals(req.getParameter("projectField"))
+						? req.getParameter("projectField") : projects.get(0).getKey());
 		context.put("types", issueTypes);
 		context.put("defaultType", issueTypes.iterator().next().getId());
 		context.put("date", new Date().toString());
@@ -188,7 +195,8 @@ public class SupersedeAlerts extends HttpServlet {
 		// select filters for similarity
 		ApplicationUser user = loginLogic.getCurrentUser();
 		if (user != null) {
-			Collection<SearchRequest> sList = ComponentAccessor.getComponentOfType(SearchRequestService.class).getOwnedFilters(user);
+			Collection<SearchRequest> sList = ComponentAccessor.getComponentOfType(SearchRequestService.class)
+					.getOwnedFilters(user);
 			context.put("filters", sList);
 		}
 
@@ -202,9 +210,11 @@ public class SupersedeAlerts extends HttpServlet {
 			if (isImport) {
 				String project = req.getParameter("projectField");
 				String type = req.getParameter("issueType");
-				Alert a = alertLogic.fetchAlerts(req, resp, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic, list[0], "").get(0);
+				Alert a = alertLogic.fetchAlerts(req, resp, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic,
+						list[0], "").get(0);
 				issueID = a.getId() + System.currentTimeMillis();
-				newIssue = issueLogic.newIssue(req, "Issue " + a.getId(), a.getDescription(), issueID, errors, supersedeCustomFieldLogic.getSupersedeCustomField(), project, type);
+				newIssue = issueLogic.newIssue(req, "Issue " + a.getId(), a.getDescription(), issueID, errors,
+						supersedeCustomFieldLogic.getSupersedeCustomField(), project, type);
 			}
 			if (isImport && newIssue == null) {
 				errors.add("Cannot add issue");
@@ -215,20 +225,23 @@ public class SupersedeAlerts extends HttpServlet {
 			Alert a = null;
 			boolean firstLoop = false;
 			for (int i = 0; i < list.length; i++) {
-				a = alertLogic.fetchAlerts(req, resp, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic, list[i], "").get(0);
+				a = alertLogic.fetchAlerts(req, resp, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic,
+						list[i], "").get(0);
 				if (isImport) {
 					// attach file to the newly created issue
 					if (!firstLoop) {
 						errors.add(newIssue != null ? newIssue.getIssue().getKey() : "importing " + a.getId());// else
 						firstLoop = true;
 					}
-					issueLogic.attachToIssue(a, issueLogic.getIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issueID).get(0));
+					issueLogic.attachToIssue(a,
+							issueLogic.getIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issueID).get(0));
 					context.put("newIssue", "true");
 				} else {
 					// attach to an existing issue
 					String[] issuesList = req.getParameter(PARAM_ISSUES_SELECTION_LIST).split(SEPARATOR);
 					for (int j = 0; j < issuesList.length; j++) {
-						Issue issue = issueLogic.getIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issuesList[j]).get(0);
+						Issue issue = issueLogic
+								.getIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issuesList[j]).get(0);
 						if (!firstLoop) {
 							errors.add(issue != null ? issue.getKey() : "attaching " + a.getId());
 							firstLoop = true;
@@ -253,18 +266,21 @@ public class SupersedeAlerts extends HttpServlet {
 			return;
 		} else if ("y".equals(req.getParameter("searchAlerts"))) {
 			String searchAlerts = req.getParameter(PARAM_SEARCH_ALERTS);
-			alerts = alertLogic.fetchAlerts(req, resp, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic, "", searchAlerts);
+			alerts = alertLogic.fetchAlerts(req, resp, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic, "",
+					searchAlerts);
 			context.put("alerts", alerts);
 			templateRenderer.render("/templates/content-supersede-alerts.vm", context, resp.getWriter());
 			return;
 		} else if ("y".equals(req.getParameter("searchIssues"))) {
-			issues = issueLogic.getIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId(), req.getParameter(PARAM_SEARCH_ISSUES));
+			issues = issueLogic.getIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId(),
+					req.getParameter(PARAM_SEARCH_ISSUES));
 			context.put("issues", issues);
 			templateRenderer.render("/templates/attach-dialog-data.vm", context, resp.getWriter());
 			return;
 		} else if ("y".equals(req.getParameter("xmlAlert"))) {
 			String xmlAlert = req.getParameter(PARAM_XML_ALERT);
-			alerts = alertLogic.fetchAlerts(req, resp, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic, xmlAlert, "");
+			alerts = alertLogic.fetchAlerts(req, resp, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic,
+					xmlAlert, "");
 			resp.setContentType("text/xml;charset=utf-8");
 			context.put("alert", alerts.get(0));
 			templateRenderer.render("/templates/xml-alert.vm", context, resp.getWriter());
@@ -283,13 +299,15 @@ public class SupersedeAlerts extends HttpServlet {
 			if ("empty".equals(issueFilter)) {
 				issuesList = issueLogic.getAllIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId());
 			} else {
-				SearchRequest sr = ComponentAccessor.getComponentOfType(SearchRequestService.class).getFilter(new JiraServiceContextImpl(user), Long.valueOf(issueFilter));
+				SearchRequest sr = ComponentAccessor.getComponentOfType(SearchRequestService.class)
+						.getFilter(new JiraServiceContextImpl(user), Long.valueOf(issueFilter));
 				// Get a list of issues from this query
 				issuesList = issueLogic.getIssuesFromFilter(req, sr.getQuery());
 			}
 			ArrayList<String> similarities = new ArrayList<String>();
 			for (int i = 0; i < list.length; i++) {
-				Alert a = alertLogic.fetchAlerts(req, resp, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic, list[i], "").get(0);
+				Alert a = alertLogic.fetchAlerts(req, resp, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic,
+						list[i], "").get(0);
 				List<String> similarity = issueLogic.checkSimilarity(a, issuesList, req);
 				similarities.add("Similarity for alert " + a.getId() + ": ");
 
