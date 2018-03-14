@@ -38,6 +38,7 @@ public class XMLFileGenerator {
 	private String applicationId;
 	private String tenant;
 	private String creationDate;
+	private String classification;
 	private String description;
 	private Date date; // for testing purposes, if date changes during jira use,
 						// new data was loaded
@@ -58,6 +59,7 @@ public class XMLFileGenerator {
 		this.id = a.getId();
 		this.issues = a.getIssues();
 		this.tenant = a.getTenant();
+		this.classification = a.getClassification();
 		this.description = a.getDescription();
 		this.applicationId = a.getApplicationId();
 		this.creationDate = a.getTimestamp();
@@ -113,6 +115,14 @@ public class XMLFileGenerator {
 
 	public void setCreationDate(String creationDate) {
 		this.creationDate = creationDate;
+	}
+
+	public String getClassification() {
+		return classification;
+	}
+
+	public void setClassification(String classification) {
+		this.classification = classification;
 	}
 
 	public String getDescription() {
@@ -204,6 +214,11 @@ public class XMLFileGenerator {
 		Attr attr = doc.createAttribute("id");
 		attr.setValue(getId());
 		rootAlert.setAttributeNode(attr);
+		
+		// description elements
+		Element classification = doc.createElement("classification");
+		classification.appendChild(doc.createTextNode(getClassification()));
+		rootAlert.appendChild(classification);
 
 		// description elements
 		Element description = doc.createElement("description");

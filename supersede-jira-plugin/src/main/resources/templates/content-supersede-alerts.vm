@@ -43,12 +43,13 @@
 					<tr>
 						<th class="td-tiny"></th>
 						<th class="td-med">$i18n.getText("supersede-alerts-table-id.label")</th>
+						<th class="td-small">Classification</th>
 						<th class="td-small">$i18n.getText("supersede-alerts-table-app-id.label")</th>
 						<!-- 						<th class="td-med">$i18n.getText("supersede-alerts-table-timestamp.label")</th> -->
 						<th class="td-max">$i18n.getText("supersede-alerts-table-description.label")</th>
-						<th class="td-tiny">$i18n.getText("supersede-alerts-table-positive.label")</th>
-						<th class="td-tiny">$i18n.getText("supersede-alerts-table-negative.label")</th>
-						<th class="td-tiny">$i18n.getText("supersede-alerts-table-sentiment.label")</th>
+						<!-- <th class="td-tiny">$i18n.getText("supersede-alerts-table-positive.label")</th> -->
+						<!-- <th class="td-tiny">$i18n.getText("supersede-alerts-table-negative.label")</th> -->
+						<!-- <th class="td-tiny">$i18n.getText("supersede-alerts-table-sentiment.label")</th> -->
 						<th class="td-tiny">$i18n.getText("supersede-alerts-table-attachment.label")</th>
 						<th class="td-tiny"></th>
 					</tr>
@@ -58,12 +59,13 @@
 					<tr>
 						<td class="td-truncate"><input class="chkSelected checkbox" type="checkbox" id=$alert.getId()></td>
 						<td class="td-truncate alertId"><a href="supersede-alerts?xmlAlert=y&xmlAlertId=$alert.getId()" target="_blank">$alert.getId()</a></td>
+						<td class="td-truncate">$alert.getClassification()</td>
 						<td class="td-truncate">$alert.getApplicationId()</td>
 						<!-- 						<td class="td-truncate">$alert.getTimestamp()</td> -->
 						<td class="td-truncate" title="$alert.getDescription()" onLoad="AJS.$(this).tooltip();">$alert.getDescription()</td>
-						<td class="td-truncate">$alert.getPositive()</td>
-						<td class="td-truncate">$alert.getNegative()</td>
-						<td class="td-truncate">$alert.getSentiment()</td>
+						<!-- <td class="td-truncate">$alert.getPositive()</td> -->
+						<!-- <td class="td-truncate">$alert.getNegative()</td> -->
+						<!-- <td class="td-truncate">$alert.getSentiment()</td> -->
 						<td class="td-truncate">#if($alert.getCount() > 0)<a data-aui-trigger aria-controls=$alert.getFilteredId() href="#">$alert.getCount()</a> <!-- 						INLINE DIALOG (RELATED TO ROW)  --> <aui-inline-dialog id=$alert.getFilteredId()>
 							#foreach( $issue in $alert.getIssues())
 							<table>

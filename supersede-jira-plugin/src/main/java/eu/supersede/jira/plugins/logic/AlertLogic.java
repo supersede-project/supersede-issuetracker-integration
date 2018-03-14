@@ -223,6 +223,7 @@ public class AlertLogic {
 				Alert a = new Alert();
 				a.setApplicationId(o.getString("applicationId"));
 				a.setId(o.getString("id") + "URCD" + r.getString("id"));
+				a.setClassification(r.getString("classification"));
 				a.setFilteredId("alert" + o.getString("id").replace('-', '_'));
 				a.setTenant(o.getString("tenant"));
 				Date d = new Date(/* o.getLong("timestamp") */);

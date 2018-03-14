@@ -17,6 +17,7 @@ package eu.supersede.jira.plugins.servlet;
 public class Alert {
 	private String id;
 	private String filteredId;
+	private String classification;
 	private String applicationId;
 	private String tenant;
 	private String timestamp;
@@ -42,6 +43,14 @@ public class Alert {
 
 	public void setFilteredId(String filteredId) {
 		this.filteredId = filteredId;
+	}
+
+	public String getClassification() {
+		return classification;
+	}
+
+	public void setClassification(String classification) {
+		this.classification = classification;
 	}
 
 	public String getApplicationId() {
