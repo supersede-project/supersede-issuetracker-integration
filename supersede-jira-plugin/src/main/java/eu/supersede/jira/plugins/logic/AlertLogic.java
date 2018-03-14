@@ -226,7 +226,7 @@ public class AlertLogic {
 				a.setClassification(r.getString("classification"));
 				a.setFilteredId("alert" + o.getString("id").replace('-', '_'));
 				a.setTenant(o.getString("tenant"));
-				Date d = new Date(/* o.getLong("timestamp") */);
+				Date d = new Date(o.getLong("timestamp"));
 				a.setTimestamp(d.toString());
 				a.setDescription(r.getString("description"));
 				a.setSentiment(r.getInt("overallSentiment"));

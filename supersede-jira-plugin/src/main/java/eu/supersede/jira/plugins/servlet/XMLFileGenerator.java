@@ -40,7 +40,7 @@ public class XMLFileGenerator {
 	private String creationDate;
 	private String classification;
 	private String description;
-	private Date date; // for testing purposes, if date changes during jira use,
+	private String date; // for testing purposes, if date changes during jira use,
 						// new data was loaded
 	private int sentiment;
 	private int positive;
@@ -50,7 +50,7 @@ public class XMLFileGenerator {
 		super();
 	}
 
-	public XMLFileGenerator(String id, Date date) {
+	public XMLFileGenerator(String id, String date) {
 		this.id = id;
 		this.date = date;
 	}
@@ -63,7 +63,7 @@ public class XMLFileGenerator {
 		this.description = a.getDescription();
 		this.applicationId = a.getApplicationId();
 		this.creationDate = a.getTimestamp();
-		this.date = new Date();
+		this.date = a.getTimestamp();
 		this.sentiment = a.getSentiment();
 		this.positive = a.getPositive();
 		this.negative = a.getNegative();
@@ -77,11 +77,11 @@ public class XMLFileGenerator {
 		this.id = id;
 	}
 
-	public Date getDate() {
+	public String getDate() {
 		return date;
 	}
 
-	public void setDate(Date date) {
+	public void setDate(String date) {
 		this.date = date;
 	}
 
