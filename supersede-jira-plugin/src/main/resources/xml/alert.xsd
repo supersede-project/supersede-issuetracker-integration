@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
+	<xs:element name="classification" type="xs:string" />
 	<xs:element name="description" type="xs:string" />
 	<xs:element name="application_id" type="xs:string" />
 	<xs:element name="id" type="xs:string" />
@@ -15,6 +16,7 @@
 				</xs:restriction>
 			</xs:complexContent>
 			<xs:sequence>
+				<xs:element ref="classification" />
 				<xs:element ref="description" />
 				<xs:element ref="application_id" />
 				<xs:element ref="timestamp" />

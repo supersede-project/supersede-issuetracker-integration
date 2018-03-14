@@ -32,8 +32,13 @@ import com.atlassian.jira.bc.issue.IssueService;
 import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.bc.project.ProjectService;
 import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.config.properties.APKeys.JiraIndexConfiguration.Issue;
 import com.atlassian.jira.issue.CustomFieldManager;
+import com.atlassian.jira.issue.IssueConstants;
 import com.atlassian.jira.issue.MutableIssue;
+import com.atlassian.jira.issue.status.SimpleStatus;
+import com.atlassian.jira.issue.status.Status;
+import com.atlassian.jira.workflow.JiraWorkflow;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
@@ -91,6 +96,9 @@ public class WebHookManagement extends HttpServlet {
 
 			List<SupersedeProcess> processList = processService.getAllProcesses();
 			ArrayList<String> requirements = new ArrayList<String>();
+			
+String name = mi.getStatusObject().getName();
+System.out.println(name);
 
 			// loop through all processes
 			for (SupersedeProcess sp : processList) {
@@ -102,6 +110,7 @@ public class WebHookManagement extends HttpServlet {
 				HashMap<String, String> map = processLogic.getIssueRequirementsHashMap(sp);
 
 				// save requirements list - these are the ones to edit since
+
 				for (Map.Entry<String, String> entry : map.entrySet()) {
 					if (entry.getValue().equalsIgnoreCase(issueKey)) {
 						requirements.add(entry.getKey());

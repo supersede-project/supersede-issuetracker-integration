@@ -48,6 +48,10 @@ table {
 	text-align: left;
 }
 
+.classification {
+	text-align: center;
+}
+
 .description {
 	text-align: center;
 }
@@ -77,6 +81,7 @@ table {
 	<table border="1">
 		<tr>
 			<th>Alert</th>
+			<th>Classification</th>
 			<th>Description</th>
 			<th>App. ID</th>
 			<th>Positive</th>
@@ -87,6 +92,7 @@ table {
 		</tr>
 		<tr style="background-color: #fff;">
 			<td class="alert"><xsl:value-of select="alert" /></td>
+			<td class="classification"><xsl:value-of select="classification" /></td>
 			<td class="description"><xsl:value-of select="description" /></td>
 			<td class="applicationId"><xsl:value-of select="applicationId" /></td>
 			<td class="positive"><xsl:value-of select="positive" /></td>
@@ -101,7 +107,8 @@ table {
 	</xsl:template>
 </xsl:stylesheet> 
 <!--Start XML--> 
-<alert id="$alert.getId()">$alert.getId()</alert> 
+<alert id="$alert.getId()">$alert.getId()</alert>
+<classification>$alert.getClassification()</classification>  
 <description>$alert.getDescription()</description> 
 <applicationId>$alert.getApplicationId()</applicationId> 
 <positive>$alert.getPositive()</positive> 

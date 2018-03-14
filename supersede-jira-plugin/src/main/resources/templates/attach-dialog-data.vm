@@ -23,9 +23,9 @@
 	<tbody class="issues-list">
 		#foreach( $issue in $issues )
 		<tr>
-			<td class="td-truncate"><input class="dialogChkSelected checkbox" type="checkbox" id=$issue.getCustomFieldValue($customFieldManager.getCustomFieldObject($customFieldId))></td>
-			<td class="td-truncate">$issue.getKey()</td>
-			<td class="td-truncate">$issue.getSummary()</td>
+			<td class="td-truncate"><input class="dialogChkSelected checkbox" type="checkbox" id=$issue.getKey() </td>
+			<td class="td-truncate">$issue.getKey() </td>
+			<td class="td-truncate">$issue.getSummary() </td>
 		</tr>
 		#end
 	</tbody>
