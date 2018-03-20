@@ -41,7 +41,11 @@
 			<p class="title">$similarity</p>
 			#else
 			<p class="title">
+			#if($similarity.toString().indexOf(" - ") == -1)
+			- $similarity
+			#else
 				- <a href="$baseurl/browse/$similarity.toString().substring(0, $similarity.toString().indexOf(" - "))">$similarity.toString().substring(0, $similarity.toString().indexOf(" - "))</a>  $similarity.toString().substring($similarity.toString().indexOf(" - "))
+			#end
 			</p>
 			#end #end
 		</div>

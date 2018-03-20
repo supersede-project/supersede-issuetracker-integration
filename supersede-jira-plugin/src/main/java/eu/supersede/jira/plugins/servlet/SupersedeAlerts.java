@@ -175,7 +175,8 @@ public class SupersedeAlerts extends HttpServlet {
 		// project in list
 		context.put("projectField",
 				req.getParameter("projectField") != null && !"".equals(req.getParameter("projectField"))
-						? req.getParameter("projectField") : projects.get(0).getKey());
+						? req.getParameter("projectField")
+						: projects.get(0).getKey());
 
 		// process request
 		List<Issue> issues = issueLogic.getIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId());
@@ -187,7 +188,8 @@ public class SupersedeAlerts extends HttpServlet {
 
 		Collection<IssueType> issueTypes = issueLogic.getIssueTypesByProject(
 				req.getParameter("projectField") != null && !"".equals(req.getParameter("projectField"))
-						? req.getParameter("projectField") : projects.get(0).getKey());
+						? req.getParameter("projectField")
+						: projects.get(0).getKey());
 		context.put("types", issueTypes);
 		context.put("defaultType", issueTypes.iterator().next().getId());
 		context.put("date", new Date().toString());
@@ -298,7 +300,8 @@ public class SupersedeAlerts extends HttpServlet {
 			List<Issue> issuesList = null;
 			if ("empty".equals(issueFilter)) {
 				issuesList = issueLogic.getAllIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId());
-			} else {
+			} else if (!"alerts".equals(issueFilter)) {
+
 				SearchRequest sr = ComponentAccessor.getComponentOfType(SearchRequestService.class)
 						.getFilter(new JiraServiceContextImpl(user), Long.valueOf(issueFilter));
 				// Get a list of issues from this query
@@ -308,7 +311,12 @@ public class SupersedeAlerts extends HttpServlet {
 			for (int i = 0; i < list.length; i++) {
 				Alert a = alertLogic.fetchAlerts(req, resp, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic,
 						list[i], "").get(0);
-				List<String> similarity = issueLogic.checkSimilarity(a, issuesList, req);
+				List<String> similarity = new ArrayList<>();
+				if ("alerts".equals(issueFilter)) {
+					similarity = alertLogic.checkAlertToAlertSimilarity(a, alerts, req);
+				} else {
+					similarity = issueLogic.checkSimilarity(a, issuesList, req);
+				}
 				similarities.add("Similarity for alert " + a.getId() + ": ");
 
 				for (String s : similarity) {

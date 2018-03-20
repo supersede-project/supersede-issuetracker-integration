@@ -207,10 +207,11 @@
 				</header>
 				<!-- Main dialog content -->
 				<div class="aui-dialog2-content dialogDataView">
-					Select the desired search in order to restrict the similarity check
+					Select the desired context in order to restrict the similarity check
 					<form class="aui">
 						<div class="field-group">
 							<label for="filter-select">$i18n.getText("supersede-prioritization-filters.label")</label> <select class="select" id="search-similarity-filters" name="search-similarity-filters">
+								<option value="alerts">All Alerts</option> 
 								<option value="empty">All issues in JIRA</option> #foreach($filter in $filters)
 								<option value=$filter.getId()>$filter.getName()</option> #end
 							</select>
@@ -242,7 +243,7 @@
 										type="hidden" class="selectionList" name="selectionList"><input
 										type="hidden" class="similarity-number" name="similarity-number">
 									<button id="similarity-button" style="margin-left: 20px" class="aui-button aui-button-secondary alertManagement toEnable simple-tooltip" title="Check similarity for this alert">
-										<span class="glyphicon glyphicon-list-alt"></span> Check similar issues
+										<span class="glyphicon glyphicon-list-alt"></span> Check similar items
 									</button>
 								</form>
 								<button id="dialog-close-button" class="aui-button aui-button-link">Close</button>
@@ -261,7 +262,7 @@
 						<span class="glyphicon glyphicon-paperclip"></span> $i18n.getText("supersede-alerts-attach-btn.label")
 					</button>
 					<button style="margin-left: 20px" id="check-similarity" class="aui-button aui-button-secondary alertManagement toEnable simple-tooltip" title="Check similarity for this alert">
-						<span class="glyphicon glyphicon-list-alt"></span> Check similar issues
+						<span class="glyphicon glyphicon-list-alt"></span> Check similar items
 					</button>
 					<button id="dialog-delete-button" class="aui-button aui-button-secondary alertManagement toEnable simple-tooltip" title='$i18n.getText("supersede-alerts-delete-btn.tooltip")'>
 						<span class="glyphicon glyphicon-trash"></span> $i18n.getText("supersede-alerts-delete-btn.label")

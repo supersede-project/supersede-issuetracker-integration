@@ -181,7 +181,7 @@ public class IssueLogic {
 
 		// Build the basic Jql query
 		List<Project> projects = ComponentAccessor.getProjectManager().getProjectObjects();
-		//jqlClauseBuilder.customField(supersedeFieldId).isNotEmpty().and().project(
+		// jqlClauseBuilder.customField(supersedeFieldId).isNotEmpty().and().project(
 
 		jqlClauseBuilder.project(
 				req.getParameter("projectField") != null ? req.getParameter("projectField") : projects.get(0).getKey());
@@ -267,8 +267,8 @@ public class IssueLogic {
 		issueInputParameters.setDescription(description);
 		issueInputParameters.addCustomFieldValue(supersedeField.getId(), id);
 		issueInputParameters.setReporterId(user.getName());
-		Project project = projectService.getProjectByKey(user,
-				/* loginLogic.getCurrentProject().toUpperCase() */ projectId).getProject();
+		Project project = projectService
+				.getProjectByKey(user, /* loginLogic.getCurrentProject().toUpperCase() */ projectId).getProject();
 		if (null == project) {
 			errors.add(
 					"Cannot add issue for requirement " + id + ": no such project " + loginLogic.getCurrentProject());
@@ -433,6 +433,8 @@ public class IssueLogic {
 			feedback.put("text", a.getDescription());
 			similarity.put("k", Math.min(Integer.parseInt(req.getParameter("similarity-number")), issues.size()));
 			similarity.put("feedback", feedback);
+			similarity.put("tenant", loginLogic.getCurrentProject());
+			similarity.put("language", "en");
 
 			JSONArray requirements = new JSONArray();
 			for (Issue i : issues) {

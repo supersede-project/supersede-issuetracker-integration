@@ -16,8 +16,10 @@ package eu.supersede.jira.plugins.logic;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
@@ -37,7 +39,9 @@ import org.apache.commons.httpclient.Cookie;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.issue.attachment.Attachment;
 import com.atlassian.jira.util.json.JSONArray;
 import com.atlassian.jira.util.json.JSONObject;
@@ -168,7 +172,8 @@ public class AlertLogic {
 			// retrieve the list of all alerts from the specified tenant
 			String sessionId = loginLogic.login();
 			if (alertId != null && !alertId.isEmpty()) {
-				// alertId = "?id="+alertId;
+				// alertId = "?id="+(alertId.substring(0, alertId.indexOf("URCD")));
+				alertId = alertId.substring(0, alertId.indexOf("URCD"));
 			} else {
 				return false;
 			}
@@ -257,5 +262,93 @@ public class AlertLogic {
 			log.error(e.getMessage());
 		}
 		return al;
+	}
+
+	public List<String> checkAlertToAlertSimilarity(Alert a, List<Alert> alerts, HttpServletRequest req) {
+		try {
+			int response = -1;
+			String responseData = "";
+
+			String sessionId = loginLogic.login();
+			String xsrf = loginLogic.authenticate(sessionId);
+			HttpSession session = req.getSession();
+			session.setAttribute("Cookie", "SESSION=" + sessionId + ";");
+			URL url = new URL(loginLogic.getSimilarity());
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			conn.setConnectTimeout(LoginLogic.CONN_TIMEOUT);
+			conn.setReadTimeout(LoginLogic.CONN_TIMEOUT);
+			conn.setRequestProperty("Authorization", loginLogic.getBasicAuth());
+			conn.setRequestProperty("TenantId", loginLogic.getCurrentProject());
+			conn.setRequestProperty("Cookie", "SESSION=" + sessionId + ";");
+			conn.setDoOutput(true);
+			conn.setDoInput(true);
+			conn.setRequestMethod("POST");
+			conn.setRequestProperty("Content-Type", "application/json");
+			conn.setRequestProperty("X-XSRF-TOKEN", xsrf);
+
+			JSONObject similarity = new JSONObject();
+			JSONObject feedback = new JSONObject();
+			feedback.put("text", a.getDescription());
+			similarity.put("k", Math.min(Integer.parseInt(req.getParameter("similarity-number")), alerts.size()));
+			similarity.put("feedback", feedback);
+			similarity.put("tenant", loginLogic.getCurrentProject());
+			similarity.put("language", "en");
+
+			JSONArray list = new JSONArray();
+			int alertCounter = 1;
+			for (Alert i : alerts) {
+				if (a.getId().equals(i.getId())) {
+					continue;
+				}
+				JSONObject singleAlert = new JSONObject();
+				singleAlert.put("_id", alertCounter++);
+				singleAlert.put("title", i.getFilteredId());
+				singleAlert.put("description", i.getDescription());
+
+				list.put(singleAlert);
+			}
+
+			similarity.put("requirements", list);
+
+			OutputStreamWriter outputStreamWriter = new OutputStreamWriter(conn.getOutputStream());
+			String txt = "";
+			System.out.println(txt);
+			outputStreamWriter.write(similarity.toString());
+			outputStreamWriter.flush();
+
+			response = conn.getResponseCode();
+			System.out.println(conn.getResponseMessage());
+			System.out.println(response);
+			responseData = conn.getResponseMessage();
+
+			BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
+			StringBuilder sb = new StringBuilder();
+			String output;
+			while ((output = br.readLine()) != null) {
+				sb.append(output);
+			}
+			System.out.println(sb.toString());
+			JSONArray result = new JSONArray(sb.toString());
+			List<String> similarityList = new ArrayList<String>();
+			int l = result.length();
+			for (int i = 0; i < l; ++i) {
+				JSONObject o = result.getJSONObject(i);
+
+				for (int j = 0; j < list.length(); j++) {
+					JSONObject al = list.getJSONObject(j);
+					if (al.getString("_id").equals(o.getString("id"))) {
+						similarityList.add(al.getString("description"));
+					}
+				}
+
+			}
+
+			return similarityList;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+
 	}
 }

@@ -174,7 +174,7 @@ function onPageLoad() {
 		var splitAlerts = alerts.split(':::');
 		var deleteList = '<ul>';
 		for (var i = 0; i < splitAlerts.length - 1; i++) {
-			deleteList += '<li><a href="/supersede-alerts?xmlAlert=y&xmlAlertId=' + splitAlerts[i] + '" target="_blank">' + splitAlerts[i] + '</a><br/></li>';
+			deleteList += '<li><a href="/jira/plugins/servlet/supersede-alerts?xmlAlert=y&xmlAlertId=' + splitAlerts[i] + '" target="_blank">' + splitAlerts[i] + '</a><br/></li>';
 		}
 		deleteList += '</ul>';
 		$('.listToDelete').html(deleteList);
