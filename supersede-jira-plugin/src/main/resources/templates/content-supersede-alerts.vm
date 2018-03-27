@@ -251,12 +251,52 @@
 							<!-- HINT TEXT -->
 						</footer>
 			</section>
+			
+						<!-- BULK DIALOG -->
+			<section role="dialog" id="bulk-dialog" class="aui-layer aui-dialog2 aui-dialog2-medium" aria-hidden="true">
+				<!-- Dialog header -->
+				<header class="aui-dialog2-header">
+					<!-- The dialog's title -->
+					<h2 class="aui-dialog2-header-main">Create issues from all alesta</h2>
+					<!-- Close icon -->
+					<a class="aui-dialog2-header-close"> <span class="aui-icon aui-icon-small aui-iconfont-close-dialog">$i18n.getText("supersede-alerts-close.btn.label")</span>
+					</a>
+
+				</header>
+				<!-- Main dialog content -->
+				<div class="aui-dialog2-content">
+					Choose a project where the selected alert(s) will be added as issue(s), and the type the issue will get. <br> <br>
+					<form class="aui">
+						<aui-label for="project-select-bulk">$i18n.getText("supersede-alerts-project-import.label")</aui-label>
+						<select id="project-select-bulk"> #foreach($project in $projects)
+							<option value=$project.getKey()>$project.getKey()</option> #end
+						</select>
+					</form>
+					<br>
+					<div id='issue-type'>#parse("/templates/content-supersede-alerts-issue-type.vm")</div>
+				</div>
+				<!-- Dialog footer -->
+				<footer class="aui-dialog2-footer">
+					<!-- Actions to render on the right of the footer -->
+					<div class="aui-dialog2-footer-actions">
+						<form action="supersede-alerts" method="get">
+							<input type="hidden" class="selectionList" name="selectionList"> <input type="checkbox" id="chkDeleteStatus" class="toEnable" class="chkDeleteStatus" name="chkDeleteStatus" value="true" />$i18n.getText("supersede-alerts-attach-dialog-check.label")
+							<input type="hidden" class="projectField" value=$projectField name="projectField"> <input type="hidden" class="issueType" name="issueType"><input type="hidden" class="bulk" name="bulk" value="y">
+							<button id="dialog-submit-button" class="aui-button aui-button-primary dialogButton">$i18n.getText("supersede-alerts-create-btn.label")</button>
+						</form>
+					</div>
+					<!-- HINT TEXT -->
+				</footer>
+			</section>
 
 			<!-- 			IMPORT - ATTACH - DELETE BUTTONS  -->
 			<div class="aui-group">
 				<div style="float: left" class="aui-item buttonPane">
 					<button style="margin-left: 20px" id="import-dialog-show-button" name="action" value="Import" class="aui-button aui-button-primary alertManagement toEnable simple-tooltip" title="Create new issue from selected alert(s)">
 						<span class="glyphicon glyphicon-plus"></span> <span class="submit-text">$i18n.getText("supersede-alerts-create-btn.label")</span>
+					</button>
+					<button style="margin-left: 20px" id="bulk-dialog-show-button" class="aui-button aui-button-primary alertManagement simple-tooltip" title="Convert all alerts to issues">
+						<span class="glyphicon glyphicon-th-list"></span> Convert all alerts to issues
 					</button>
 					<button style="margin-left: 20px" id="attach-dialog-show-button" class="aui-button aui-button-primary alertManagement toEnable simple-tooltip" title="Attach selected alert to existing issue(s)">
 						<span class="glyphicon glyphicon-paperclip"></span> $i18n.getText("supersede-alerts-attach-btn.label")

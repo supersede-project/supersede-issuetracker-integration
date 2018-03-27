@@ -12,15 +12,21 @@
    limitations under the License.
  */
 
-AJS.$(document).ready(function() {
-	$('#project-select-import').val($('.projectField').val()).trigger('change');
-	$('#project-select-attach').val($('.projectField').val()).trigger('change');
-	$('#page-title').text('Alerts Management');
-	onPageLoad();
-});
+AJS.$(document).ready(
+		function() {
+			$('#project-select-import').val($('.projectField').val()).trigger(
+					'change');
+			$('#project-select-bulk').val($('.projectField').val()).trigger(
+					'change');
+			$('#project-select-attach').val($('.projectField').val()).trigger(
+					'change');
+			$('#page-title').text('Alerts Management');
+			onPageLoad();
+		});
 
 function onPageLoad() {
 	AJS.$('#project-select-import').auiSelect2();
+	AJS.$('#project-select-bulk').auiSelect2();
 	AJS.$('#project-select-attach').auiSelect2();
 	AJS.$('#issue-type-selector').auiSelect2();
 	$('#issue-type-selector').on('change', issueTypeSelectorChange);
@@ -47,54 +53,61 @@ function onPageLoad() {
 		});
 	});
 
-	jQuery('.searchBtn').click(function() {
-		$("#selectionList").val(selectionString);
-		var self = jQuery(this);
-		var searchStr = $('#searchAlertsInput').val();
-		if (!searchStr) {
-			searchStr = "";
-		}
-		jQuery.ajax({
-			type : "get",
-			url : "supersede-alerts?searchAlerts=y&searchAlertsInput=" + searchStr,
-			success : function(data) {
-				console.log('dom', self, data);
-				$("#data").html(data);
-				// self.parent().parent().remove();
-				AJS.tablessortable.setTableSortable(AJS.$(".sortableTable"));
-				onPageLoad();
-			},
-			error : function() {
-				console.log('error', arguments);
-			}
-		});
-	});
+	jQuery('.searchBtn').click(
+			function() {
+				$("#selectionList").val(selectionString);
+				var self = jQuery(this);
+				var searchStr = $('#searchAlertsInput').val();
+				if (!searchStr) {
+					searchStr = "";
+				}
+				jQuery.ajax({
+					type : "get",
+					url : "supersede-alerts?searchAlerts=y&searchAlertsInput="
+							+ searchStr,
+					success : function(data) {
+						console.log('dom', self, data);
+						$("#data").html(data);
+						// self.parent().parent().remove();
+						AJS.tablessortable.setTableSortable(AJS
+								.$(".sortableTable"));
+						onPageLoad();
+					},
+					error : function() {
+						console.log('error', arguments);
+					}
+				});
+			});
 
-	jQuery('.searchBtnDialog').click(function() {
-		$("#selectionList").val(selectionString);
-		var self = jQuery(this);
-		var searchStr = $('#searchAlertsInput').val();
-		var searchIssueStr = $('#searchIssuesDialogInput').val();
-		if (!searchStr) {
-			searchStr = " ";
-		}
-		if (!searchIssueStr) {
-			searchIssueStr = " ";
-		}
-		jQuery.ajax({
-			type : "get",
-			url : "supersede-alerts?searchIssues=y&searchAlertsInput=" + searchStr + "&searchIssuesInput=" + searchIssueStr,
-			success : function(data) {
-				console.log('dom', self, data);
-				$("#attach-dialog-data").html(data);
-				AJS.tablessortable.setTableSortable(AJS.$(".sortableDialogTable"));
-				onPageLoad();
-			},
-			error : function() {
-				console.log('error', arguments);
-			}
-		});
-	});
+	jQuery('.searchBtnDialog').click(
+			function() {
+				$("#selectionList").val(selectionString);
+				var self = jQuery(this);
+				var searchStr = $('#searchAlertsInput').val();
+				var searchIssueStr = $('#searchIssuesDialogInput').val();
+				if (!searchStr) {
+					searchStr = " ";
+				}
+				if (!searchIssueStr) {
+					searchIssueStr = " ";
+				}
+				jQuery.ajax({
+					type : "get",
+					url : "supersede-alerts?searchIssues=y&searchAlertsInput="
+							+ searchStr + "&searchIssuesInput="
+							+ searchIssueStr,
+					success : function(data) {
+						console.log('dom', self, data);
+						$("#attach-dialog-data").html(data);
+						AJS.tablessortable.setTableSortable(AJS
+								.$(".sortableDialogTable"));
+						onPageLoad();
+					},
+					error : function() {
+						console.log('error', arguments);
+					}
+				});
+			});
 
 	jQuery("#searchAlertsInput").keyup(function(event) {
 		if (event.keyCode == 13) {
@@ -102,42 +115,48 @@ function onPageLoad() {
 		}
 	});
 
-	jQuery('.chkSelected').click(function() {
-		if ($(this).prop('checked')) {
-			// Write a string containing the IDs of selected
-			// alerts
-			selectionString += $(this).attr('id');
-			selectionString += ':::';
-			$(".toEnable").prop('disabled', false);
-			$(".toEnable").prop('enabled', true);
-			// alert(selectionString);
-		} else {
-			// Remove the selected ID if checkbox gets unchecked
-			selectionString = selectionString.replace($(this).attr('id') + ':::', '');
-			if (!selectionString) {
-				$(".toEnable").prop('disabled', true);
-				$(".toEnable").prop('enabled', false);
-			}
-		}
-	});
-	jQuery('.dialogChkSelected').click(function() {
-		if ($(this).prop('checked')) {
-			// Write a string containing the IDs of selected
-			// alerts
-			// alert("entered");
-			issuesSelectionString += $(this).attr('id');
-			issuesSelectionString += ':::';
-			$(".toEnableDialog").prop('disabled', false);
-			$(".toEnableDialog").prop('enabled', true);
-		} else {
-			// Remove the selected ID if checkbox gets unchecked
-			issuesSelectionString = issuesSelectionString.replace($(this).attr('id') + ':::', '');
-			if (!issuesSelectionString) {
-				$(".toEnableDialog").prop('disabled', true);
-				$(".toEnableDialog").prop('enabled', false);
-			}
-		}
-	});
+	jQuery('.chkSelected').click(
+			function() {
+				if ($(this).prop('checked')) {
+					// Write a string containing the IDs of selected
+					// alerts
+					selectionString += $(this).attr('id');
+					selectionString += ':::';
+					$(".toEnable").prop('disabled', false);
+					$(".toEnable").prop('enabled', true);
+					// alert(selectionString);
+				} else {
+					// Remove the selected ID if checkbox gets unchecked
+					selectionString = selectionString.replace($(this)
+							.attr('id')
+							+ ':::', '');
+					if (!selectionString) {
+						$(".toEnable").prop('disabled', true);
+						$(".toEnable").prop('enabled', false);
+					}
+				}
+			});
+	jQuery('.dialogChkSelected').click(
+			function() {
+				if ($(this).prop('checked')) {
+					// Write a string containing the IDs of selected
+					// alerts
+					// alert("entered");
+					issuesSelectionString += $(this).attr('id');
+					issuesSelectionString += ':::';
+					$(".toEnableDialog").prop('disabled', false);
+					$(".toEnableDialog").prop('enabled', true);
+				} else {
+					// Remove the selected ID if checkbox gets unchecked
+					issuesSelectionString = issuesSelectionString.replace($(
+							this).attr('id')
+							+ ':::', '');
+					if (!issuesSelectionString) {
+						$(".toEnableDialog").prop('disabled', true);
+						$(".toEnableDialog").prop('enabled', false);
+					}
+				}
+			});
 
 	var opt = {
 		autoOpen : false,
@@ -169,17 +188,27 @@ function onPageLoad() {
 		AJS.dialog2("#similarity-dialog").show();
 	});
 
-	AJS.$("#dialog-delete-button").click(function() {
-		var alerts = selectionString;
-		var splitAlerts = alerts.split(':::');
-		var deleteList = '<ul>';
-		for (var i = 0; i < splitAlerts.length - 1; i++) {
-			deleteList += '<li><a href="/jira/plugins/servlet/supersede-alerts?xmlAlert=y&xmlAlertId=' + splitAlerts[i] + '" target="_blank">' + splitAlerts[i] + '</a><br/></li>';
-		}
-		deleteList += '</ul>';
-		$('.listToDelete').html(deleteList);
-		AJS.dialog2("#delete-dialog").show();
+	AJS.$("#bulk-dialog-show-button").click(function() {
+		AJS.dialog2("#bulk-dialog").show();
 	});
+
+	AJS
+			.$("#dialog-delete-button")
+			.click(
+					function() {
+						var alerts = selectionString;
+						var splitAlerts = alerts.split(':::');
+						var deleteList = '<ul>';
+						for (var i = 0; i < splitAlerts.length - 1; i++) {
+							deleteList += '<li><a href="/jira/plugins/servlet/supersede-alerts?xmlAlert=y&xmlAlertId='
+									+ splitAlerts[i]
+									+ '" target="_blank">'
+									+ splitAlerts[i] + '</a><br/></li>';
+						}
+						deleteList += '</ul>';
+						$('.listToDelete').html(deleteList);
+						AJS.dialog2("#delete-dialog").show();
+					});
 
 	// Hides the dialog
 	AJS.$("#dialog-close-button").click(function(e) {
@@ -207,47 +236,73 @@ function onPageLoad() {
 
 	AJS.$(".simple-tooltip").tooltip();
 
-	$('#project-select-import').change(function() {
-		$('.projectField').val($(this).val());
-		var self = jQuery(this);
-		jQuery.ajax({
-			type : "get",
-			url : "supersede-alerts?getIssueTypes=y&projectField=" + $(this).val(),
-			success : function(data) {
-				$("#issue-type").html(data);
-				AJS.$('#issue-type-selector').auiSelect2();
-				$('#issue-type-selector').on('change', issueTypeSelectorChange);
-			},
-			error : function() {
-				console.log('error', arguments);
-			}
-		});
-	});
-
-	$('#project-select-attach').change(function() {
-		$('.projectField').val($(this).val());
-		var self = jQuery(this);
-		jQuery.ajax({
-			type : "get",
-			url : "supersede-alerts?searchIssues=y&projectField=" + $(this).val(),
-			success : function(data) {
-				console.log('dom', self, data);
-				$("#attach-dialog-data").html(data);
-				// self.parent().parent().remove();
-				AJS.tablessortable.setTableSortable(AJS.$(".sortableDialogTable"));
-				onPageLoad();
-			},
-			error : function() {
-				console.log('error', arguments);
-			}
-		});
-		// alert("load!");
-	});
+	$('#project-select-import').change(
+			function() {
+				$('.projectField').val($(this).val());
+				var self = jQuery(this);
+				jQuery.ajax({
+					type : "get",
+					url : "supersede-alerts?getIssueTypes=y&projectField="
+							+ $(this).val(),
+					success : function(data) {
+						$("#issue-type").html(data);
+						AJS.$('#issue-type-selector').auiSelect2();
+						$('#issue-type-selector').on('change',
+								issueTypeSelectorChange);
+					},
+					error : function() {
+						console.log('error', arguments);
+					}
+				});
+			});
 	
+	$('#project-select-bulk').change(
+			function() {
+				$('.projectField').val($(this).val());
+				var self = jQuery(this);
+				jQuery.ajax({
+					type : "get",
+					url : "supersede-alerts?getIssueTypes=y&projectField="
+							+ $(this).val(),
+					success : function(data) {
+						$("#issue-type").html(data);
+						AJS.$('#issue-type-selector').auiSelect2();
+						$('#issue-type-selector').on('change',
+								issueTypeSelectorChange);
+					},
+					error : function() {
+						console.log('error', arguments);
+					}
+				});
+			});
+
+	$('#project-select-attach').change(
+			function() {
+				$('.projectField').val($(this).val());
+				var self = jQuery(this);
+				jQuery.ajax({
+					type : "get",
+					url : "supersede-alerts?searchIssues=y&projectField="
+							+ $(this).val(),
+					success : function(data) {
+						console.log('dom', self, data);
+						$("#attach-dialog-data").html(data);
+						// self.parent().parent().remove();
+						AJS.tablessortable.setTableSortable(AJS
+								.$(".sortableDialogTable"));
+						onPageLoad();
+					},
+					error : function() {
+						console.log('error', arguments);
+					}
+				});
+				// alert("load!");
+			});
+
 	AJS.$("#similarity-button").click(function() {
 		$('.issueFilter').val($('#search-similarity-filters').val());
 		$('.similarity-number').val($('#select-similarity-number').val());
-		
+
 	});
 
 	function issueTypeSelectorChange() {

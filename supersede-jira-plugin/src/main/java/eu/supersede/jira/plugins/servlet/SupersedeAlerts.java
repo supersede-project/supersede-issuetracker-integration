@@ -325,6 +325,18 @@ public class SupersedeAlerts extends HttpServlet {
 			}
 			context.put("similarities", similarities);
 			System.out.println("DONE");
+		} else if ("y".equals(req.getParameter("bulk"))) {
+			List<Alert> list = alerts;
+			String project = req.getParameter("projectField");
+			String type = req.getParameter("issueType");
+
+			for (Alert a : alerts) {
+				String issueID = a.getId() + System.currentTimeMillis();
+				IssueResult newIssue = issueLogic.newIssue(req, "Issue " + a.getId(), a.getDescription(), issueID, errors,
+						supersedeCustomFieldLogic.getSupersedeCustomField(), project, type);
+				issueLogic.attachToIssue(a,
+						issueLogic.getIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issueID).get(0));
+			}
 		}
 
 		issues = issueLogic.getIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId());
