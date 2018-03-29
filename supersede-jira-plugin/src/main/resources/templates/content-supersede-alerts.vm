@@ -37,6 +37,28 @@
 
 	<!-- 	DATA TABLE -->
 	<div id="data-section">
+	<!-- 			IMPORT - ATTACH - DELETE BUTTONS  -->
+	<br>
+	<br>
+			<div class="aui-group">
+				<div style="float: left" class="aui-item buttonPane">
+					<button id="import-dialog-show-button" name="action" value="Import" class="aui-button aui-button-primary toEnable simple-tooltip" title="Create new issue from selected alert(s)">
+						<span class="glyphicon glyphicon-plus"></span> <span class="submit-text">$i18n.getText("supersede-alerts-create-btn.label")</span>
+					</button>
+					<button style="margin-left: 20px" id="bulk-dialog-show-button" class="aui-button aui-button-primary alertManagement simple-tooltip" title="Convert all alerts to issues">
+						<span class="glyphicon glyphicon-th-list"></span> Convert all alerts to issues
+					</button>
+					<button style="margin-left: 20px" id="attach-dialog-show-button" class="aui-button aui-button-primary alertManagement toEnable simple-tooltip" title="Attach selected alert to existing issue(s)">
+						<span class="glyphicon glyphicon-paperclip"></span> $i18n.getText("supersede-alerts-attach-btn.label")
+					</button>
+					<button style="margin-left: 20px" id="check-similarity" class="aui-button aui-button-secondary alertManagement toEnable simple-tooltip" title="Check similarity for this alert">
+						<span class="glyphicon glyphicon-list-alt"></span> Check similar items
+					</button>
+					<button id="dialog-delete-button" class="aui-button aui-button-secondary alertManagement toEnable simple-tooltip" title='$i18n.getText("supersede-alerts-delete-btn.tooltip")'>
+						<span class="glyphicon glyphicon-trash"></span> $i18n.getText("supersede-alerts-delete-btn.label")
+					</button>
+				</div>
+			</div>
 		<div class="p-list">
 			<table class="aui table-truncate aui-table-sortable sortableTable">
 				<thead>
@@ -288,27 +310,7 @@
 					<!-- HINT TEXT -->
 				</footer>
 			</section>
-
-			<!-- 			IMPORT - ATTACH - DELETE BUTTONS  -->
-			<div class="aui-group">
-				<div style="float: left" class="aui-item buttonPane">
-					<button style="margin-left: 20px" id="import-dialog-show-button" name="action" value="Import" class="aui-button aui-button-primary alertManagement toEnable simple-tooltip" title="Create new issue from selected alert(s)">
-						<span class="glyphicon glyphicon-plus"></span> <span class="submit-text">$i18n.getText("supersede-alerts-create-btn.label")</span>
-					</button>
-					<button style="margin-left: 20px" id="bulk-dialog-show-button" class="aui-button aui-button-primary alertManagement simple-tooltip" title="Convert all alerts to issues">
-						<span class="glyphicon glyphicon-th-list"></span> Convert all alerts to issues
-					</button>
-					<button style="margin-left: 20px" id="attach-dialog-show-button" class="aui-button aui-button-primary alertManagement toEnable simple-tooltip" title="Attach selected alert to existing issue(s)">
-						<span class="glyphicon glyphicon-paperclip"></span> $i18n.getText("supersede-alerts-attach-btn.label")
-					</button>
-					<button style="margin-left: 20px" id="check-similarity" class="aui-button aui-button-secondary alertManagement toEnable simple-tooltip" title="Check similarity for this alert">
-						<span class="glyphicon glyphicon-list-alt"></span> Check similar items
-					</button>
-					<button id="dialog-delete-button" class="aui-button aui-button-secondary alertManagement toEnable simple-tooltip" title='$i18n.getText("supersede-alerts-delete-btn.tooltip")'>
-						<span class="glyphicon glyphicon-trash"></span> $i18n.getText("supersede-alerts-delete-btn.label")
-					</button>
-				</div>
-			</div>
+			
 		</div>
 	</div>
 </body>
