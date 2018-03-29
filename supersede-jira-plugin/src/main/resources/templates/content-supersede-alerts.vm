@@ -48,6 +48,13 @@
 					<button style="margin-left: 20px" id="bulk-dialog-show-button" class="aui-button aui-button-primary alertManagement simple-tooltip" title="Convert all alerts to issues">
 						<span class="glyphicon glyphicon-th-list"></span> Convert all alerts to issues
 					</button>
+					<form action="supersede-alerts" method="get">
+					<input type="hidden" name="cluster" value="y">
+					<input type="hidden" name="similarity-number" value="10">
+					<button style="margin-left: 20px" id="bulk-dialog-show-button" class="aui-button aui-button-primary alertManagement simple-tooltip" title="Convert all alerts to issues">
+						<span class="glyphicon glyphicon-th-list"></span> Perform clusterization
+					</button>
+					</form>
 					<button style="margin-left: 20px" id="attach-dialog-show-button" class="aui-button aui-button-primary alertManagement toEnable simple-tooltip" title="Attach selected alert to existing issue(s)">
 						<span class="glyphicon glyphicon-paperclip"></span> $i18n.getText("supersede-alerts-attach-btn.label")
 					</button>

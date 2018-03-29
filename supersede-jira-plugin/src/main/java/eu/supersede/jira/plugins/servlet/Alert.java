@@ -28,6 +28,15 @@ public class Alert {
 	private int negative;
 	private int count;
 
+	public Alert() {
+		this.setId("---");
+		this.setFilteredId("---");
+		this.setClassification("---");
+		this.setApplicationId("---");
+		this.setTenant("---");
+		this.setTimestamp("---");
+		this.setDescription("---");
+	}
 
 	public String getId() {
 		return id;

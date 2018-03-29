@@ -336,8 +336,9 @@ public class AlertLogic {
 
 				for (int j = 0; j < list.length(); j++) {
 					JSONObject al = list.getJSONObject(j);
-					if (al.getString("_id").equals(o.getString("id"))) {
+					if (al.getString("_id").equals(o.getString("id")) && o.getDouble("score") > 0.5) {
 						similarityList.add(al.getString("description"));
+						break;
 					}
 				}
 
@@ -350,5 +351,32 @@ public class AlertLogic {
 			return null;
 		}
 
+	}
+
+	public List<Alert> checkAlertToAlertClusterization(List<Alert> alerts, HttpServletRequest req) {
+		// Inizio con una similarity normale col primo alert selezionato
+
+		List<Alert> similarityList = new ArrayList<Alert>();
+
+		while (alerts.size() > 0) {
+			List<String> similarities = new ArrayList<String>();
+			// rimuovo il primo alert dalla lista per analizzarlo, e lo aggiungo in testa al
+			// risultato
+			Alert a = alerts.remove(0);
+			similarityList.add(a);
+			similarities = checkAlertToAlertSimilarity(a, alerts, req);
+			// Rimuovo tutte le similarities dall'array alert presente
+			for (String s : similarities) {
+				for (Alert al : alerts) {
+					if (al.getDescription().equals(s)) {
+						similarityList.add(alerts.remove(alerts.indexOf(al)));
+						break;
+					}
+				}
+			}
+			similarityList.add(new Alert());
+		}
+
+		return similarityList;
 	}
 }

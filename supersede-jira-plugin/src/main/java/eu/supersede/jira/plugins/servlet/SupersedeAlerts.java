@@ -332,11 +332,13 @@ public class SupersedeAlerts extends HttpServlet {
 
 			for (Alert a : alerts) {
 				String issueID = a.getId() + System.currentTimeMillis();
-				IssueResult newIssue = issueLogic.newIssue(req, "Issue " + a.getId(), a.getDescription(), issueID, errors,
-						supersedeCustomFieldLogic.getSupersedeCustomField(), project, type);
+				IssueResult newIssue = issueLogic.newIssue(req, "Issue " + a.getId(), a.getDescription(), issueID,
+						errors, supersedeCustomFieldLogic.getSupersedeCustomField(), project, type);
 				issueLogic.attachToIssue(a,
 						issueLogic.getIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issueID).get(0));
 			}
+		} else if ("y".equals(req.getParameter("cluster"))) {
+			context.put("alerts", alertLogic.checkAlertToAlertClusterization(alerts, req));
 		}
 
 		issues = issueLogic.getIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId());
