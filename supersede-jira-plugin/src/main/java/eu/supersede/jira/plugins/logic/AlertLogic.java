@@ -268,6 +268,23 @@ public class AlertLogic {
 		try {
 			int response = -1;
 			String responseData = "";
+			double tolerance = 0.0;
+			if (req.getParameter("clusterization-tolerance") != null) {
+				switch (req.getParameter("clusterization-tolerance")) {
+				case "low":
+					tolerance = 0.3;
+					break;
+				case "med":
+					tolerance = 0.5;
+					break;
+				case "high":
+					tolerance = 0.66;
+					break;
+				default:
+					tolerance = 0.0;
+					break;
+				}
+			}
 
 			String sessionId = loginLogic.login();
 			String xsrf = loginLogic.authenticate(sessionId);
@@ -336,7 +353,7 @@ public class AlertLogic {
 
 				for (int j = 0; j < list.length(); j++) {
 					JSONObject al = list.getJSONObject(j);
-					if (al.getString("_id").equals(o.getString("id")) && o.getDouble("score") > 0.5) {
+					if (al.getString("_id").equals(o.getString("id")) && o.getDouble("score") >= tolerance) {
 						similarityList.add(al.getString("description"));
 						break;
 					}

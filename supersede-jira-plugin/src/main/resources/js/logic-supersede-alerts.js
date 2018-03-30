@@ -191,6 +191,10 @@ function onPageLoad() {
 	AJS.$("#bulk-dialog-show-button").click(function() {
 		AJS.dialog2("#bulk-dialog").show();
 	});
+	
+	AJS.$("#clusterization-dialog-show-button").click(function() {
+		AJS.dialog2("#clusterization-dialog").show();
+	});
 
 	AJS
 			.$("#dialog-delete-button")
@@ -302,6 +306,12 @@ function onPageLoad() {
 	AJS.$("#similarity-button").click(function() {
 		$('.issueFilter').val($('#search-similarity-filters').val());
 		$('.similarity-number').val($('#select-similarity-number').val());
+
+	});
+	
+	AJS.$("#clusterization-button").click(function() {
+		$('.clusterization-tolerance').val($('#select-clusterization-tolerance').val());
+		$('.clusterization-number').val($('#select-clusterization-number').val());
 
 	});
 

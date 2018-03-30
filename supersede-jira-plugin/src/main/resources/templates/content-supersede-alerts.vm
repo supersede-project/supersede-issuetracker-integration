@@ -48,13 +48,9 @@
 					<button style="margin-left: 20px" id="bulk-dialog-show-button" class="aui-button aui-button-primary alertManagement simple-tooltip" title="Convert all alerts to issues">
 						<span class="glyphicon glyphicon-th-list"></span> Convert all alerts to issues
 					</button>
-					<form action="supersede-alerts" method="get">
-					<input type="hidden" name="cluster" value="y">
-					<input type="hidden" name="similarity-number" value="10">
-					<button style="margin-left: 20px" id="bulk-dialog-show-button" class="aui-button aui-button-primary alertManagement simple-tooltip" title="Convert all alerts to issues">
+					<button style="margin-left: 20px" id="clusterization-dialog-show-button" class="aui-button aui-button-primary alertManagement simple-tooltip" title="Convert all alerts to issues">
 						<span class="glyphicon glyphicon-th-list"></span> Perform clusterization
 					</button>
-					</form>
 					<button style="margin-left: 20px" id="attach-dialog-show-button" class="aui-button aui-button-primary alertManagement toEnable simple-tooltip" title="Attach selected alert to existing issue(s)">
 						<span class="glyphicon glyphicon-paperclip"></span> $i18n.getText("supersede-alerts-attach-btn.label")
 					</button>
@@ -317,6 +313,66 @@
 					<!-- HINT TEXT -->
 				</footer>
 			</section>
+			
+			<!-- CLUSTERIZATION DIALOG -->
+			<section role="dialog" id="clusterization-dialog" class="aui-layer aui-dialog2 aui-dialog2-medium" aria-hidden="true">
+				<!-- Dialog header -->
+				<header class="aui-dialog2-header">
+					<h2 class="aui-dialog2-header-main">Clusterization</h2>
+					<!-- Close icon -->
+					<a class="aui-dialog2-header-close"> <span class="aui-icon aui-icon-small aui-iconfont-close-dialog">Close</span>
+					</a>
+				</header>
+				<!-- Main dialog content -->
+				<div class="aui-dialog2-content dialogDataView">
+					Select <strong>tolerance*</strong> and *number of results* in order to proceed with clusterization <br>
+					<br>
+					<strong>Tolerance</strong> is used in order to filter similarity scores that are too low for the requested accuracy.<br>
+					<strong> Number </strong> specifies how many alerts can be clustered to the starter one. <br>
+					Please note that higher tolerance is more likely to create smaller clusters<br>
+					<form class="aui">
+						<div class="field-group">
+							<label for="clusterization-tolerance">Similarity score tolerance</label> <select class="select" id="select-clusterization-tolerance" name="select-clusterization-tolerance">
+								<option value="low">Low tolerance</option> 
+								<option value="med" selected>Medium tolerance (default)</option> 
+								<option value="high">High tolerance</option> 
+							</select>
+							<br>
+							<br>
+							<br>
+							<label for="clusterization-number">$i18n.getText("supersede-prioritization-similarity-number.label")</label> <select class="select" id="select-clusterization-number" name="select-clusterization-number">
+								<option value="1">1</option> 
+								<option value="2">2</option> 
+								<option value="3">3</option> 
+								<option value="4">4</option> 
+								<option value="5">5</option> 
+								<option value="6">6</option> 
+								<option value="7">7</option> 
+								<option value="8">8</option> 
+								<option value="9">9</option> 
+								<option value="10" selected>10</option> 
+							</select>
+						</div>
+					</form>
+					<div>
+						<!-- Dialog footer -->
+						<footer class="aui-dialog2-footer">
+							<!-- Actions to render on the right of the footer -->
+							<div class="aui-dialog2-footer-actions">
+								<form action="supersede-alerts" method="get">
+									<input type="hidden" name="cluster" value="y">
+									<input type="hidden" class="clusterization-tolerance" name="clusterization-tolerance">
+									<input type="hidden" class="clusterization-number" name="similarity-number">
+									<button id="clusterization-button" style="margin-left: 20px" class="aui-button aui-button-secondary alertManagement simple-tooltip" title="Clusterize">
+										<span class="glyphicon glyphicon-list-alt"></span> Clusterize
+									</button>
+								</form>
+								<button id="dialog-close-button" class="aui-button aui-button-link">Close</button>
+							</div>
+							<!-- HINT TEXT -->
+						</footer>
+			</section>
+			
 			
 		</div>
 	</div>
