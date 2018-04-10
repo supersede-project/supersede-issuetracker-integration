@@ -14,14 +14,18 @@
 
 package eu.supersede.jira.plugins.servlet;
 
+import java.util.Date;
+
 public class Alert {
 	private String id;
 	private String filteredId;
 	private String classification;
 	private String applicationId;
 	private String tenant;
+	private Date date;
 	private String timestamp;
 	private String description;
+	private String sameCluster;
 	private String[] issues;
 	private int sentiment;
 	private int positive;
@@ -78,6 +82,14 @@ public class Alert {
 		this.tenant = tenant;
 	}
 
+	public Date getDate() {
+		return date;
+	}
+
+	public void setDate(Date date) {
+		this.date = date;
+	}
+
 	public String getTimestamp() {
 		return timestamp;
 	}
@@ -92,6 +104,14 @@ public class Alert {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public String getSameCluster() {
+		return sameCluster;
+	}
+
+	public void setSameCluster(String sameCluster) {
+		this.sameCluster = sameCluster;
 	}
 
 	public String[] getIssues() {

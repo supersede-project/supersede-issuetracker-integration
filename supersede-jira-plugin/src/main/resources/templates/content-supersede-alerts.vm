@@ -48,7 +48,7 @@
 					<button style="margin-left: 20px" id="bulk-dialog-show-button" class="aui-button aui-button-primary alertManagement simple-tooltip" title="Convert all alerts to issues">
 						<span class="glyphicon glyphicon-th-list"></span> Convert all alerts to issues
 					</button>
-					<button style="margin-left: 20px" id="clusterization-dialog-show-button" class="aui-button aui-button-primary alertManagement simple-tooltip" title="Convert all alerts to issues">
+					<button style="margin-left: 20px" id="clusterization-dialog-show-button" class="aui-button aui-button-primary alertManagement simple-tooltip" enabled="false" title="Convert all alerts to issues">
 						<span class="glyphicon glyphicon-th-list"></span> Perform clusterization
 					</button>
 					<button style="margin-left: 20px" id="attach-dialog-show-button" class="aui-button aui-button-primary alertManagement toEnable simple-tooltip" title="Attach selected alert to existing issue(s)">
@@ -67,10 +67,11 @@
 				<thead>
 					<tr>
 						<th class="td-tiny"></th>
+						<!-- <th class="td-tiny"></th> -->
 						<th class="td-med">$i18n.getText("supersede-alerts-table-id.label")</th>
 						<th class="td-small">Classification</th>
 						<th class="td-small">$i18n.getText("supersede-alerts-table-app-id.label")</th>
-						<!-- 						<th class="td-med">$i18n.getText("supersede-alerts-table-timestamp.label")</th> -->
+						<th class="td-med">$i18n.getText("supersede-alerts-table-timestamp.label")</th>
 						<th class="td-max">$i18n.getText("supersede-alerts-table-description.label")</th>
 						<!-- <th class="td-tiny">$i18n.getText("supersede-alerts-table-positive.label")</th> -->
 						<!-- <th class="td-tiny">$i18n.getText("supersede-alerts-table-negative.label")</th> -->
@@ -83,10 +84,11 @@
 					#foreach( $alert in $alerts )
 					<tr>
 						<td class="td-truncate"><input class="chkSelected checkbox" type="checkbox" id=$alert.getId()></td>
+						<!-- <td class="td-truncate">$alert.getSameCluster()</td> -->
 						<td class="td-truncate alertId"><a href="supersede-alerts?xmlAlert=y&xmlAlertId=$alert.getId()" target="_blank">$alert.getId()</a></td>
 						<td class="td-truncate">$alert.getClassification()</td>
 						<td class="td-truncate">$alert.getApplicationId()</td>
-						<!-- 						<td class="td-truncate">$alert.getTimestamp()</td> -->
+						<td class="td-truncate">$alert.getDate()</td>
 						<td class="td-truncate" title="$alert.getDescription()" onLoad="AJS.$(this).tooltip();">$alert.getDescription()</td>
 						<!-- <td class="td-truncate">$alert.getPositive()</td> -->
 						<!-- <td class="td-truncate">$alert.getNegative()</td> -->

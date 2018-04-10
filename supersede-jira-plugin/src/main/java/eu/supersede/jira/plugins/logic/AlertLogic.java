@@ -226,12 +226,18 @@ public class AlertLogic {
 				// linked projects or libraries.
 				JSONObject r = requests.getJSONObject(i);
 				Alert a = new Alert();
+				if (i > 0) {
+					a.setSameCluster("X");
+				} else {
+					a.setSameCluster("A");
+				}
 				a.setApplicationId(o.getString("applicationId"));
 				a.setId(o.getString("id") + "URCD" + r.getString("id"));
 				a.setClassification(r.getString("classification"));
 				a.setFilteredId("alert" + o.getString("id").replace('-', '_'));
 				a.setTenant(o.getString("tenant"));
 				Date d = new Date(o.getLong("timestamp"));
+				a.setDate(d);
 				a.setTimestamp(d.toString());
 				a.setDescription(r.getString("description"));
 				a.setSentiment(r.getInt("overallSentiment"));
@@ -328,8 +334,6 @@ public class AlertLogic {
 			similarity.put("requirements", list);
 
 			OutputStreamWriter outputStreamWriter = new OutputStreamWriter(conn.getOutputStream());
-			String txt = "";
-			System.out.println(txt);
 			outputStreamWriter.write(similarity.toString());
 			outputStreamWriter.flush();
 
@@ -382,6 +386,10 @@ public class AlertLogic {
 			Alert a = alerts.remove(0);
 			similarityList.add(a);
 			similarities = checkAlertToAlertSimilarity(a, alerts, req);
+
+			if (similarities == null) {
+				continue;
+			}
 			// Rimuovo tutte le similarities dall'array alert presente
 			for (String s : similarities) {
 				for (Alert al : alerts) {

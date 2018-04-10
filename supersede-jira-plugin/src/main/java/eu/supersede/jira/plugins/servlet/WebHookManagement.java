@@ -16,7 +16,12 @@ package eu.supersede.jira.plugins.servlet;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -27,6 +32,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import com.atlassian.jira.bc.issue.IssueService;
 import com.atlassian.jira.bc.issue.search.SearchService;
@@ -38,6 +44,8 @@ import com.atlassian.jira.issue.IssueConstants;
 import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.issue.status.SimpleStatus;
 import com.atlassian.jira.issue.status.Status;
+import com.atlassian.jira.util.json.JSONArray;
+import com.atlassian.jira.util.json.JSONObject;
 import com.atlassian.jira.workflow.JiraWorkflow;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.user.UserManager;
@@ -71,8 +79,11 @@ public class WebHookManagement extends HttpServlet {
 
 	List<String> errors = new LinkedList<String>();
 
-	public WebHookManagement(IssueService issueService, ProjectService projectService, SearchService searchService, UserManager userManager, com.atlassian.jira.user.util.UserManager jiraUserManager, TemplateRenderer templateRenderer,
-			PluginSettingsFactory pluginSettingsFactory, CustomFieldManager customFieldManager, ProcessService processService, SupersedeLoginService ssLoginService) {
+	public WebHookManagement(IssueService issueService, ProjectService projectService, SearchService searchService,
+			UserManager userManager, com.atlassian.jira.user.util.UserManager jiraUserManager,
+			TemplateRenderer templateRenderer, PluginSettingsFactory pluginSettingsFactory,
+			CustomFieldManager customFieldManager, ProcessService processService,
+			SupersedeLoginService ssLoginService) {
 		this.templateRenderer = templateRenderer;
 
 		loginLogic = LoginLogic.getInstance(ssLoginService);
@@ -96,9 +107,23 @@ public class WebHookManagement extends HttpServlet {
 
 			List<SupersedeProcess> processList = processService.getAllProcesses();
 			ArrayList<String> requirements = new ArrayList<String>();
-			
-String name = mi.getStatusObject().getName();
-System.out.println(name);
+
+			System.out.println(mi.getStatus().getName());
+
+			if ("Done".equals(mi.getStatus().getName())) {
+
+				// http://supersede.es.atos.net:8081/orchestrator/feedback/authenticate
+				// superadmin/password
+
+				String token = loginToOrchestrator();
+				if (token.isEmpty()) {
+					return;
+				}
+
+				String response = sendFeedback(token);
+
+				return;
+			}
 
 			// loop through all processes
 			for (SupersedeProcess sp : processList) {
@@ -135,6 +160,84 @@ System.out.println(name);
 			System.out.println("##############################################");
 			return;
 		}
+	}
+
+	private String loginToOrchestrator() {
+
+		int response = -1;
+		String responseData = "";
+		try {
+			URL url = new URL("http://supersede.es.atos.net:8081/orchestrator/feedback/authenticate");
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			conn.setConnectTimeout(LoginLogic.CONN_TIMEOUT);
+			conn.setReadTimeout(LoginLogic.CONN_TIMEOUT);
+			conn.setDoOutput(true);
+			conn.setDoInput(true);
+			conn.setRequestMethod("POST");
+			conn.setRequestProperty("Content-Type", "application/json");
+
+			JSONObject loginJSON = new JSONObject();
+			loginJSON.put("name", "superadmin");
+			loginJSON.put("password", "password");
+
+			OutputStreamWriter outputStreamWriter = new OutputStreamWriter(conn.getOutputStream());
+			outputStreamWriter.write(loginJSON.toString());
+			outputStreamWriter.flush();
+
+			response = conn.getResponseCode();
+			System.out.println(conn.getResponseMessage());
+			System.out.println(response);
+			responseData = conn.getResponseMessage();
+
+			BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
+			StringBuilder sb = new StringBuilder();
+			String output;
+			while ((output = br.readLine()) != null) {
+				sb.append(output);
+			}
+			System.out.println(sb.toString());
+			JSONObject result = new JSONObject(sb.toString());
+
+			return result.getString("token");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return "";
+	}
+
+	private String sendFeedback(String token) {
+		int response = -1;
+		String responseData = "";
+		try {
+			URL url = new URL(
+					"http://supersede.es.atos.net:8081/orchestrator/feedback/en/applications/305/configurations/100/info");
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			conn.setConnectTimeout(LoginLogic.CONN_TIMEOUT);
+			conn.setReadTimeout(LoginLogic.CONN_TIMEOUT);
+			conn.setDoOutput(true);
+			conn.setDoInput(true);
+			conn.setRequestProperty("Authorization", token);
+			conn.setRequestMethod("POST");
+			conn.setRequestProperty("Content-Type", "application/json");
+
+			JSONObject loginJSON = new JSONObject();
+			loginJSON.put("text", "Hi, your feedback has been evaluated and it is currently implemented!");
+
+			OutputStreamWriter outputStreamWriter = new OutputStreamWriter(conn.getOutputStream());
+			outputStreamWriter.write(loginJSON.toString());
+			outputStreamWriter.flush();
+
+			response = conn.getResponseCode();
+			System.out.println(conn.getResponseMessage());
+			System.out.println(response);
+			responseData = conn.getResponseMessage();
+			return responseData;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return "";
 	}
 
 	@Override
