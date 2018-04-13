@@ -189,7 +189,7 @@ public class IssueLogic {
 			// if an ID is provided, use in in filter
 			// ID MUST BE the beginnning of the string. You cannot put a
 			// wildcard at the beginning of the search
-			jqlClauseBuilder.and().sub().customField(supersedeFieldId).like(id).or().field("key").eq(id).or()
+			jqlClauseBuilder.and().sub().customField(supersedeFieldId).like(id.substring(0, id.length() > 255 ? 254 : id.length() - 1)).or().field("key").eq(id).or()
 					.field("summary").like(id + "*").endsub();
 		}
 		Query query = jqlClauseBuilder.buildQuery();
@@ -265,7 +265,8 @@ public class IssueLogic {
 		ApplicationUser user = loginLogic.getCurrentUser();
 		IssueInputParameters issueInputParameters = issueService.newIssueInputParameters();
 		issueInputParameters.setDescription(description);
-		issueInputParameters.addCustomFieldValue(supersedeField.getId(), id);
+		issueInputParameters.addCustomFieldValue(supersedeField.getId(),
+				id.substring(0, id.length() > 255 ? 254 : id.length() - 1));
 		issueInputParameters.setReporterId(user.getName());
 		Project project = projectService
 				.getProjectByKey(user, /* loginLogic.getCurrentProject().toUpperCase() */ projectId).getProject();

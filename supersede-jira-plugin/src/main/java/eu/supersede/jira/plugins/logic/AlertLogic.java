@@ -35,6 +35,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.xml.ws.RespectBinding;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.httpclient.Cookie;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -147,6 +148,19 @@ public class AlertLogic {
 		return alerts;
 	}
 
+	public List<Alert> fetchAlertsByBase64(HttpServletRequest req, HttpServletResponse res, Long supersedeFieldId,
+			IssueLogic il, String base64Id, String searchAlerts) {
+		List<Alert> result = new ArrayList<Alert>();
+		List<Alert> alerts = fetchAlerts(req, res, supersedeFieldId, il);
+		for (Alert a : alerts) {
+			if (base64Id.equals(a.getBase64Id())) {
+				result.add(a);
+			}
+		}
+
+		return result;
+	}
+
 	public Set<String> getRelatedIssues(HttpServletRequest req, Long supersedeFieldId, IssueLogic il, String alertId) {
 		// IssueLogic il = null;//IssueLogic.getInstance(issueService,
 		// projectService, searchService)
@@ -168,40 +182,67 @@ public class AlertLogic {
 	public boolean discardAlert(HttpServletRequest req, String alertId) {
 		// List<Alert> alerts = new LinkedList<Alert>();
 		int response = -1;
+		String responseData = null;
 		try {
 			// retrieve the list of all alerts from the specified tenant
 			String sessionId = loginLogic.login();
 			if (alertId != null && !alertId.isEmpty()) {
 				// alertId = "?id="+(alertId.substring(0, alertId.indexOf("URCD")));
-				alertId = alertId.substring(0, alertId.indexOf("URCD"));
+				alertId = alertId.substring(alertId.indexOf("URCD") + 4);
 			} else {
 				return false;
 			}
-			URL url = new URL(loginLogic.getUrl() + "/supersede-dm-app/alerts/discard/" + alertId);
+			URL url = new URL(loginLogic.getUrl() + "/supersede-dm-app/userrequests/discard?id=" + alertId);
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 			conn.setConnectTimeout(LoginLogic.CONN_TIMEOUT);
 			conn.setReadTimeout(LoginLogic.CONN_TIMEOUT);
 			conn.setDoOutput(true);
-			conn.setRequestMethod("DELETE");
+			
+			StringBuilder params = new StringBuilder("id=").append(alertId);
+
+			conn.setRequestMethod("POST");
 			conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-			// conn.setRequestProperty("Content-Type", "application/json");
-			// conn.setRequestProperty("Authorization",
-			// loginLogic.getBasicAuth());
+			conn.setRequestProperty("Content-Length", String.valueOf(params.length()));
 			conn.setRequestProperty("TenantId", loginLogic.getCurrentProject());
 			conn.setRequestProperty("Cookie", "SESSION=" + sessionId + ";");
 			conn.setRequestProperty("X-XSRF-TOKEN", loginLogic.authenticate(sessionId));
-
-			// OutputStreamWriter wr = new
-			// OutputStreamWriter(conn.getOutputStream());
-			// wr.write(alertId);
-			// wr.flush();
-
+			conn.setDoOutput(true);
+			OutputStreamWriter outputStreamWriter = new OutputStreamWriter(conn.getOutputStream());
+			outputStreamWriter.write(params.toString());
+			outputStreamWriter.flush();
 			response = conn.getResponseCode();
-			conn.getInputStream();
+			responseData = conn.getResponseMessage();
 
-			// JSONObject req = new JSONObject();
-			// req.put("name", name);
-			// req.put("description", description);
+			BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
+			StringBuilder sb = new StringBuilder();
+			String output;
+			while ((output = br.readLine()) != null) {
+				sb.append(output);
+			}
+//			conn.setRequestMethod("PUT");
+//			conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+//			// conn.setRequestProperty("Content-Type", "application/json");
+//			// conn.setRequestProperty("Authorization",
+//			// loginLogic.getBasicAuth());
+//			conn.setRequestProperty("TenantId", loginLogic.getCurrentProject());
+//			conn.setRequestProperty("Cookie", "SESSION=" + sessionId + ";");
+//			conn.setRequestProperty("X-XSRF-TOKEN", loginLogic.authenticate(sessionId));
+//
+//			// OutputStreamWriter wr = new
+//			// OutputStreamWriter(conn.getOutputStream());
+//			// wr.write(alertId);
+//			// wr.flush();
+//
+//			OutputStreamWriter out = new OutputStreamWriter(
+//					conn.getOutputStream());
+//			response = conn.getResponseCode();
+//		    out.write(alertId);
+//		    out.close();
+//			conn.getInputStream();
+//
+//			// JSONObject req = new JSONObject();
+//			// req.put("name", name);
+//			// req.put("description", description);
 
 			log.debug("alert " + alertId + "deleted");
 
@@ -235,6 +276,7 @@ public class AlertLogic {
 				a.setId(o.getString("id") + "URCD" + r.getString("id"));
 				a.setClassification(r.getString("classification"));
 				a.setFilteredId("alert" + o.getString("id").replace('-', '_'));
+				a.setBase64Id(Base64.encodeBase64URLSafeString(a.getId().getBytes()));
 				a.setTenant(o.getString("tenant"));
 				Date d = new Date(o.getLong("timestamp"));
 				a.setDate(d);

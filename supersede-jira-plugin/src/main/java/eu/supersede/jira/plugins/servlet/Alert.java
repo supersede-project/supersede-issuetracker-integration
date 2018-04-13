@@ -19,6 +19,7 @@ import java.util.Date;
 public class Alert {
 	private String id;
 	private String filteredId;
+	private String base64Id;
 	private String classification;
 	private String applicationId;
 	private String tenant;
@@ -56,6 +57,14 @@ public class Alert {
 
 	public void setFilteredId(String filteredId) {
 		this.filteredId = filteredId;
+	}
+
+	public String getBase64Id() {
+		return base64Id;
+	}
+
+	public void setBase64Id(String base64Id) {
+		this.base64Id = base64Id;
 	}
 
 	public String getClassification() {

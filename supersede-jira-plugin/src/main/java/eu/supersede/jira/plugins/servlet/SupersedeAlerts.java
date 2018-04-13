@@ -113,10 +113,11 @@ public class SupersedeAlerts extends HttpServlet {
 		if (!"".equals(req.getParameter("deleteAction")) && req.getParameter("deleteAction") != null) {
 			String[] list = req.getParameter(PARAM_SELECTION_LIST).split(SEPARATOR);
 			for (int i = 0; i < list.length; i++) {
-				String alertId = list[i];
-				boolean deleted = alertLogic.discardAlert(req, alertId);
+				Alert a = alertLogic.fetchAlertsByBase64(req, resp, supersedeCustomFieldLogic.getSupersedeFieldId(),
+						issueLogic, list[0], "").get(0);
+				boolean deleted = alertLogic.discardAlert(req, a.getId());
 				if (deleted) {
-					errors.add("Alert with ID " + alertId + "was successfully deleted");
+					errors.add("Alert with ID " + a.getId() + "was successfully deleted");
 					req.setAttribute("fromPost", true);
 				}
 				// int count = alertLogic.getAlertCount(req,
@@ -212,9 +213,9 @@ public class SupersedeAlerts extends HttpServlet {
 			if (isImport) {
 				String project = req.getParameter("projectField");
 				String type = req.getParameter("issueType");
-				Alert a = alertLogic.fetchAlerts(req, resp, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic,
-						list[0], "").get(0);
-				issueID = a.getId() + System.currentTimeMillis();
+				Alert a = alertLogic.fetchAlertsByBase64(req, resp, supersedeCustomFieldLogic.getSupersedeFieldId(),
+						issueLogic, list[0], "").get(0);
+				issueID = a.getBase64Id() + System.currentTimeMillis();
 				newIssue = issueLogic.newIssue(req, "Issue " + a.getId(), a.getDescription(), issueID, errors,
 						supersedeCustomFieldLogic.getSupersedeCustomField(), project, type);
 			}
@@ -227,16 +228,16 @@ public class SupersedeAlerts extends HttpServlet {
 			Alert a = null;
 			boolean firstLoop = false;
 			for (int i = 0; i < list.length; i++) {
-				a = alertLogic.fetchAlerts(req, resp, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic,
-						list[i], "").get(0);
+				a = alertLogic.fetchAlertsByBase64(req, resp, supersedeCustomFieldLogic.getSupersedeFieldId(),
+						issueLogic, list[i], "").get(0);
 				if (isImport) {
 					// attach file to the newly created issue
 					if (!firstLoop) {
 						errors.add(newIssue != null ? newIssue.getIssue().getKey() : "importing " + a.getId());// else
 						firstLoop = true;
 					}
-					issueLogic.attachToIssue(a,
-							issueLogic.getIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId(), issueID).get(0));
+					issueLogic.attachToIssue(a, issueLogic.getIssues(req,
+							supersedeCustomFieldLogic.getSupersedeFieldId(), newIssue.getIssue().getKey()).get(0));
 					context.put("newIssue", "true");
 				} else {
 					// attach to an existing issue
@@ -281,8 +282,8 @@ public class SupersedeAlerts extends HttpServlet {
 			return;
 		} else if ("y".equals(req.getParameter("xmlAlert"))) {
 			String xmlAlert = req.getParameter(PARAM_XML_ALERT);
-			alerts = alertLogic.fetchAlerts(req, resp, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic,
-					xmlAlert, "");
+			alerts = alertLogic.fetchAlertsByBase64(req, resp, supersedeCustomFieldLogic.getSupersedeFieldId(),
+					issueLogic, xmlAlert, "");
 			resp.setContentType("text/xml;charset=utf-8");
 			context.put("alert", alerts.get(0));
 			templateRenderer.render("/templates/xml-alert.vm", context, resp.getWriter());
