@@ -15,6 +15,7 @@
 package eu.supersede.jira.plugins.logic;
 
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
@@ -25,9 +26,11 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -182,7 +185,7 @@ public class AlertLogic {
 	public boolean discardAlert(HttpServletRequest req, String alertId) {
 		// List<Alert> alerts = new LinkedList<Alert>();
 		int response = -1;
-		String responseData = null;
+		String responseData = "";
 		try {
 			// retrieve the list of all alerts from the specified tenant
 			String sessionId = loginLogic.login();
@@ -192,59 +195,31 @@ public class AlertLogic {
 			} else {
 				return false;
 			}
-			URL url = new URL(loginLogic.getUrl() + "/supersede-dm-app/userrequests/discard?id=" + alertId);
+			String xsrf = loginLogic.authenticate(sessionId);
+			HttpSession session = req.getSession();
+			session.setAttribute("Cookie", "SESSION=" + sessionId + ";");
+			URL url = new URL(loginLogic.getUrl() + "/supersede-dm-app/alerts/userrequests/discard");
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 			conn.setConnectTimeout(LoginLogic.CONN_TIMEOUT);
 			conn.setReadTimeout(LoginLogic.CONN_TIMEOUT);
-			conn.setDoOutput(true);
-			
-			StringBuilder params = new StringBuilder("id=").append(alertId);
-
-			conn.setRequestMethod("POST");
-			conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-			conn.setRequestProperty("Content-Length", String.valueOf(params.length()));
+			conn.setRequestProperty("Authorization", loginLogic.getBasicAuth());
 			conn.setRequestProperty("TenantId", loginLogic.getCurrentProject());
 			conn.setRequestProperty("Cookie", "SESSION=" + sessionId + ";");
-			conn.setRequestProperty("X-XSRF-TOKEN", loginLogic.authenticate(sessionId));
 			conn.setDoOutput(true);
+			conn.setDoInput(true);
+			conn.setRequestMethod("PUT");
+			conn.setRequestProperty("Content-Type", "application/json");
+			conn.setRequestProperty("X-XSRF-TOKEN", xsrf);
+
 			OutputStreamWriter outputStreamWriter = new OutputStreamWriter(conn.getOutputStream());
-			outputStreamWriter.write(params.toString());
+			String txt = "";
+			System.out.println(txt);
+			outputStreamWriter.write("id=" + alertId);
 			outputStreamWriter.flush();
+
 			response = conn.getResponseCode();
+			System.out.println(response);
 			responseData = conn.getResponseMessage();
-
-			BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
-			StringBuilder sb = new StringBuilder();
-			String output;
-			while ((output = br.readLine()) != null) {
-				sb.append(output);
-			}
-//			conn.setRequestMethod("PUT");
-//			conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-//			// conn.setRequestProperty("Content-Type", "application/json");
-//			// conn.setRequestProperty("Authorization",
-//			// loginLogic.getBasicAuth());
-//			conn.setRequestProperty("TenantId", loginLogic.getCurrentProject());
-//			conn.setRequestProperty("Cookie", "SESSION=" + sessionId + ";");
-//			conn.setRequestProperty("X-XSRF-TOKEN", loginLogic.authenticate(sessionId));
-//
-//			// OutputStreamWriter wr = new
-//			// OutputStreamWriter(conn.getOutputStream());
-//			// wr.write(alertId);
-//			// wr.flush();
-//
-//			OutputStreamWriter out = new OutputStreamWriter(
-//					conn.getOutputStream());
-//			response = conn.getResponseCode();
-//		    out.write(alertId);
-//		    out.close();
-//			conn.getInputStream();
-//
-//			// JSONObject req = new JSONObject();
-//			// req.put("name", name);
-//			// req.put("description", description);
-
-			log.debug("alert " + alertId + "deleted");
 
 			conn.disconnect();
 		} catch (Exception e) {
