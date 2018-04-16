@@ -198,7 +198,7 @@ public class AlertLogic {
 			String xsrf = loginLogic.authenticate(sessionId);
 			HttpSession session = req.getSession();
 			session.setAttribute("Cookie", "SESSION=" + sessionId + ";");
-			URL url = new URL(loginLogic.getUrl() + "/supersede-dm-app/alerts/userrequests/discard");
+			URL url = new URL(loginLogic.getUrl() + "/supersede-dm-app/alerts/userrequests/discard?id=" + alertId);
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 			conn.setConnectTimeout(LoginLogic.CONN_TIMEOUT);
 			conn.setReadTimeout(LoginLogic.CONN_TIMEOUT);
@@ -214,7 +214,6 @@ public class AlertLogic {
 			OutputStreamWriter outputStreamWriter = new OutputStreamWriter(conn.getOutputStream());
 			String txt = "";
 			System.out.println(txt);
-			outputStreamWriter.write("id=" + alertId);
 			outputStreamWriter.flush();
 
 			response = conn.getResponseCode();
