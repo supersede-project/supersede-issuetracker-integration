@@ -21,6 +21,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import javax.management.openmbean.KeyAlreadyExistsException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -72,9 +73,14 @@ public class SupersedeCfg extends HttpServlet {
 	 */
 	private static final String CONFIG_BROWSER_TEMPLATE = "/templates/supersede-cfg.vm";
 
-	public static final String KEY_HOSTNAME = "hostname", KEY_USERNAME = "username", KEY_PASSWORD = "password", KEY_TENANT = "tenant", KEY_REPLAN_HOST = "replan-host", KEY_REPLAN_TENANT = "replan-tenant", KEY_SIMILARITY = "similarity";
+	public static final String KEY_HOSTNAME = "hostname", KEY_USERNAME = "username", KEY_PASSWORD = "password",
+			KEY_TENANT = "tenant", KEY_REPLAN_HOST = "replan-host", KEY_REPLAN_TENANT = "replan-tenant",
+			KEY_SIMILARITY = "similarity", KEY_FEEDBACK = "feedback", KEY_FEEDBACK_USER = "F2Fuser",
+			KEY_FEEDBACK_PASSWORD = "F2Fpassword";
 
-	public static final String DEF_HOSTNAME = "http://localhost", DEF_USERNAME = "admin", DEF_PASSWORD = "admin", DEF_TENANT = "", DEF_REPLAN_HOST = "", DEF_REPLAN_TENANT = "", DEF_SIMILARITY = "";
+	public static final String DEF_HOSTNAME = "http://localhost", DEF_USERNAME = "admin", DEF_PASSWORD = "admin",
+			DEF_TENANT = "", DEF_REPLAN_HOST = "", DEF_REPLAN_TENANT = "", DEF_SIMILARITY = "", DEF_FEEDBACK = "",
+			DEF_FEEDBACK_USER = "", DEF_FEEDBACK_PASSWORD = "";
 
 	private UserManager userManager;
 	private TemplateRenderer templateRenderer;
@@ -88,8 +94,11 @@ public class SupersedeCfg extends HttpServlet {
 	private final ProcessService processService;
 	private final LoginLogic loginLogic;
 
-	public SupersedeCfg(UserManager userManager, com.atlassian.jira.user.util.UserManager jiraUserManager, TemplateRenderer templateRenderer, PluginSettingsFactory pluginSettingsFactory, SupersedeLoginService ssLoginService,
-			UserSearchService userSearchService, ReplanJiraLoginService replanJiraLoginService, SupersedeLoginService supersedeLoginService, ProcessService processService) {
+	public SupersedeCfg(UserManager userManager, com.atlassian.jira.user.util.UserManager jiraUserManager,
+			TemplateRenderer templateRenderer, PluginSettingsFactory pluginSettingsFactory,
+			SupersedeLoginService ssLoginService, UserSearchService userSearchService,
+			ReplanJiraLoginService replanJiraLoginService, SupersedeLoginService supersedeLoginService,
+			ProcessService processService) {
 		this.userManager = userManager;
 		this.templateRenderer = templateRenderer;
 		this.jiraUserManager = jiraUserManager;
@@ -121,12 +130,12 @@ public class SupersedeCfg extends HttpServlet {
 	 *            an instance of the pluginSettings to use. Use the
 	 *            settingsFactory.createGlobalSettings() to retrieve it.
 	 * @param key
-	 *            the locally scoped key, just the name of the variable. The
-	 *            actual stored key is package dependent but it's name is
-	 *            handled automatically.
+	 *            the locally scoped key, just the name of the variable. The actual
+	 *            stored key is package dependent but it's name is handled
+	 *            automatically.
 	 * @param defaultValue
-	 *            if no such value exists, the default value is set in the
-	 *            settings and returned
+	 *            if no such value exists, the default value is set in the settings
+	 *            and returned
 	 * @return
 	 */
 	public static String getConfigurationValue(PluginSettings pluginSettings, String key, String defaultValue) {
@@ -144,8 +153,7 @@ public class SupersedeCfg extends HttpServlet {
 	 * 
 	 * @param pluginSettings
 	 * @param key
-	 *            a locally scoped key. The actual storage key is handled
-	 *            internally
+	 *            a locally scoped key. The actual storage key is handled internally
 	 * @param value
 	 * @return
 	 */
@@ -183,7 +191,8 @@ public class SupersedeCfg extends HttpServlet {
 				return;
 			}
 
-			ReplanJiraLogin login = replanJiraLoginService.getLoginByJiraUsername(jiraUsername, loginLogic.getReplanTenant());
+			ReplanJiraLogin login = replanJiraLoginService.getLoginByJiraUsername(jiraUsername,
+					loginLogic.getReplanTenant());
 			// if (login == null) {
 			// login =
 			// replanJiraLoginService.getLoginByReplanUsername(replanUsername,
@@ -208,6 +217,12 @@ public class SupersedeCfg extends HttpServlet {
 			}
 			ssLoginService.add(jiraUser, ssUser, ssPass, ssTenant);
 
+		} else if ("y".equals(req.getParameter("f2f"))) {
+
+			PluginSettings pluginSettings = pluginSettingsFactory.createGlobalSettings();
+			pluginSettings.put(getStorageKey(KEY_FEEDBACK), req.getParameter(KEY_FEEDBACK));
+			pluginSettings.put(getStorageKey(KEY_FEEDBACK_USER), req.getParameter(KEY_FEEDBACK_USER));
+			pluginSettings.put(getStorageKey(KEY_FEEDBACK_PASSWORD), req.getParameter(KEY_FEEDBACK_PASSWORD));
 		}
 		resp.sendRedirect("supersede-cfg");
 	}
@@ -225,6 +240,9 @@ public class SupersedeCfg extends HttpServlet {
 		String replanSetting = getConfigurationValue(pluginSettings, KEY_REPLAN_HOST, DEF_REPLAN_HOST);
 		String replanTenantSetting = getConfigurationValue(pluginSettings, KEY_REPLAN_TENANT, DEF_REPLAN_TENANT);
 		String similaritySetting = getConfigurationValue(pluginSettings, KEY_SIMILARITY, DEF_SIMILARITY);
+		String f2fSetting = getConfigurationValue(pluginSettings, KEY_FEEDBACK, DEF_FEEDBACK);
+		String f2fuser = getConfigurationValue(pluginSettings, KEY_FEEDBACK_USER, DEF_FEEDBACK_USER);	
+		String f2fpassword = getConfigurationValue(pluginSettings, KEY_FEEDBACK_PASSWORD, DEF_FEEDBACK_PASSWORD);
 
 		loginLogic.loadConfiguration(pluginSettingsFactory.createGlobalSettings());
 
@@ -237,6 +255,9 @@ public class SupersedeCfg extends HttpServlet {
 		context.put(KEY_REPLAN_HOST, replanSetting);
 		context.put(KEY_REPLAN_TENANT, replanTenantSetting);
 		context.put(KEY_SIMILARITY, similaritySetting);
+		context.put(KEY_FEEDBACK, f2fSetting);
+		context.put(KEY_FEEDBACK_USER, f2fuser);
+		context.put(KEY_FEEDBACK_PASSWORD, f2fpassword);
 
 		String jiraUser = loginLogic.getCurrentUser().getUsername();
 		SupersedeLogin ssLogin = ssLoginService.getLogin(jiraUser);
@@ -247,7 +268,8 @@ public class SupersedeCfg extends HttpServlet {
 		context.put("replanLogins", replanJiraLoginService.getAllLogins());
 
 		// Pass a list of JIRA Users
-		List<ApplicationUser> activeUsers = userSearchService.findUsersAllowEmptyQuery(new JiraServiceContextImpl(loginLogic.getCurrentUser()), "");
+		List<ApplicationUser> activeUsers = userSearchService
+				.findUsersAllowEmptyQuery(new JiraServiceContextImpl(loginLogic.getCurrentUser()), "");
 
 		// Get a list of tenant users
 		ReplanLogic replanLogic = ReplanLogic.getInstance();

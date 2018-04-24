@@ -48,7 +48,7 @@ public class LoginLogic {
 
 	private static String authToken;
 
-	private String serverUrl, username, password, tenantOverride, replanHost, replanTenant, similarity;
+	private String serverUrl, username, password, tenantOverride, replanHost, replanTenant, similarity, feedback, feedbackUser, feedbackPassword;
 
 	private String currentProject; // TODO: 20170803 No longer required, if "get
 									// tenant from user group" is confirmed
@@ -99,7 +99,16 @@ public class LoginLogic {
 		replanHost = SupersedeCfg.getConfigurationValue(pluginSettings, SupersedeCfg.KEY_REPLAN_HOST, SupersedeCfg.DEF_REPLAN_HOST);
 		replanTenant = SupersedeCfg.getConfigurationValue(pluginSettings, SupersedeCfg.KEY_REPLAN_TENANT, SupersedeCfg.DEF_REPLAN_TENANT);
 		setSimilarity(SupersedeCfg.getConfigurationValue(pluginSettings, SupersedeCfg.KEY_SIMILARITY, SupersedeCfg.DEF_SIMILARITY));
-
+		setFeedback(SupersedeCfg.getConfigurationValue(pluginSettings, SupersedeCfg.KEY_FEEDBACK, SupersedeCfg.DEF_FEEDBACK));
+		setFeedbackUser(SupersedeCfg.getConfigurationValue(pluginSettings, SupersedeCfg.KEY_FEEDBACK_USER, SupersedeCfg.DEF_FEEDBACK_USER));
+		setFeedbackPassword(SupersedeCfg.getConfigurationValue(pluginSettings, SupersedeCfg.KEY_FEEDBACK_PASSWORD, SupersedeCfg.DEF_FEEDBACK_PASSWORD));
+	}
+	
+	public void loadConfigurationForWebHook(PluginSettings settings) {
+		PluginSettings pluginSettings = settings;
+		setFeedback(SupersedeCfg.getConfigurationValue(pluginSettings, SupersedeCfg.KEY_FEEDBACK, SupersedeCfg.DEF_FEEDBACK));
+		setFeedbackUser(SupersedeCfg.getConfigurationValue(pluginSettings, SupersedeCfg.KEY_FEEDBACK_USER, SupersedeCfg.DEF_FEEDBACK_USER));
+		setFeedbackPassword(SupersedeCfg.getConfigurationValue(pluginSettings, SupersedeCfg.KEY_FEEDBACK_PASSWORD, SupersedeCfg.DEF_FEEDBACK_PASSWORD));
 	}
 
 	public String getBasicAuth() {
@@ -233,6 +242,30 @@ public class LoginLogic {
 
 	public void setSimilarity(String similarity) {
 		this.similarity = similarity;
+	}
+
+	public String getFeedback() {
+		return feedback;
+	}
+
+	public void setFeedback(String feedback) {
+		this.feedback = feedback;
+	}
+
+	public String getFeedbackUser() {
+		return feedbackUser;
+	}
+
+	public void setFeedbackUser(String feedbackUser) {
+		this.feedbackUser = feedbackUser;
+	}
+
+	public String getFeedbackPassword() {
+		return feedbackPassword;
+	}
+
+	public void setFeedbackPassword(String feedbackPassword) {
+		this.feedbackPassword = feedbackPassword;
 	}
 
 }

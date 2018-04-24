@@ -179,6 +179,31 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2")
 							</p>
 						</form>
 					</div>
+					
+					<div class="module">
+						<div class="mod-header" id="interface-options-head">
+							<div>
+								<h2>Feedback-to-feedback options</h2>
+								<i>(optional)</i>
+							</div>
+						</div>
+						<form method="post" action="supersede-cfg" class="aui dont-default-focus">
+						<input type="hidden" name="f2f" value="y">
+							Insert the URL for feedback-to-feedback sending. Please note that this will work only if USER=<user_id> and APP=<app_id> is put on the issue's description!
+							<p>
+								<label for="ss-f2f-url">Feedback-to-feedback URL:</label> <input type="text" id="ss-f2f-url" name="feedback" value="$feedback">
+							</p>
+							<p>
+								<label for="ss-feedback-user-input">SS Username:</label> <input type="text" id="ss-feedback-user-input" name="F2Fuser" value="$F2Fuser">
+							</p>
+							<p>
+								<label for="ss-feedback-pass-input">Password:</label> <input type="password" id="ss-feedback-pass-input" name="F2Fpassword" value="$F2Fpassword">
+							</p>
+							<p>
+								<input type="submit" class="button" value="Save">
+							</p>
+						</form>
+					</div>
 					<br> <br>
 					<hr>
 					<br>

@@ -27,6 +27,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -76,6 +78,8 @@ public class WebHookManagement extends HttpServlet {
 	private RequirementLogic requirementLogic;
 
 	private final ProcessService processService;
+	
+	private PluginSettingsFactory pluginSettingsFactory;
 
 	List<String> errors = new LinkedList<String>();
 
@@ -87,7 +91,7 @@ public class WebHookManagement extends HttpServlet {
 		this.templateRenderer = templateRenderer;
 
 		loginLogic = LoginLogic.getInstance(ssLoginService);
-
+		loginLogic.loadConfigurationForWebHook(pluginSettingsFactory.createGlobalSettings());
 		processLogic = ProcessLogic.getInstance();
 		requirementLogic = RequirementLogic.getInstance(issueService, projectService, searchService);
 		this.processService = checkNotNull(processService);
@@ -100,6 +104,7 @@ public class WebHookManagement extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		if ("y".equals(req.getParameter("webhook"))) {
+			
 			String issueKey = req.getParameter("issueKey");
 			String issueId = req.getParameter("issueId");
 
@@ -120,7 +125,31 @@ public class WebHookManagement extends HttpServlet {
 					return;
 				}
 
-				String response = sendFeedback(token);
+				// After a successful logon, I try retrieving the data in the issue
+				boolean found = false;
+				String app = null;
+				String user = null;
+				Pattern APP_PATTERN = Pattern.compile("APP=[a-zA-Z0-9]*");
+				Matcher m = APP_PATTERN.matcher(mi.getDescription());
+				while (m.find()) {
+					found = true;
+
+					String part = mi.getDescription().substring(m.start(), m.end());
+					app = part.split("=")[1];
+				}
+				Pattern USER_PATTERN = Pattern.compile("USER=[a-zA-Z0-9]*");
+				m = USER_PATTERN.matcher(mi.getDescription());
+				while (m.find()) {
+					found &= true;
+					String part = mi.getDescription().substring(m.start(), m.end());
+					user = part.split("=")[1];
+				}
+
+				if (!found) {
+					return;
+				}
+
+				String response = sendFeedback(token, user, app, mi.getKey());
 
 				return;
 			}
@@ -177,8 +206,8 @@ public class WebHookManagement extends HttpServlet {
 			conn.setRequestProperty("Content-Type", "application/json");
 
 			JSONObject loginJSON = new JSONObject();
-			loginJSON.put("name", "superadmin");
-			loginJSON.put("password", "password");
+			loginJSON.put("name", loginLogic.getFeedbackUser());
+			loginJSON.put("password", loginLogic.getFeedbackPassword());
 
 			OutputStreamWriter outputStreamWriter = new OutputStreamWriter(conn.getOutputStream());
 			outputStreamWriter.write(loginJSON.toString());
@@ -206,12 +235,14 @@ public class WebHookManagement extends HttpServlet {
 		return "";
 	}
 
-	private String sendFeedback(String token) {
+	private String sendFeedback(String token, String user, String app, String issueCode) {
 		int response = -1;
 		String responseData = "";
 		try {
-			URL url = new URL(
-					"http://supersede.es.atos.net:8081/orchestrator/feedback/en/applications/305/configurations/100/info");
+			String tempUrl = loginLogic.getFeedback();
+			tempUrl = tempUrl.replace("APP", app);
+			tempUrl = tempUrl.replace("USER", user);
+			URL url = new URL(tempUrl);
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 			conn.setConnectTimeout(LoginLogic.CONN_TIMEOUT);
 			conn.setReadTimeout(LoginLogic.CONN_TIMEOUT);
@@ -222,7 +253,7 @@ public class WebHookManagement extends HttpServlet {
 			conn.setRequestProperty("Content-Type", "application/json");
 
 			JSONObject loginJSON = new JSONObject();
-			loginJSON.put("text", "Hi, your feedback has been evaluated and it is currently implemented!");
+			loginJSON.put("text", "Hi, your feedback has been evaluated as issue " + issueCode + " and it is currently implemented!");
 
 			OutputStreamWriter outputStreamWriter = new OutputStreamWriter(conn.getOutputStream());
 			outputStreamWriter.write(loginJSON.toString());
