@@ -122,6 +122,7 @@ function onPageLoad() {
 					// alerts
 					selectionString += $(this).attr('id');
 					selectionString += ':::';
+					alert(selectionString);
 					$(".toEnable").prop('disabled', false);
 					$(".toEnable").prop('enabled', true);
 					// alert(selectionString);
@@ -223,7 +224,11 @@ function onPageLoad() {
 	// DIALOG
 	jQuery('.dialogButton').click(function() {
 		console.log('alert management');
+		$(".issuesSelectionList").val(issuesSelectionString);
 		$("#issuesSelectionList").val(issuesSelectionString);
+		$("#selectionList").val(selectionString);
+		$(".selectionList").val(selectionString);
+		
 	});
 
 	// DIALOG
