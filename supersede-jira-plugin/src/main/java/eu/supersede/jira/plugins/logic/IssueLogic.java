@@ -442,8 +442,8 @@ public class IssueLogic {
 			for (Issue i : issues) {
 				JSONObject requirement = new JSONObject();
 				requirement.put("_id", i.getId());
-				requirement.put("title", i.getKey());
-				requirement.put("description", i.getKey());
+				requirement.put("title", i.getSummary().replaceAll("[^A-Za-z0-9 ]", ""));
+				requirement.put("description", i.getDescription().replaceAll("[^A-Za-z0-9 ]", ""));
 
 				requirements.put(requirement);
 			}
