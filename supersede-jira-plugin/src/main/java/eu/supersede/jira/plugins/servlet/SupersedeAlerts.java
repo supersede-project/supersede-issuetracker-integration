@@ -300,7 +300,7 @@ public class SupersedeAlerts extends HttpServlet {
 			String[] list = req.getParameter(PARAM_SELECTION_LIST).split(SEPARATOR);
 			List<Issue> issuesList = null;
 			if ("empty".equals(issueFilter)) {
-				issuesList = issueLogic.getAllIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId());
+				issuesList = issues;//issueLogic.getAllIssues(req, supersedeCustomFieldLogic.getSupersedeFieldId());
 			} else if (!"alerts".equals(issueFilter)) {
 
 				SearchRequest sr = ComponentAccessor.getComponentOfType(SearchRequestService.class)
@@ -310,7 +310,7 @@ public class SupersedeAlerts extends HttpServlet {
 			}
 			ArrayList<String> similarities = new ArrayList<String>();
 			for (int i = 0; i < list.length; i++) {
-				Alert a = alertLogic.fetchAlerts(req, resp, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic,
+				Alert a = alertLogic.fetchAlertsByBase64(req, resp, supersedeCustomFieldLogic.getSupersedeFieldId(), issueLogic,
 						list[i], "").get(0);
 				List<String> similarity = new ArrayList<>();
 				if ("alerts".equals(issueFilter)) {

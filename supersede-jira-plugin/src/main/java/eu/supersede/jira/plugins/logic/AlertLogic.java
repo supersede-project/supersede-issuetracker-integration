@@ -354,8 +354,6 @@ public class AlertLogic {
 			outputStreamWriter.flush();
 
 			response = conn.getResponseCode();
-			System.out.println(conn.getResponseMessage());
-			System.out.println(response);
 			responseData = conn.getResponseMessage();
 
 			BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));

@@ -189,7 +189,8 @@ public class IssueLogic {
 			// if an ID is provided, use in in filter
 			// ID MUST BE the beginnning of the string. You cannot put a
 			// wildcard at the beginning of the search
-			jqlClauseBuilder.and().sub().customField(supersedeFieldId).like(id.substring(0, id.length() > 255 ? 254 : id.length() - 1)).or().field("key").eq(id).or()
+			jqlClauseBuilder.and().sub().customField(supersedeFieldId)
+					.like(id.substring(0, id.length() > 255 ? 254 : id.length() - 1)).or().field("key").eq(id).or()
 					.field("summary").like(id + "*").endsub();
 		}
 		Query query = jqlClauseBuilder.buildQuery();
@@ -441,8 +442,8 @@ public class IssueLogic {
 			for (Issue i : issues) {
 				JSONObject requirement = new JSONObject();
 				requirement.put("_id", i.getId());
-				requirement.put("title", i.getSummary());
-				requirement.put("description", i.getDescription());
+				requirement.put("title", i.getKey());
+				requirement.put("description", i.getKey());
 
 				requirements.put(requirement);
 			}
@@ -450,8 +451,6 @@ public class IssueLogic {
 			similarity.put("requirements", requirements);
 
 			OutputStreamWriter outputStreamWriter = new OutputStreamWriter(conn.getOutputStream());
-			String txt = "";
-			System.out.println(txt);
 			outputStreamWriter.write(similarity.toString());
 			outputStreamWriter.flush();
 

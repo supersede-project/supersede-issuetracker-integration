@@ -207,8 +207,10 @@
 				</header>
 				<!-- Main dialog content -->
 				<div class="aui-dialog2-content dialogDataView">
-					<div class="listToDelete">
-					</div>
+					<!-- <div class="listToDelete"> </div> -->
+					
+					This will permanently delete the selected alerts from the SUPERSEDE database! <br> <br> Are you sure you want to continue?
+				</div>
 					<!-- Dialog footer -->
 					<footer class="aui-dialog2-footer">
 						<!-- Actions to render on the right of the footer -->
@@ -216,11 +218,9 @@
 							<form action="supersede-alerts" method="post">
 								<input type="hidden" class="selectionList" name="selectionList"> <input type="submit" id="dialog-submit-button" class="aui-button aui-button-primary dialogButton" name="deleteAction" value="Delete">
 							</form>
-							<button id="dialog-close-button" class="aui-button aui-button-link">Close</button>
 						</div>
 						<!-- HINT TEXT -->
 					</footer>
-				</div>
 			</section>
 
 			<!-- SIMILARITY DIALOG -->
@@ -284,7 +284,7 @@
 				<!-- Dialog header -->
 				<header class="aui-dialog2-header">
 					<!-- The dialog's title -->
-					<h2 class="aui-dialog2-header-main">Create issues from all alesta</h2>
+					<h2 class="aui-dialog2-header-main">Create issues from all alerts</h2>
 					<!-- Close icon -->
 					<a class="aui-dialog2-header-close"> <span class="aui-icon aui-icon-small aui-iconfont-close-dialog">$i18n.getText("supersede-alerts-close.btn.label")</span>
 					</a>

@@ -122,7 +122,7 @@ function onPageLoad() {
 					// alerts
 					selectionString += $(this).attr('id');
 					selectionString += ':::';
-					alert(selectionString);
+					//alert(selectionString);
 					$(".toEnable").prop('disabled', false);
 					$(".toEnable").prop('enabled', true);
 					// alert(selectionString);
