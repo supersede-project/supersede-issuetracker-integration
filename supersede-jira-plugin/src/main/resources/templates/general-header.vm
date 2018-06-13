@@ -44,7 +44,9 @@
 			#if($similarity.toString().indexOf(" - ") == -1)
 			- $similarity
 			#else
-				- <a href="$baseurl/browse/$similarity.toString().substring(0, $similarity.toString().indexOf(" - "))">$similarity.toString().substring(0, $similarity.toString().indexOf(" - "))</a>  $similarity.toString().substring($similarity.toString().indexOf(" - "))
+				<!-- - <a href="$baseurl/browse/$similarity.toString().substring(0, $similarity.toString().indexOf(" - "))">$similarity.toString().substring(0, $similarity.toString().indexOf(" - "))</a>  $similarity.toString().substring($similarity.toString().indexOf(" - ")) -->
+					 - <a href="$baseurl/browse/$similarity.toString().substring(0, $similarity.toString().indexOf(" - "))">$similarity.toString().substring(0, $similarity.toString().indexOf(" - "))</a>  $similarity.toString().substring($similarity.toString().indexOf(" - "), $similarity.toString().indexOf("plugins/servlet/supersede-alerts?")) <a href="$baseurl/$similarity.toString().substring($similarity.toString().indexOf("plugins/servlet/supersede-alerts?"))">Attach the alert to this issue</a>
+				
 			#end
 			</p>
 			#end #end

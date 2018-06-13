@@ -398,6 +398,7 @@ public class IssueLogic {
 		// Remove subtypes from list (you cannot create a subtask from outside
 		// an issue, so it doesn't make sense to include it
 		Iterator<IssueType> iter = issueTypes.iterator();
+		https: // open.spotify.com/track/5W3cjX2J3tjhG8zb6u0qHn
 		while (iter.hasNext()) {
 			IssueType it = iter.next();
 			if (!it.isSubTask()) {
@@ -442,8 +443,9 @@ public class IssueLogic {
 			for (Issue i : issues) {
 				JSONObject requirement = new JSONObject();
 				requirement.put("_id", i.getId());
-				requirement.put("title", i.getSummary().replaceAll("[^A-Za-z0-9 ]", ""));
-				requirement.put("description", i.getDescription().replaceAll("[^A-Za-z0-9 ]", ""));
+				requirement.put("title", i.getSummary() != null ? i.getSummary().replaceAll("[^A-Za-z0-9 ]", "") : "");
+				requirement.put("description",
+						i.getDescription() != null ? i.getDescription().replaceAll("[^A-Za-z0-9 ]", "") : "");
 
 				requirements.put(requirement);
 			}
@@ -474,7 +476,8 @@ public class IssueLogic {
 				IssueManager im = ComponentAccessor.getIssueManager();
 				Long id = Long.parseLong(o.getString("id"));
 				Issue sim = im.getIssueObject(id);
-				similarityList.add(sim.getKey() + " - " + sim.getSummary());
+				similarityList.add(sim.getKey() + " - " + sim.getSummary() + "plugins/servlet/supersede-alerts?projectField=ASVP&selectionList=" + a.getBase64Id()
+						+ "&issuesSelectionList=" + sim.getKey() + "&action=Attach");
 			}
 
 			return similarityList;

@@ -201,7 +201,7 @@ public class RequirementLogic {
 			URL url = new URL(loginLogic.getUrl() + "supersede-dm-app/processes/requirements/new");
 			String jiraIssueUrl = " " + ComponentAccessor.getApplicationProperties().getString("jira.baseurl") + "/browse/";
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-			StringBuilder params = new StringBuilder("processId=").append(processId).append("&name=").append(i.getSummary().replace("%", "perc")).append("&description=").append(i.getDescription().replaceAll("%", "perc") + jiraIssueUrl + i.getKey());
+			StringBuilder params = new StringBuilder("processId=").append(processId).append("&name=").append(i.getSummary().replace("%", "perc")).append("&description=").append((i.getDescription() != null ? i.getDescription().replaceAll("%", "perc") : "") + jiraIssueUrl + i.getKey());
 			conn.setConnectTimeout(LoginLogic.CONN_TIMEOUT);
 			conn.setReadTimeout(LoginLogic.CONN_TIMEOUT);
 			conn.setDoOutput(true);
